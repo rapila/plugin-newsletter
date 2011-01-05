@@ -1,0 +1,15 @@
+# default values for newsletter plugin
+# please overwrite values in site/config/config.yml
+
+newsletter_plugin:
+  richtext_settings:
+    height: 600
+    toolbar_Full: [["Bold","Italic","-"],["Link","Unlink"],["BulletedList"],["Undo","Redo","-","RemoveFormat"],["Maximize","Styles","Format"],["Image", "PickImage"],["Source"]]
+  sender_name: Mini-CMS.ch
+  sender_email_address: 'noreply@example.com'
+  #requires_authentication options true, user_role rolekey, default: false
+
+  subscriber_groups_require_authentication: 
+    1: manager
+
+

@@ -1,0 +1,9 @@
+<h3>{{writeString=wns.newsletter.subscribe.title}}</h3>
+<fieldset>
+  <form action="{{writeLink=to_self;ignore_request=true}}" method="post">
+    <label for="subscriber_email">{{writeString=wns.subscriber.email}}</label>
+    <input type="text" name="subscriber_email" id="subscriber_email" value="{{writeRequestValue=subscriber_email}}" /><br />{{writeFlashValue=email}}
+    <label>&nbsp;</label><button type="submit" class="subscribe" id="send" title="">{{writeString=wns.newsletter.subscribe}}</button>
+  </form>
+</fieldset>
+<p class="form_message"><br />{{message}}</p>

@@ -1,0 +1,21 @@
+jQuery(document).ready(function() {
+	var subscriber_group_list = jQuery('table.subscriber_group_list');
+	subscriber_group_list.each(function() {
+		jQuery(this).prepareWidget(function(widget) {
+			Widget.callStaticWidgetMethod('detail', 'connect_detail_with_list', 'subscriber_group', widget, 'setSubscriberGroupId');
+			widget.handle('list.cell-click', function(event, rowIndex, col, row, cell) {
+				if(col.identifier === 'delete') {
+					var name = widget.cell_for_identifier('name', row).text();
+					var delete_message = AdminInterface.strings.get_parameterized_string('wns.subscriber_group.delete_warning', { name: name});
+					Widget.confirm("{{writeString=wns.delete_warning_title}}", delete_message, function(confirmed) {
+						if(confirmed) {
+							this.delete_row(row);
+						}
+					}.bind(this));
+					event.stopPropagation();
+				}
+			});
+			AdminInterface.strings.handle_strings_for_list_result('wns.subscriber_groups.no_result', [], widget);
+		});
+	});
+});

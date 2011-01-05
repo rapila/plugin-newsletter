@@ -1,0 +1,50 @@
+Widget.types.subscriber_detail = {
+	initialize: function() {
+		this.content = jQuery.parseHTML("{{includeTemplate=edit}}");
+		this.content.find('div.hide_if_not_saved').hide();
+
+		Widget.create('detail', function(widget) {
+			this.detail_widget = widget.set_instance(this);
+			jQuery.extend(widget.settings, {
+				title: "{{writeString=wns.new_entry}}",
+				width: 550
+			});
+			widget.content = this.content;
+			if(this.auto_open) {
+				this.open();
+			}
+			this.content.find("select[name='preferred_language_id']").prepareWidget(function(widget) {
+				widget.settings.international_option = false;
+				widget.settings.use_admin_languages = true;
+			}, jQuery.noop);
+		}.bind(this));
+	},
+	
+	open: function() {
+		if(!this.detail_widget) {
+			this.auto_open = true;
+			return false;
+		}
+		this.detail_widget.open();
+		this.detail_widget.content.find('input[name=name]').focus();
+	},
+	
+	fill_data: function() {
+		this.getSubscriberData(function(subscriber_data) {
+			this.content.find("input[name='name']").val(subscriber_data.Name);
+			this.content.find("input[name='email']").val(subscriber_data.Email);
+			this.content.find(".updated_info").text(subscriber_data.UpdatedInfo);
+			this.content.find(".created_info").text(subscriber_data.CreatedInfo);
+			this.content.find('div.hide_if_not_saved').show();
+			this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.subscriber}} "+subscriber_data.Name);
+		});
+	},
+		
+	close: function() {
+		this.detail_widget.close();
+		this.close_callback();
+	},
+	
+	save_callback: jQuery.noop,
+	close_callback: jQuery.noop
+};

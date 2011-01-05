@@ -1,0 +1,85 @@
+Todo
+PREPARE, choose template, load, copy from other etc.
+- loadTemplate()
+- import csv to temporary group???
+
+EDIT Text
+- disable text edit when newletter is approved
+
+SEND Newsletter
+- sendNewsletter()
+	change save button to send if accordion is on send
+	check double emails when multiple groups or groups and custom mails are sent
+	
+	
+
+FEATRURES, ENHANCEMENTS
+Internationalisation: preferred_language_id check?
+
+newletter allow resend: configurable, duplication possible?
+otherwise there is no evidence of what has been sent.
+
+save sent version of newsletter?
+
+default subscriber_group:
+- anybody, edit subscribers in groups, if not anybody, should be handled externally in PersonBackendModule f.e.
+- use key or name, check
+
+Email Subscription and Confirmation text
+- what about making a database version with placeholders in order to make them easily editable by customers
+Newsletter body template: 
+
+- configurable footer
+
+
+HTML / Plain newsletter
+- think about handling and create newsletter implications
+
+BUGS and Insecurities ------------------------------------------------------------------------------------------------------------------------
+
+Newsletter Title 
+
+
+DONE ARCHIVE ------------------------------------------------------------------------------------------------------------------------
+- Newsletters are not finished yet, preview etc
+
+- EMail: mb_send_mail() [<a href='function.mb-send-mail'>function.mb-send-mail</a>]: Unsupported transfer encoding &quot;quoted-printable&quot; will be regarded as 8bit"
+	SOLUTION: Update Package ?
+	
+	
+	veranstaltungskalender
+	dienstag, 24.februar 2009
+	
+	
+	veranstaltung detail ort standard wird nicht angezeigt
+	
+	
+	& kontrollieren in Datenbank
+	
+	
+change chooser title for newsletter 
+fill missing meta info in template
+fix wrong already sent newsletter when only test was sent
+fix new newsletter displays wrong thing after sending it
+test newsletter should be able to send anyway
+the selected newsletter should be persistent
+
+- subscriber_groups [inactive] => change name to not
+- cleanup lang files
+- remove none option from group select in subscriber
+
+- check newsletter create undefined constant…
+
+link titelliste
+	
+	- create() is not called correctly and I do not figure out why not (added temporary $this->create() in getDetail())
+  action param und post request 
+
+- implement newsletter design and make it editable, maybe js add row with dummy_image and test tinymce
+
+- test the custom template handling for usability, 
+	- new location of templates in plugins/newsletter/templates and site/templates, see static methods
+  - NewsletterBackendModule::getMatchingCustomTemplates()
+  - NewsletterBackendModule::getNewsletterBodyTemplateByName() & getNewsletterCssTemplateByName()
+- check templates parsing in getDetail(), does not work properly because of the change, Template::ESCAPE/NO_HTML_ESCAPE ? Line 67-73
+- the getDetail() method requires now a preselect of the template, could be solved with js/ajax too on change of template select?

@@ -1,0 +1,5 @@
+allowed_roles: []
+name: "Newsletter"
+description: "Newsletter module for creating and sending newsletters"
+website: "http://plugins.mini-cms.ch/newsletter"
+version: "2.0"

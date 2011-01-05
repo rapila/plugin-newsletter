@@ -1,0 +1,32 @@
+<form>
+	<div class="accordion">
+		<h3><a href="#">Newsletter Konfiguration</a></h3>
+		<div class="general_info">
+			<div class="status_section">
+				<div class="hide_if_not_saved">
+					<label>{{writeString=wns.created_info}}:</label><span class="created_info status"></span><br />
+					<label>{{writeString=wns.updated.info}}:</label><span class="updated_info status"></span><br />
+				</div>
+			</div>
+			<div>
+				<label for="subject" class="validate-subject_required">{{writeString=wns.newsletter.subject}}</label>
+				<input type="text" name="subject" class="ui-widget-content input_long" />
+			</div>
+			<div class="group_fields">
+				<label for="template_name" class="validate-template_required">{{writeString=wns.newsletter.template}}</label>
+				<select name="template_name" class="ui-widget-content input_short"></select><br />
+			</div>
+			<div class="group_fields" style="width:10em;">
+				<label for="language_id">{{writeString=wns.language}}</label>
+				<select name="language_id" class="ui-widget-content input_short" style="width:auto;" data-widget-type="language_input"></select><br />
+			</div><br style="clear:both;" />
+		</div>
+		<h3><a href="#">Newsletter Text</a></h3>
+		<div class="accordion_content"	style="display:none;">
+			<div class="newsletter_body">
+				<textarea name="newsletter_body" class="ui-widget-content" rows="20"></textarea>
+			</div>
+			<input type="checkbox" name="is_approved" /><label for="is_approved" style="display:inline-block;">{{writeString=wns.newsletter.is_approved}} <span class="status_send_info"></span></label>
+		</div>
+	</div>
+</form>

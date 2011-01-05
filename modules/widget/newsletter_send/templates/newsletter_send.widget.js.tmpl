@@ -1,0 +1,140 @@
+Widget.types.newsletter_send = {
+	
+	show_test_dialog: function() {
+		var _this = this;
+		var test_markup = jQuery.parseHTML('{{includeTemplate=test}}');
+		
+		var email_address_info = test_markup.find('.email_address_info');
+		var custom_emails = test_markup.find('textarea[name=custom_emails]');
+		custom_emails.bind('keyup', function() {
+			var emails = _this.valid_emails_in_field(custom_emails);
+			if(emails.length > 1) {
+				email_address_info.text(emails[0]+", {{writeString=wns.newsletter_mailing.custom_email_see}}");
+			} else {
+				email_address_info.text(emails[0]);
+			}
+		}).triggerHandler('keyup');
+		
+		test_markup.bind('submit', function(event) {
+			_this.send_test_newsletter(_this.valid_emails_in_field(custom_emails), test_markup);
+			return false;
+		});
+
+		test_markup.dialog({
+			title: this.getNewsletterSubject(),
+			modal: true,
+			autoOpen: true,
+			buttons: [{
+				text: "{{writeString=wns.newsletter.send_test}}",
+				className: 'primary ui-state-highlight',
+				click: function() {
+					test_markup.submit();
+				}
+			}, {
+				text: "{{writeString=wns.cancel}}",
+				className: 'secondary ui-state-default',
+				click: function() {
+					test_markup.dialog('close');
+				}
+			}]
+		});
+	},
+	
+	show_send_dialog: function() {
+		var _this = this;
+		var send_progress = jQuery('<div/>').hide();
+		send_progress.progressbar();
+		
+		var send_markup = jQuery.parseHTML('{{includeTemplate=send}}');
+		send_markup.append(send_progress);
+		
+		var mail_groups = send_markup.find("select[name='mail_group_ids[]']");
+		mail_groups.prepareWidget();
+	
+		send_markup.bind('submit', function(event) {
+			_this.send_newsletter(mail_groups.val(), send_progress, send_markup);
+			return false;
+		});
+		
+		send_markup.dialog({
+			title: this.getNewsletterSubject(),
+			modal: true,
+			autoOpen: true,
+			buttons: [{
+				text: "{{writeString=wns.newsletter.send_hot}}",
+				className: 'primary ui-state-highlight',
+				click: function() {
+					send_markup.submit();
+				}
+			}, {
+				text: "{{writeString=wns.cancel}}",
+				className: 'secondary ui-state-default',
+				click: function() {
+					send_markup.dialog('close');
+				}
+			}]
+		});
+	},
+	
+	valid_emails_in_field: function(field) {
+		var valid_emails = [];
+		jQuery.each(field.val().split(/[\s\n,]+/), function(i, email) {
+			if(jQuery.validateEmail(email)) {
+				valid_emails.push(email);
+			}
+		});
+		if(valid_emails.length === 0) {
+			valid_emails.push(this.settings.default_email);
+		}
+		return valid_emails;
+	},
+	
+	send_test_newsletter: function(emails, markup) {
+		this.sendTestNewsletter(emails, function(result) {
+			this.handle_send_response(result, markup);
+		});
+	},
+	
+	send_newsletter: function(mail_groups, progress, markup) {
+		var batch_count = this.getExpectedBatchCount(mail_groups);
+				console.log('valid_emails', batch_count, 'mail_groups', mail_groups);
+		var current = batch_count;
+		this.sendNewsletter(mail_groups, 0, function(result) {
+			if(result === true || result === false) {
+				progress.progressbar('option', 'value', 1);
+				this.handle_send_response(result, markup);
+			} else {
+				progress.progressbar('option', 'value', (100/batch_count)*result);
+			}
+			return true;
+		})
+	},
+	
+	handle_send_response: function(result, markup) {
+		if(result) {
+			Widget.notifyUser('info', '{{writeString=wns.newsletter_send.sent_all}}');
+			markup.dialog('close');
+		} else {
+			this.unsuccessfulAttempts(function(attempts) {
+				message = jQuery('<div/>').text("{{writeString=wns.newsletter_send.sent_some}}");
+				var error_list = jQuery('<ul/>').appendTo(message);
+				jQuery.each(attempts, function(counter, item) {
+					error_list.append(jQuery('<li/>').text(item.message+" ["+item.recipient+"]"));
+				});
+				Widget.notifyUser('alert', message, {
+					closeDelay: false,
+					isHTML: true,
+					closable: true
+				});
+				markup.dialog('close');
+			});
+		}
+	},
+	
+	save_callback: jQuery.noop,
+	close_callback: jQuery.noop,
+	
+	settings: {
+		default_email: '{{writeSessionAttribute=getUser->getEmail}}'
+	}
+};

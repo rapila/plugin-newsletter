@@ -1,0 +1,46 @@
+jQuery(document).ready(function() {
+	// init main content
+	AdminInterface.content.find('table.newsletter_list').prepareWidget(function(newsletter_list) {
+		
+		// init sidebar
+		var sidebar;
+
+		AdminInterface.sidebar.find('.ui-list').prepareWidget(function(widget) {
+			sidebar = widget;
+			sidebar.settings.row_click_active_mode = 'activate';
+			var initial_selection = "{{writeRequestValue=subscriber_group_id}}";
+			if(initial_selection) {
+				initial_selection = isNaN(initial_selection) ? initial_selection : parseInt(initial_selection);
+				sidebar.handle('loaded', function() {
+					sidebar.activate_row(sidebar.row_from_row_data({id: initial_selection}));
+				}, true, true);
+			}
+			// click handlers
+			sidebar.handle('list.row-click', function(event, row, element) {
+				var subscriber_group_id = element.data('id');
+				if(!element.is('.ui-state-active')) {
+				 	subscriber_group_id = null;
+				}
+				newsletter_list.setOption('subscriber_group_id', subscriber_group_id);
+				newsletter_list.reload();
+			});
+		});
+		// init infobar
+		AdminInterface.info_bar.prepareWidget(function(info_bar) {
+			info_bar.add_button('add-new-item', function() {
+				Widget.create('newsletter_detail', function(widget) {
+					widget.open();
+					widget.save_callback = function() {
+						newsletter_list.reload();
+					};
+				});
+			}, 'n', true).add_search_input("{{writeString=wns.search.enter_search}}", function(search) {
+				if(newsletter_list.setSearch(search)) {
+					newsletter_list.reload();
+				}
+			});
+			// add row_count_info
+			info_bar.add_row_count_info_for_list(newsletter_list);
+		});
+	});
+});

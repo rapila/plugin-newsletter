@@ -1,0 +1,9 @@
+Widget.types.subscriber_group_input = {
+	prepare: function() {
+		var option = jQuery('<option/>');
+		var subscriber_groups = this.getSubscriberGroups();
+		jQuery.each(subscriber_groups, function(i, group) {
+			option.clone().text(group.name).attr('value', group.id).appendTo(this._element);
+		}.bind(this));
+	}
+};
