@@ -1,8 +1,10 @@
 jQuery(document).ready(function() {
 	// init main content
 	var subscriber_list = AdminInterface.content.find('table.subscriber_list');
+	var sidebar;
 	subscriber_list.prepareWidget(function(subscriber_list) {
-		AdminInterface.sidebar.find('.ui-list').prepareWidget(function(sidebar) {
+		AdminInterface.sidebar.find('.ui-list').prepareWidget(function(widget) {
+			sidebar = widget;
 			sidebar.settings.row_click_active_mode = 'activate';
 			var initial_selection = "{{writeRequestValue=subscriber_group_id}}";
 			if(initial_selection) {

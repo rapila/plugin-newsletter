@@ -25,10 +25,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$aResult['CreatedInfo'] = Util::formatCreatedInfo($oNewsletter);
 		$aResult['UpdatedInfo'] = Util::formatUpdatedInfo($oNewsletter);
 		$aResult['SessionUserEmail'] = Session::getSession()->getUser()->getEmail();
-		if($oNewsletter->countNewsletterMailings() > 0) {
-  		$aResult['HasBeedSent'] = $oNewsletter->countNewsletterMailings() > 0;
-		}
-		$aResult['HasBeedSent'] = true;
+		$aResult['HasBeedSent'] = $oNewsletter->countNewsletterMailings() > 0;
 		return $aResult;
 	}
 	
