@@ -1,5 +1,8 @@
 <?php
 
+/**
+* @package newsletter
+*/
 class NewsletterSendFailure extends Exception {
 	private $mRecipient;
 	

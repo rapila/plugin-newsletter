@@ -1,4 +1,8 @@
 <?php
+
+/**
+* @package newsletter
+*/
 class NewsletterMailer {
 	private $aRecipients;
 	private $oNewsletter;
