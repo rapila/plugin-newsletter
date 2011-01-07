@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Base class that represents a row from the 'subscriber_group_memberships' table.
  *
@@ -13,7 +14,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	/**
 	 * Peer class name
 	 */
-  const PEER = 'SubscriberGroupMembershipPeer';
+	const PEER = 'SubscriberGroupMembershipPeer';
 
 	/**
 	 * The Peer class.
@@ -548,7 +549,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		if ($con === null) {
 			$con = Propel::getConnection(SubscriberGroupMembershipPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
-		
+
 		$con->beginTransaction();
 		try {
 			$ret = $this->preDelete($con);
@@ -590,7 +591,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		if ($con === null) {
 			$con = Propel::getConnection(SubscriberGroupMembershipPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
 		}
-		
+
 		$con->beginTransaction();
 		$isInsert = $this->isNew();
 		try {
@@ -879,7 +880,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 * type constants.
 	 *
 	 * @param     string  $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME,
-	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. 
+	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM.
 	 *                    Defaults to BasePeer::TYPE_PHPNAME.
 	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
 	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
@@ -1037,7 +1038,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		$pks = array();
 		$pks[0] = $this->getSubscriberId();
 		$pks[1] = $this->getSubscriberGroupId();
-		
+
 		return $pks;
 	}
 
@@ -1159,13 +1160,13 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	public function getSubscriber(PropelPDO $con = null)
 	{
 		if ($this->aSubscriber === null && ($this->subscriber_id !== null)) {
-			$this->aSubscriber = SubscriberQuery::create()->findPk($this->subscriber_id);
+			$this->aSubscriber = SubscriberQuery::create()->findPk($this->subscriber_id, $con);
 			/* The following can be used additionally to
-			   guarantee the related object contains a reference
-			   to this object.  This level of coupling may, however, be
-			   undesirable since it could result in an only partially populated collection
-			   in the referenced object.
-			   $this->aSubscriber->addSubscriberGroupMemberships($this);
+				 guarantee the related object contains a reference
+				 to this object.  This level of coupling may, however, be
+				 undesirable since it could result in an only partially populated collection
+				 in the referenced object.
+				 $this->aSubscriber->addSubscriberGroupMemberships($this);
 			 */
 		}
 		return $this->aSubscriber;
@@ -1208,13 +1209,13 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	public function getSubscriberGroup(PropelPDO $con = null)
 	{
 		if ($this->aSubscriberGroup === null && ($this->subscriber_group_id !== null)) {
-			$this->aSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->subscriber_group_id);
+			$this->aSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->subscriber_group_id, $con);
 			/* The following can be used additionally to
-			   guarantee the related object contains a reference
-			   to this object.  This level of coupling may, however, be
-			   undesirable since it could result in an only partially populated collection
-			   in the referenced object.
-			   $this->aSubscriberGroup->addSubscriberGroupMemberships($this);
+				 guarantee the related object contains a reference
+				 to this object.  This level of coupling may, however, be
+				 undesirable since it could result in an only partially populated collection
+				 in the referenced object.
+				 $this->aSubscriberGroup->addSubscriberGroupMemberships($this);
 			 */
 		}
 		return $this->aSubscriberGroup;
@@ -1257,13 +1258,13 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	public function getUserRelatedByCreatedBy(PropelPDO $con = null)
 	{
 		if ($this->aUserRelatedByCreatedBy === null && ($this->created_by !== null)) {
-			$this->aUserRelatedByCreatedBy = UserQuery::create()->findPk($this->created_by);
+			$this->aUserRelatedByCreatedBy = UserQuery::create()->findPk($this->created_by, $con);
 			/* The following can be used additionally to
-			   guarantee the related object contains a reference
-			   to this object.  This level of coupling may, however, be
-			   undesirable since it could result in an only partially populated collection
-			   in the referenced object.
-			   $this->aUserRelatedByCreatedBy->addSubscriberGroupMembershipsRelatedByCreatedBy($this);
+				 guarantee the related object contains a reference
+				 to this object.  This level of coupling may, however, be
+				 undesirable since it could result in an only partially populated collection
+				 in the referenced object.
+				 $this->aUserRelatedByCreatedBy->addSubscriberGroupMembershipsRelatedByCreatedBy($this);
 			 */
 		}
 		return $this->aUserRelatedByCreatedBy;
@@ -1306,13 +1307,13 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	public function getUserRelatedByUpdatedBy(PropelPDO $con = null)
 	{
 		if ($this->aUserRelatedByUpdatedBy === null && ($this->updated_by !== null)) {
-			$this->aUserRelatedByUpdatedBy = UserQuery::create()->findPk($this->updated_by);
+			$this->aUserRelatedByUpdatedBy = UserQuery::create()->findPk($this->updated_by, $con);
 			/* The following can be used additionally to
-			   guarantee the related object contains a reference
-			   to this object.  This level of coupling may, however, be
-			   undesirable since it could result in an only partially populated collection
-			   in the referenced object.
-			   $this->aUserRelatedByUpdatedBy->addSubscriberGroupMembershipsRelatedByUpdatedBy($this);
+				 guarantee the related object contains a reference
+				 to this object.  This level of coupling may, however, be
+				 undesirable since it could result in an only partially populated collection
+				 in the referenced object.
+				 $this->aUserRelatedByUpdatedBy->addSubscriberGroupMembershipsRelatedByUpdatedBy($this);
 			 */
 		}
 		return $this->aUserRelatedByUpdatedBy;
@@ -1334,6 +1335,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		$this->clearAllReferences();
 		$this->resetModified();
 		$this->setNew(true);
+		$this->setDeleted(false);
 	}
 
 	/**
@@ -1425,10 +1427,18 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 */
 	public function __call($name, $params)
 	{
-		if (preg_match('/get(\w+)/', $name, $matches) && $this->hasVirtualColumn($matches[1])) {
-			return $this->getVirtualColumn($matches[1]);
+		if (preg_match('/get(\w+)/', $name, $matches)) {
+			$virtualColumn = $matches[1];
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+			// no lcfirst in php<5.3...
+			$virtualColumn[0] = strtolower($virtualColumn[0]);
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
 		}
-		throw new PropelException('Call to undefined method: ' . $name);
+		return parent::__call($name, $params);
 	}
 
 } // BaseSubscriberGroupMembership
