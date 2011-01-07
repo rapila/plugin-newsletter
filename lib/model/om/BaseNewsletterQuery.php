@@ -34,19 +34,21 @@
  * @method     NewsletterQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     NewsletterQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method     NewsletterQuery leftJoinUserRelatedByCreatedBy($relationAlias = '') Adds a LEFT JOIN clause to the query using the UserRelatedByCreatedBy relation
- * @method     NewsletterQuery rightJoinUserRelatedByCreatedBy($relationAlias = '') Adds a RIGHT JOIN clause to the query using the UserRelatedByCreatedBy relation
- * @method     NewsletterQuery innerJoinUserRelatedByCreatedBy($relationAlias = '') Adds a INNER JOIN clause to the query using the UserRelatedByCreatedBy relation
+ * @method     NewsletterQuery leftJoinUserRelatedByCreatedBy($relationAlias = null) Adds a LEFT JOIN clause to the query using the UserRelatedByCreatedBy relation
+ * @method     NewsletterQuery rightJoinUserRelatedByCreatedBy($relationAlias = null) Adds a RIGHT JOIN clause to the query using the UserRelatedByCreatedBy relation
+ * @method     NewsletterQuery innerJoinUserRelatedByCreatedBy($relationAlias = null) Adds a INNER JOIN clause to the query using the UserRelatedByCreatedBy relation
  *
- * @method     NewsletterQuery leftJoinUserRelatedByUpdatedBy($relationAlias = '') Adds a LEFT JOIN clause to the query using the UserRelatedByUpdatedBy relation
- * @method     NewsletterQuery rightJoinUserRelatedByUpdatedBy($relationAlias = '') Adds a RIGHT JOIN clause to the query using the UserRelatedByUpdatedBy relation
- * @method     NewsletterQuery innerJoinUserRelatedByUpdatedBy($relationAlias = '') Adds a INNER JOIN clause to the query using the UserRelatedByUpdatedBy relation
+ * @method     NewsletterQuery leftJoinUserRelatedByUpdatedBy($relationAlias = null) Adds a LEFT JOIN clause to the query using the UserRelatedByUpdatedBy relation
+ * @method     NewsletterQuery rightJoinUserRelatedByUpdatedBy($relationAlias = null) Adds a RIGHT JOIN clause to the query using the UserRelatedByUpdatedBy relation
+ * @method     NewsletterQuery innerJoinUserRelatedByUpdatedBy($relationAlias = null) Adds a INNER JOIN clause to the query using the UserRelatedByUpdatedBy relation
  *
- * @method     NewsletterQuery leftJoinNewsletterMailing($relationAlias = '') Adds a LEFT JOIN clause to the query using the NewsletterMailing relation
- * @method     NewsletterQuery rightJoinNewsletterMailing($relationAlias = '') Adds a RIGHT JOIN clause to the query using the NewsletterMailing relation
- * @method     NewsletterQuery innerJoinNewsletterMailing($relationAlias = '') Adds a INNER JOIN clause to the query using the NewsletterMailing relation
+ * @method     NewsletterQuery leftJoinNewsletterMailing($relationAlias = null) Adds a LEFT JOIN clause to the query using the NewsletterMailing relation
+ * @method     NewsletterQuery rightJoinNewsletterMailing($relationAlias = null) Adds a RIGHT JOIN clause to the query using the NewsletterMailing relation
+ * @method     NewsletterQuery innerJoinNewsletterMailing($relationAlias = null) Adds a INNER JOIN clause to the query using the NewsletterMailing relation
  *
  * @method     Newsletter findOne(PropelPDO $con = null) Return the first Newsletter matching the query
+ * @method     Newsletter findOneOrCreate(PropelPDO $con = null) Return the first Newsletter matching the query, or a new Newsletter object populated from the query conditions when no match is found
+ *
  * @method     Newsletter findOneById(int $id) Return the first Newsletter filtered by the id column
  * @method     Newsletter findOneBySubject(string $subject) Return the first Newsletter filtered by the subject column
  * @method     Newsletter findOneByNewsletterBody(resource $newsletter_body) Return the first Newsletter filtered by the newsletter_body column
@@ -207,13 +209,11 @@ abstract class BaseNewsletterQuery extends ModelCriteria
 	 */
 	public function filterBySubject($subject = null, $comparison = null)
 	{
-		if (is_array($subject)) {
-			if (null === $comparison) {
+		if (null === $comparison) {
+			if (is_array($subject)) {
 				$comparison = Criteria::IN;
-			}
-		} elseif (preg_match('/[\%\*]/', $subject)) {
-			$subject = str_replace('*', '%', $subject);
-			if (null === $comparison) {
+			} elseif (preg_match('/[\%\*]/', $subject)) {
+				$subject = str_replace('*', '%', $subject);
 				$comparison = Criteria::LIKE;
 			}
 		}
@@ -244,13 +244,11 @@ abstract class BaseNewsletterQuery extends ModelCriteria
 	 */
 	public function filterByLanguageId($languageId = null, $comparison = null)
 	{
-		if (is_array($languageId)) {
-			if (null === $comparison) {
+		if (null === $comparison) {
+			if (is_array($languageId)) {
 				$comparison = Criteria::IN;
-			}
-		} elseif (preg_match('/[\%\*]/', $languageId)) {
-			$languageId = str_replace('*', '%', $languageId);
-			if (null === $comparison) {
+			} elseif (preg_match('/[\%\*]/', $languageId)) {
+				$languageId = str_replace('*', '%', $languageId);
 				$comparison = Criteria::LIKE;
 			}
 		}
@@ -302,13 +300,11 @@ abstract class BaseNewsletterQuery extends ModelCriteria
 	 */
 	public function filterByTemplateName($templateName = null, $comparison = null)
 	{
-		if (is_array($templateName)) {
-			if (null === $comparison) {
+		if (null === $comparison) {
+			if (is_array($templateName)) {
 				$comparison = Criteria::IN;
-			}
-		} elseif (preg_match('/[\%\*]/', $templateName)) {
-			$templateName = str_replace('*', '%', $templateName);
-			if (null === $comparison) {
+			} elseif (preg_match('/[\%\*]/', $templateName)) {
+				$templateName = str_replace('*', '%', $templateName);
 				$comparison = Criteria::LIKE;
 			}
 		}
@@ -461,7 +457,7 @@ abstract class BaseNewsletterQuery extends ModelCriteria
 	 *
 	 * @return    NewsletterQuery The current query, for fluid interface
 	 */
-	public function joinUserRelatedByCreatedBy($relationAlias = '', $joinType = Criteria::LEFT_JOIN)
+	public function joinUserRelatedByCreatedBy($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('UserRelatedByCreatedBy');
@@ -496,7 +492,7 @@ abstract class BaseNewsletterQuery extends ModelCriteria
 	 *
 	 * @return    UserQuery A secondary query class using the current class as primary query
 	 */
-	public function useUserRelatedByCreatedByQuery($relationAlias = '', $joinType = Criteria::LEFT_JOIN)
+	public function useUserRelatedByCreatedByQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		return $this
 			->joinUserRelatedByCreatedBy($relationAlias, $joinType)
@@ -525,7 +521,7 @@ abstract class BaseNewsletterQuery extends ModelCriteria
 	 *
 	 * @return    NewsletterQuery The current query, for fluid interface
 	 */
-	public function joinUserRelatedByUpdatedBy($relationAlias = '', $joinType = Criteria::LEFT_JOIN)
+	public function joinUserRelatedByUpdatedBy($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('UserRelatedByUpdatedBy');
@@ -560,7 +556,7 @@ abstract class BaseNewsletterQuery extends ModelCriteria
 	 *
 	 * @return    UserQuery A secondary query class using the current class as primary query
 	 */
-	public function useUserRelatedByUpdatedByQuery($relationAlias = '', $joinType = Criteria::LEFT_JOIN)
+	public function useUserRelatedByUpdatedByQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		return $this
 			->joinUserRelatedByUpdatedBy($relationAlias, $joinType)
@@ -589,7 +585,7 @@ abstract class BaseNewsletterQuery extends ModelCriteria
 	 *
 	 * @return    NewsletterQuery The current query, for fluid interface
 	 */
-	public function joinNewsletterMailing($relationAlias = '', $joinType = Criteria::INNER_JOIN)
+	public function joinNewsletterMailing($relationAlias = null, $joinType = Criteria::INNER_JOIN)
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('NewsletterMailing');
@@ -624,7 +620,7 @@ abstract class BaseNewsletterQuery extends ModelCriteria
 	 *
 	 * @return    NewsletterMailingQuery A secondary query class using the current class as primary query
 	 */
-	public function useNewsletterMailingQuery($relationAlias = '', $joinType = Criteria::INNER_JOIN)
+	public function useNewsletterMailingQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
 	{
 		return $this
 			->joinNewsletterMailing($relationAlias, $joinType)

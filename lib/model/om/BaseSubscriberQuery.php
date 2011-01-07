@@ -28,19 +28,21 @@
  * @method     SubscriberQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     SubscriberQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method     SubscriberQuery leftJoinUserRelatedByCreatedBy($relationAlias = '') Adds a LEFT JOIN clause to the query using the UserRelatedByCreatedBy relation
- * @method     SubscriberQuery rightJoinUserRelatedByCreatedBy($relationAlias = '') Adds a RIGHT JOIN clause to the query using the UserRelatedByCreatedBy relation
- * @method     SubscriberQuery innerJoinUserRelatedByCreatedBy($relationAlias = '') Adds a INNER JOIN clause to the query using the UserRelatedByCreatedBy relation
+ * @method     SubscriberQuery leftJoinUserRelatedByCreatedBy($relationAlias = null) Adds a LEFT JOIN clause to the query using the UserRelatedByCreatedBy relation
+ * @method     SubscriberQuery rightJoinUserRelatedByCreatedBy($relationAlias = null) Adds a RIGHT JOIN clause to the query using the UserRelatedByCreatedBy relation
+ * @method     SubscriberQuery innerJoinUserRelatedByCreatedBy($relationAlias = null) Adds a INNER JOIN clause to the query using the UserRelatedByCreatedBy relation
  *
- * @method     SubscriberQuery leftJoinUserRelatedByUpdatedBy($relationAlias = '') Adds a LEFT JOIN clause to the query using the UserRelatedByUpdatedBy relation
- * @method     SubscriberQuery rightJoinUserRelatedByUpdatedBy($relationAlias = '') Adds a RIGHT JOIN clause to the query using the UserRelatedByUpdatedBy relation
- * @method     SubscriberQuery innerJoinUserRelatedByUpdatedBy($relationAlias = '') Adds a INNER JOIN clause to the query using the UserRelatedByUpdatedBy relation
+ * @method     SubscriberQuery leftJoinUserRelatedByUpdatedBy($relationAlias = null) Adds a LEFT JOIN clause to the query using the UserRelatedByUpdatedBy relation
+ * @method     SubscriberQuery rightJoinUserRelatedByUpdatedBy($relationAlias = null) Adds a RIGHT JOIN clause to the query using the UserRelatedByUpdatedBy relation
+ * @method     SubscriberQuery innerJoinUserRelatedByUpdatedBy($relationAlias = null) Adds a INNER JOIN clause to the query using the UserRelatedByUpdatedBy relation
  *
- * @method     SubscriberQuery leftJoinSubscriberGroupMembership($relationAlias = '') Adds a LEFT JOIN clause to the query using the SubscriberGroupMembership relation
- * @method     SubscriberQuery rightJoinSubscriberGroupMembership($relationAlias = '') Adds a RIGHT JOIN clause to the query using the SubscriberGroupMembership relation
- * @method     SubscriberQuery innerJoinSubscriberGroupMembership($relationAlias = '') Adds a INNER JOIN clause to the query using the SubscriberGroupMembership relation
+ * @method     SubscriberQuery leftJoinSubscriberGroupMembership($relationAlias = null) Adds a LEFT JOIN clause to the query using the SubscriberGroupMembership relation
+ * @method     SubscriberQuery rightJoinSubscriberGroupMembership($relationAlias = null) Adds a RIGHT JOIN clause to the query using the SubscriberGroupMembership relation
+ * @method     SubscriberQuery innerJoinSubscriberGroupMembership($relationAlias = null) Adds a INNER JOIN clause to the query using the SubscriberGroupMembership relation
  *
  * @method     Subscriber findOne(PropelPDO $con = null) Return the first Subscriber matching the query
+ * @method     Subscriber findOneOrCreate(PropelPDO $con = null) Return the first Subscriber matching the query, or a new Subscriber object populated from the query conditions when no match is found
+ *
  * @method     Subscriber findOneById(int $id) Return the first Subscriber filtered by the id column
  * @method     Subscriber findOneByName(string $name) Return the first Subscriber filtered by the name column
  * @method     Subscriber findOneByPreferredLanguageId(string $preferred_language_id) Return the first Subscriber filtered by the preferred_language_id column
@@ -195,13 +197,11 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 */
 	public function filterByName($name = null, $comparison = null)
 	{
-		if (is_array($name)) {
-			if (null === $comparison) {
+		if (null === $comparison) {
+			if (is_array($name)) {
 				$comparison = Criteria::IN;
-			}
-		} elseif (preg_match('/[\%\*]/', $name)) {
-			$name = str_replace('*', '%', $name);
-			if (null === $comparison) {
+			} elseif (preg_match('/[\%\*]/', $name)) {
+				$name = str_replace('*', '%', $name);
 				$comparison = Criteria::LIKE;
 			}
 		}
@@ -219,13 +219,11 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 */
 	public function filterByPreferredLanguageId($preferredLanguageId = null, $comparison = null)
 	{
-		if (is_array($preferredLanguageId)) {
-			if (null === $comparison) {
+		if (null === $comparison) {
+			if (is_array($preferredLanguageId)) {
 				$comparison = Criteria::IN;
-			}
-		} elseif (preg_match('/[\%\*]/', $preferredLanguageId)) {
-			$preferredLanguageId = str_replace('*', '%', $preferredLanguageId);
-			if (null === $comparison) {
+			} elseif (preg_match('/[\%\*]/', $preferredLanguageId)) {
+				$preferredLanguageId = str_replace('*', '%', $preferredLanguageId);
 				$comparison = Criteria::LIKE;
 			}
 		}
@@ -243,13 +241,11 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 */
 	public function filterByEmail($email = null, $comparison = null)
 	{
-		if (is_array($email)) {
-			if (null === $comparison) {
+		if (null === $comparison) {
+			if (is_array($email)) {
 				$comparison = Criteria::IN;
-			}
-		} elseif (preg_match('/[\%\*]/', $email)) {
-			$email = str_replace('*', '%', $email);
-			if (null === $comparison) {
+			} elseif (preg_match('/[\%\*]/', $email)) {
+				$email = str_replace('*', '%', $email);
 				$comparison = Criteria::LIKE;
 			}
 		}
@@ -402,7 +398,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 *
 	 * @return    SubscriberQuery The current query, for fluid interface
 	 */
-	public function joinUserRelatedByCreatedBy($relationAlias = '', $joinType = Criteria::LEFT_JOIN)
+	public function joinUserRelatedByCreatedBy($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('UserRelatedByCreatedBy');
@@ -437,7 +433,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 *
 	 * @return    UserQuery A secondary query class using the current class as primary query
 	 */
-	public function useUserRelatedByCreatedByQuery($relationAlias = '', $joinType = Criteria::LEFT_JOIN)
+	public function useUserRelatedByCreatedByQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		return $this
 			->joinUserRelatedByCreatedBy($relationAlias, $joinType)
@@ -466,7 +462,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 *
 	 * @return    SubscriberQuery The current query, for fluid interface
 	 */
-	public function joinUserRelatedByUpdatedBy($relationAlias = '', $joinType = Criteria::LEFT_JOIN)
+	public function joinUserRelatedByUpdatedBy($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('UserRelatedByUpdatedBy');
@@ -501,7 +497,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 *
 	 * @return    UserQuery A secondary query class using the current class as primary query
 	 */
-	public function useUserRelatedByUpdatedByQuery($relationAlias = '', $joinType = Criteria::LEFT_JOIN)
+	public function useUserRelatedByUpdatedByQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		return $this
 			->joinUserRelatedByUpdatedBy($relationAlias, $joinType)
@@ -530,7 +526,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 *
 	 * @return    SubscriberQuery The current query, for fluid interface
 	 */
-	public function joinSubscriberGroupMembership($relationAlias = '', $joinType = Criteria::INNER_JOIN)
+	public function joinSubscriberGroupMembership($relationAlias = null, $joinType = Criteria::INNER_JOIN)
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('SubscriberGroupMembership');
@@ -565,7 +561,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 *
 	 * @return    SubscriberGroupMembershipQuery A secondary query class using the current class as primary query
 	 */
-	public function useSubscriberGroupMembershipQuery($relationAlias = '', $joinType = Criteria::INNER_JOIN)
+	public function useSubscriberGroupMembershipQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
 	{
 		return $this
 			->joinSubscriberGroupMembership($relationAlias, $joinType)
