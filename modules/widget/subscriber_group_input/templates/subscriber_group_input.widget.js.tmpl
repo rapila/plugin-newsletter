@@ -1,9 +1,19 @@
 Widget.types.subscriber_group_input = {
 	prepare: function() {
+		this.reload();
+		Widget.handle('cmos-subscriber_groups_changed', this.reload.bind(this));
+	},
+	
+	reload: function() {
+		var current = this._element.val();
+		this._element.empty();
 		var option = jQuery('<option/>');
 		var subscriber_groups = this.getSubscriberGroups();
 		jQuery.each(subscriber_groups, function(i, group) {
 			option.clone().text(group.name).attr('value', group.id).appendTo(this._element);
 		}.bind(this));
+		if(current) {
+			this._element.val(current);
+		}
 	}
 };
