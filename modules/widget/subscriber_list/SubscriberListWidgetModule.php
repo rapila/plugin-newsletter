@@ -70,6 +70,9 @@ class SubscriberListWidgetModule extends WidgetModule {
 				return $oSubscriberGroup->getName();
 			}
 		}
+    if($this->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
+			return StringPeer::getString('wns.subscriber_group.without');
+		}
 		return $this->oDelegateProxy->getSubscriberGroupId();
 	}
 

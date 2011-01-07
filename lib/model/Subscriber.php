@@ -7,10 +7,14 @@ require_once 'model/om/BaseSubscriber.php';
  */
 class Subscriber extends BaseSubscriber {
 
-	public function getSubscriptionsInfo() {
+	public function getSubscribedGroupIds($bWithKeyAsValue=true) {
 		$aResult = array();
 		foreach($this->getSubscriberGroupMemberships() as $oMembership) {
-			$aResult[$oMembership->getSubscriberGroupId()] = $oMembership->getSubscriberGroupId();
+		  if($bWithKeyAsValue) {
+  			$aResult[$oMembership->getSubscriberGroupId()] = $oMembership->getSubscriberGroupId();
+		  } else {
+        $aResult[] = $oMembership->getSubscriberGroupId();
+		  }
 		}
 		return $aResult;
 	}

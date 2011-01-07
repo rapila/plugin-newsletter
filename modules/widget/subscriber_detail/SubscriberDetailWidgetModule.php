@@ -14,6 +14,7 @@ class SubscriberDetailWidgetModule extends PersistentWidgetModule {
 		$aResult = $oSubscriber->toArray();
 		$aResult['CreatedInfo'] = Util::formatCreatedInfo($oSubscriber);
 		$aResult['UpdatedInfo'] = Util::formatUpdatedInfo($oSubscriber);
+		$aResult['SubscribedGroupIds'] = $oSubscriber->getSubscribedGroupIds(false);
 		return $aResult;
 	}
 
@@ -32,6 +33,7 @@ class SubscriberDetailWidgetModule extends PersistentWidgetModule {
 			$oSubscriber->setCreatedBy(Session::getSession()->getUserId());
 			$oSubscriber->setCreatedAt(date('c'));
 		}
+		
 		$oSubscriber->setPreferredLanguageId($aSubscriberData['preferred_language_id']);
 		$oSubscriber->setName($aSubscriberData['name']);
 		$oSubscriber->setEmail($aSubscriberData['email']);
@@ -40,6 +42,16 @@ class SubscriberDetailWidgetModule extends PersistentWidgetModule {
     if(!Flash::noErrors()) {
 			throw new ValidationException();
 		}
+    // subscriptions
+		foreach($oSubscriber->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
+			$oSubscriberGroupMembership->delete();
+		}
+		$aSubscriptions = isset($aSubscriberData['subscriber_group_ids']) ? $aSubscriberData['subscriber_group_ids'] : array();
+		foreach($aSubscriptions as $iSubscriberGroupId) {
+			$oSubscriberGroupMembership = new SubscriberGroupMembership();
+			$oSubscriberGroupMembership->setSubscriberGroupId($iSubscriberGroupId);
+			$oSubscriber->addSubscriberGroupMembership($oSubscriberGroupMembership);
+		}		
 		return $oSubscriber->save();
 	}
 }

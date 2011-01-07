@@ -1,5 +1,7 @@
 <form>
 	<div class="status_section">
+		<label for="subscriber_group_ids">{{writeString=wns.subscribers.subscriber_group_memberships}}</label>
+		<select name="subscriber_group_ids" class="ui-widget-content" data-widget-type="subscriber_group_input" multiple="multiple"></select><br />
 		<div class="hide_if_not_saved">
 			<label>{{writeString=wns.created_info}}:</label><span class="created_info status"></span><br />
 			<label>{{writeString=wns.updated.info}}:</label><span class="updated_info status"></span>

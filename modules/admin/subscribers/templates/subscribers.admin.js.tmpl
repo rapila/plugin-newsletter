@@ -26,6 +26,8 @@ jQuery(document).ready(function() {
 			info_bar.add_button('add-new-item', function() {
 				Widget.create('subscriber_detail', function(widget) {
 					widget.open();
+					var current_value = [''+subscriber_list.getOption('subscriber_group_id')+''];
+					widget.content.find("select[name='subscriber_group_ids']").val(current_value);
 					widget.save_callback = function() {
 						subscriber_list.reload();
 					};
