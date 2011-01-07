@@ -21,7 +21,7 @@ class SubscriberListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'name', 'preferred_language_id', 'email', 'delete');
+		return array('id', 'name', 'email', 'preferred_language_id', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
