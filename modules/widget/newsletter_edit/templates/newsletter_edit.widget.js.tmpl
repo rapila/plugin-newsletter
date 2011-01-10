@@ -5,20 +5,21 @@ Widget.types.newsletter_edit = {
 		
 		var mode_dropdown = this._element.find("select[name='display_mode']");
 		var subscriber_group_dropdown = this._element.find("select[name='subscriber_group_id']");
-		var subscribe_options = this._element.find(".subscribe_options");
+		var subscriber_group_elements = this._element.find(".subscriber_group_elements");
+
 		var display_data = this.getDisplayMode();
-		if(display_data.display_mode != 'newsletter_subscribe') {
-			subscribe_options.hide();
+		if(display_data.display_mode != 'newsletter_unsubscribe') {
+			subscriber_group_elements.slideDown();
 		} 
 		mode_dropdown.change(function() {
 			if(mode_dropdown.val() !== 'newsletter_unsubscribe') {
-				subscribe_options.show();
+				subscriber_group_elements.slideDown();
 			} else {
-				subscribe_options.hide();
+				subscriber_group_elements.slideUp();
 			}
-		})
-		var option_prototype = jQuery('<option/>');
+		});
 		
+		var option_prototype = jQuery('<option/>');
 		jQuery.each(this.getDisplayOptions(), function(value, text) {
 			mode_dropdown.append(option_prototype.clone().attr('value', value).text(text));
 		});
@@ -27,7 +28,6 @@ Widget.types.newsletter_edit = {
 		if(!mode_dropdown.val()) {
 			mode_dropdown.find("option:first-child").attr('selected', true);
 		}
-	
 		jQuery.each(this.getSubscriberGroups(), function(value, text) {
 			subscriber_group_dropdown.append(option_prototype.clone().attr('value', value).text(text));
 		});

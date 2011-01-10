@@ -70,7 +70,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 				$oTemplate->replaceIdentifier('message', StringPeer::getString('newsletter.subscribe.success'));
 			}
 		}
-		$oTemplate->replaceIdentifier('message', StringPeer::getString('newsletter.subscribe.message'));
+		$oTemplate->replaceIdentifier('message', StringPeer::getString('wns.newsletter.subscribe.message'));
 		
 		return $oTemplate;	
 	}
