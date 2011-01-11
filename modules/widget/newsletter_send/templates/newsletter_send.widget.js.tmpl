@@ -97,14 +97,15 @@ Widget.types.newsletter_send = {
 	
 	send_newsletter: function(mail_groups, progress, markup) {
 		var batch_count = this.getExpectedBatchCount(mail_groups);
-				console.log('valid_emails', batch_count, 'mail_groups', mail_groups);
-		var current = batch_count;
+		markup.find("select[name='mail_group_ids[]']").hide();
+		progress.show();
 		this.sendNewsletter(mail_groups, 0, function(result) {
 			if(result === true || result === false) {
 				progress.progressbar('option', 'value', 1);
 				this.handle_send_response(result, markup);
 			} else {
 				progress.progressbar('option', 'value', (100/batch_count)*result);
+				this.sendNewsletter(mail_groups, result, arguments.callee);
 			}
 			return true;
 		})
