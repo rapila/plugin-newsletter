@@ -8,6 +8,7 @@ newsletter_plugin:
   sender_name: Mini-CMS.ch
   sender_email_address: 'noreply@example.com'
   #requires_authentication options true, user_role rolekey, default: false
+  unsubscribe_page_name: subscribe
 
   subscriber_groups_require_authentication: 
     1: manager
