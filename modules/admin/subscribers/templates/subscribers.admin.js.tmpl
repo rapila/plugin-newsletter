@@ -9,7 +9,7 @@ jQuery(document).ready(function() {
 			var initial_selection = "{{writeRequestValue=subscriber_group_id}}";
 			if(initial_selection) {
 				sidebar.handle('loaded', function() {
-					sidebar.activate_row(sidebar.row_from_row_data({id: parseInt(initial_selection)}));
+					sidebar.activate_row(sidebar.row_from_row_data({id: parseInt(initial_selection, 10)}));
 				}, true, true);
 			}
 			sidebar.handle('list.row-click', function(event, rowIndex, row) {
