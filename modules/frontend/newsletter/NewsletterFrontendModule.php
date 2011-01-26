@@ -50,7 +50,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 		$oTemplate = $this->constructTemplate("newsletter_subscribe");
 		if(Manager::isPost()) {
 			$oFlash = Flash::getFlash();
-			$oFlash->checkForEmail('subscriber_email', 'email');
+			$oFlash->checkForEmail('subscriber_email', 'email_required_for_subscription');
 			$oFlash->finishReporting();
 			if(Flash::noErrors()) {
 				$this->oSubscriber = SubscriberPeer::getByEmail($_POST['subscriber_email']);
