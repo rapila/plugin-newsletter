@@ -15,12 +15,11 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 		}
 		$aOptions = @unserialize($this->getData());
 		if($aOptions['display_mode'] === 'newsletter_subscribe') {
-			return $this->newsletterSubscribe();
+			return $this->newsletterSubscribe($aOptions);
 		}
 		if($aOptions['display_mode'] === 'newsletter_display') {
 			
 		}		
-		// the display_mode "newsletter_unsubscribe" does not have to be implemented because the request param "unsubscribe" will be handled anyway
 	}
 	
 	private function newsletterUnsubscribe() {
@@ -46,11 +45,20 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 		// create file module for rendering newsletter for see in browser
 	}
 	
-	private function newsletterSubscribe() {
+	private function newsletterSubscribe($aOptions) {
+		if(isset($aOptions['subscriber_group_id']) && $aOptions['subscriber_group_id'] !== null) {
+			if(!SubscriberGroupPeer::retrieveByPK($aOptions['subscriber_group_id'])) {
+				throw new Exception(__CLASS__.': configured subscriber_group_id '.$aOptions['subscriber_group_id'].' does not exist!');
+			}
+		}
 		$oTemplate = $this->constructTemplate("newsletter_subscribe");
+
 		if(Manager::isPost()) {
 			$oFlash = Flash::getFlash();
-			$oFlash->checkForEmail('subscriber_email', 'email_required_for_subscription');
+			if($oFlash->checkForValue('subscriber_email', 'email_required_for_subscription')) {
+				$oFlash->checkForEmail('subscriber_email', 'email_required_for_subscription');
+			}
+
 			$oFlash->finishReporting();
 			if(Flash::noErrors()) {
 				$this->oSubscriber = SubscriberPeer::getByEmail($_POST['subscriber_email']);
@@ -60,18 +68,16 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 					$this->oSubscriber->setPreferredLanguageId(isset($_REQUEST['preferred_language_id']) ? $_REQUEST['preferred_language_id'] : Session::language());
 					$this->oSubscriber->setName(isset($_POST['name']) ? $_POST['name'] : $this->oSubscriber->getEmail());
 					$this->oSubscriber->setCreatedAt(date('c'));
-					$this->oSubscriber->save();
 				}
-				if(SubscriberGroupPeer::hasSubscriberGroups()) {
-					$iSubscriberGroupId = isset($_POST['subscriber_group_id']) ? $_POST['subscriber_group_id'] : Settings::getSetting('newsletter_plugin', 'subscriber_group_default_id', 1);
-					$this->oSubscriber->addSubscriberGroupMembershipIfNotExists($iSubscriberGroupId);
+				if($aOptions['subscriber_group_id']) {
+					$this->oSubscriber->addSubscriberGroupMembershipIfNotExists($aOptions['subscriber_group_id']);
 				}
+				$this->oSubscriber->save();
 				$this->notifySubscriber();
+				unset($_REQUEST['subscriber_email']);
 				$oTemplate->replaceIdentifier('message', StringPeer::getString('newsletter.subscribe.success'));
 			}
-		}
-		$oTemplate->replaceIdentifier('message', StringPeer::getString('wns.newsletter.subscribe.message'));
-		
+		}		
 		return $oTemplate;	
 	}
 	

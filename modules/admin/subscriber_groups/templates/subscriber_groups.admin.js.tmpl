@@ -3,7 +3,14 @@ jQuery(document).ready(function() {
 	AdminInterface.content.find('table.subscriber_group_list').prepareWidget(function(subscriber_group_list) {
 		// init infobar
 		AdminInterface.info_bar.prepareWidget(function(info_bar) {
-			info_bar.add_search_input("{{writeString=wns.search.enter_search}}", function(search) {
+		  info_bar.add_button('add-new-item', function() {
+				Widget.create('subscriber_group_detail', function(widget) {
+					widget.open();
+					widget.save_callback = function() {
+						subscriber_group_list.reload();
+					};
+				});
+			}, 'n', true).add_search_input("{{writeString=wns.search.enter_search}}", function(search) {
 				if(subscriber_group_list.setSearch(search)) {
 					subscriber_group_list.reload();
 				}
@@ -11,5 +18,6 @@ jQuery(document).ready(function() {
 			// add row_count_info
 			info_bar.add_row_count_info_for_list(subscriber_group_list);
 		});
+
 	});
 });
