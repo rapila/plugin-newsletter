@@ -78,7 +78,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 	public function notifySubscriber() {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_notification');
 		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
-		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Mini-CMS on '.$_SERVER['HTTP_HOST']);
+		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila on '.$_SERVER['HTTP_HOST']);
 		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email_address', 'noreply@example.com');
 		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
 		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());
