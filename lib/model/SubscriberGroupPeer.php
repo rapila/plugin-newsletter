@@ -82,7 +82,7 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 	
 	public static function getSubscriberGroupByName($sName) {
 		$oCriteria = new Criteria();
-		$oCriteria->add(self::NAME, strtolower($sName));
+		$oCriteria->add(self::NAME, $sName);
 		return self::doSelectOne($oCriteria);
 	}
 		
