@@ -21,7 +21,7 @@ class SubscriberGroupListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'name', 'link_to_subscriber_data', 'delete');
+		return array('id', 'name', 'sender_email', 'link_to_subscriber_data', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -31,7 +31,10 @@ class SubscriberGroupListWidgetModule extends WidgetModule {
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_DATA;
 				break;
 			case 'name':
-				$aResult['heading'] = StringPeer::getString('wns.subscriber.name');
+				$aResult['heading'] = StringPeer::getString('wns.subscriber_group.name');
+				break;
+			case 'sender_email':
+				$aResult['heading'] = StringPeer::getString('wns.subscriber_group.sender_email');
 				break;
 			case 'link_to_subscriber_data':
 				$aResult['heading'] = StringPeer::getString('wns.subscribers');

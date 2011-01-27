@@ -10,3 +10,6 @@ ALTER TABLE `newsletters` DROP `date_published`;
 #220
 ALTER TABLE `subscribers` ADD `updated_by` INT UNSIGNED NOT NULL ,
 ADD `updated_at` DATETIME NOT NULL;
+
+#added 20110127.1011
+ALTER TABLE `subscriber_groups` ADD `sender_email` VARCHAR( 80 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER `name`; 

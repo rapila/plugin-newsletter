@@ -39,6 +39,7 @@ class SubscriberGroupTableMap extends TableMap {
 		// columns
 		$this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
 		$this->addColumn('NAME', 'Name', 'VARCHAR', true, 80, null);
+		$this->addColumn('SENDER_EMAIL', 'SenderEmail', 'VARCHAR', true, 80, null);
 		$this->addColumn('IS_DEFAULT', 'IsDefault', 'BOOLEAN', true, null, false);
 		$this->addColumn('DESCRIPTION', 'Description', 'VARCHAR', false, 255, null);
 		$this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);

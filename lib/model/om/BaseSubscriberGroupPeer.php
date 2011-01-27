@@ -26,7 +26,7 @@ abstract class BaseSubscriberGroupPeer {
 	const TM_CLASS = 'SubscriberGroupTableMap';
 	
 	/** The total number of columns. */
-	const NUM_COLUMNS = 8;
+	const NUM_COLUMNS = 9;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
@@ -36,6 +36,9 @@ abstract class BaseSubscriberGroupPeer {
 
 	/** the column name for the NAME field */
 	const NAME = 'subscriber_groups.NAME';
+
+	/** the column name for the SENDER_EMAIL field */
+	const SENDER_EMAIL = 'subscriber_groups.SENDER_EMAIL';
 
 	/** the column name for the IS_DEFAULT field */
 	const IS_DEFAULT = 'subscriber_groups.IS_DEFAULT';
@@ -71,12 +74,12 @@ abstract class BaseSubscriberGroupPeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'Name', 'IsDefault', 'Description', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'UpdatedBy', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'name', 'isDefault', 'description', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::NAME, self::IS_DEFAULT, self::DESCRIPTION, self::CREATED_AT, self::UPDATED_AT, self::CREATED_BY, self::UPDATED_BY, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'NAME', 'IS_DEFAULT', 'DESCRIPTION', 'CREATED_AT', 'UPDATED_AT', 'CREATED_BY', 'UPDATED_BY', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'name', 'is_default', 'description', 'created_at', 'updated_at', 'created_by', 'updated_by', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'Name', 'SenderEmail', 'IsDefault', 'Description', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'UpdatedBy', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'name', 'senderEmail', 'isDefault', 'description', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::NAME, self::SENDER_EMAIL, self::IS_DEFAULT, self::DESCRIPTION, self::CREATED_AT, self::UPDATED_AT, self::CREATED_BY, self::UPDATED_BY, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'NAME', 'SENDER_EMAIL', 'IS_DEFAULT', 'DESCRIPTION', 'CREATED_AT', 'UPDATED_AT', 'CREATED_BY', 'UPDATED_BY', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'name', 'sender_email', 'is_default', 'description', 'created_at', 'updated_at', 'created_by', 'updated_by', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
 	);
 
 	/**
@@ -86,12 +89,12 @@ abstract class BaseSubscriberGroupPeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Name' => 1, 'IsDefault' => 2, 'Description' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, 'CreatedBy' => 6, 'UpdatedBy' => 7, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'name' => 1, 'isDefault' => 2, 'description' => 3, 'createdAt' => 4, 'updatedAt' => 5, 'createdBy' => 6, 'updatedBy' => 7, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::NAME => 1, self::IS_DEFAULT => 2, self::DESCRIPTION => 3, self::CREATED_AT => 4, self::UPDATED_AT => 5, self::CREATED_BY => 6, self::UPDATED_BY => 7, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'NAME' => 1, 'IS_DEFAULT' => 2, 'DESCRIPTION' => 3, 'CREATED_AT' => 4, 'UPDATED_AT' => 5, 'CREATED_BY' => 6, 'UPDATED_BY' => 7, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'name' => 1, 'is_default' => 2, 'description' => 3, 'created_at' => 4, 'updated_at' => 5, 'created_by' => 6, 'updated_by' => 7, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Name' => 1, 'SenderEmail' => 2, 'IsDefault' => 3, 'Description' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, 'CreatedBy' => 7, 'UpdatedBy' => 8, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'name' => 1, 'senderEmail' => 2, 'isDefault' => 3, 'description' => 4, 'createdAt' => 5, 'updatedAt' => 6, 'createdBy' => 7, 'updatedBy' => 8, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::NAME => 1, self::SENDER_EMAIL => 2, self::IS_DEFAULT => 3, self::DESCRIPTION => 4, self::CREATED_AT => 5, self::UPDATED_AT => 6, self::CREATED_BY => 7, self::UPDATED_BY => 8, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'NAME' => 1, 'SENDER_EMAIL' => 2, 'IS_DEFAULT' => 3, 'DESCRIPTION' => 4, 'CREATED_AT' => 5, 'UPDATED_AT' => 6, 'CREATED_BY' => 7, 'UPDATED_BY' => 8, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'name' => 1, 'sender_email' => 2, 'is_default' => 3, 'description' => 4, 'created_at' => 5, 'updated_at' => 6, 'created_by' => 7, 'updated_by' => 8, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
 	);
 
 	/**
@@ -165,6 +168,7 @@ abstract class BaseSubscriberGroupPeer {
 		if (null === $alias) {
 			$criteria->addSelectColumn(SubscriberGroupPeer::ID);
 			$criteria->addSelectColumn(SubscriberGroupPeer::NAME);
+			$criteria->addSelectColumn(SubscriberGroupPeer::SENDER_EMAIL);
 			$criteria->addSelectColumn(SubscriberGroupPeer::IS_DEFAULT);
 			$criteria->addSelectColumn(SubscriberGroupPeer::DESCRIPTION);
 			$criteria->addSelectColumn(SubscriberGroupPeer::CREATED_AT);
@@ -174,6 +178,7 @@ abstract class BaseSubscriberGroupPeer {
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
 			$criteria->addSelectColumn($alias . '.NAME');
+			$criteria->addSelectColumn($alias . '.SENDER_EMAIL');
 			$criteria->addSelectColumn($alias . '.IS_DEFAULT');
 			$criteria->addSelectColumn($alias . '.DESCRIPTION');
 			$criteria->addSelectColumn($alias . '.CREATED_AT');

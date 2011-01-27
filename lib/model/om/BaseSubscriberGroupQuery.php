@@ -8,6 +8,7 @@
  *
  * @method     SubscriberGroupQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     SubscriberGroupQuery orderByName($order = Criteria::ASC) Order by the name column
+ * @method     SubscriberGroupQuery orderBySenderEmail($order = Criteria::ASC) Order by the sender_email column
  * @method     SubscriberGroupQuery orderByIsDefault($order = Criteria::ASC) Order by the is_default column
  * @method     SubscriberGroupQuery orderByDescription($order = Criteria::ASC) Order by the description column
  * @method     SubscriberGroupQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
@@ -17,6 +18,7 @@
  *
  * @method     SubscriberGroupQuery groupById() Group by the id column
  * @method     SubscriberGroupQuery groupByName() Group by the name column
+ * @method     SubscriberGroupQuery groupBySenderEmail() Group by the sender_email column
  * @method     SubscriberGroupQuery groupByIsDefault() Group by the is_default column
  * @method     SubscriberGroupQuery groupByDescription() Group by the description column
  * @method     SubscriberGroupQuery groupByCreatedAt() Group by the created_at column
@@ -49,6 +51,7 @@
  *
  * @method     SubscriberGroup findOneById(int $id) Return the first SubscriberGroup filtered by the id column
  * @method     SubscriberGroup findOneByName(string $name) Return the first SubscriberGroup filtered by the name column
+ * @method     SubscriberGroup findOneBySenderEmail(string $sender_email) Return the first SubscriberGroup filtered by the sender_email column
  * @method     SubscriberGroup findOneByIsDefault(boolean $is_default) Return the first SubscriberGroup filtered by the is_default column
  * @method     SubscriberGroup findOneByDescription(string $description) Return the first SubscriberGroup filtered by the description column
  * @method     SubscriberGroup findOneByCreatedAt(string $created_at) Return the first SubscriberGroup filtered by the created_at column
@@ -58,6 +61,7 @@
  *
  * @method     array findById(int $id) Return SubscriberGroup objects filtered by the id column
  * @method     array findByName(string $name) Return SubscriberGroup objects filtered by the name column
+ * @method     array findBySenderEmail(string $sender_email) Return SubscriberGroup objects filtered by the sender_email column
  * @method     array findByIsDefault(boolean $is_default) Return SubscriberGroup objects filtered by the is_default column
  * @method     array findByDescription(string $description) Return SubscriberGroup objects filtered by the description column
  * @method     array findByCreatedAt(string $created_at) Return SubscriberGroup objects filtered by the created_at column
@@ -210,6 +214,28 @@ abstract class BaseSubscriberGroupQuery extends ModelCriteria
 			}
 		}
 		return $this->addUsingAlias(SubscriberGroupPeer::NAME, $name, $comparison);
+	}
+
+	/**
+	 * Filter the query on the sender_email column
+	 * 
+	 * @param     string $senderEmail The value to use as filter.
+	 *            Accepts wildcards (* and % trigger a LIKE)
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    SubscriberGroupQuery The current query, for fluid interface
+	 */
+	public function filterBySenderEmail($senderEmail = null, $comparison = null)
+	{
+		if (null === $comparison) {
+			if (is_array($senderEmail)) {
+				$comparison = Criteria::IN;
+			} elseif (preg_match('/[\%\*]/', $senderEmail)) {
+				$senderEmail = str_replace('*', '%', $senderEmail);
+				$comparison = Criteria::LIKE;
+			}
+		}
+		return $this->addUsingAlias(SubscriberGroupPeer::SENDER_EMAIL, $senderEmail, $comparison);
 	}
 
 	/**
