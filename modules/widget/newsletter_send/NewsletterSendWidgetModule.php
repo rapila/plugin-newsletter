@@ -31,9 +31,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function getSenderEmails() {
-		ErrorHandler::log(Settings::getSetting('newsletter_plugin', 'sender_email_addresses'));
-		$aResult = Settings::getSetting('newsletter_plugin', 'sender_email_addresses');
-		ErrorHandler::log($aResult);
+		$aResult = Settings::getSetting('newsletter_plugin', 'sender_email_addresses', array(LinkUtil::getDomainHolderEmail('newsletter')));
 		return $aResult;
 	}
 	
@@ -41,7 +39,10 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		return floor(SubscriberPeer::countSubscribersBySubscriberGroupMembership($aMailGroups)/$this->iBatchSize);
 	}
 
-	public function sendNewsletter($aMailGroups = null, $iBatchNumber = 0) {
+	public function sendNewsletter($aMailGroups = null, $sSenderEmail = null, $iBatchNumber = 0) {
+		if(!$sSenderEmail) {
+			$sSenderEmail = LinkUtil::getDomainHolderEmail('newsletter');
+		}
 		if($aMailGroups === null && SubscriberGroupPeer::hasSubscriberGroups()) {
 			throw new LocalizedException("newsletter.mailing.subscriber_groups_required");
 		}
@@ -66,7 +67,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 			$this->aUnsuccessfulAttempts = array();
 		}
 		
-		$oNewsletterMailer = new NewsletterMailer($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink);
+		$oNewsletterMailer = new NewsletterMailer($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $sSenderEmail);
 		
 		if(!$oNewsletterMailer->send()) {
 			$this->aUnsuccessfulAttempts = array_merge($this->aUnsuccessfulAttempts, $oNewsletterMailer->getInvalidEmails());
