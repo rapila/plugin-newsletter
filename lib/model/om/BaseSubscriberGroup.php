@@ -37,12 +37,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	protected $name;
 
 	/**
-	 * The value for the sender_email field.
-	 * @var        string
-	 */
-	protected $sender_email;
-
-	/**
 	 * The value for the is_default field.
 	 * Note: this column has a database default value of: false
 	 * @var        boolean
@@ -152,16 +146,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	public function getName()
 	{
 		return $this->name;
-	}
-
-	/**
-	 * Get the [sender_email] column value.
-	 * 
-	 * @return     string
-	 */
-	public function getSenderEmail()
-	{
-		return $this->sender_email;
 	}
 
 	/**
@@ -319,26 +303,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 
 		return $this;
 	} // setName()
-
-	/**
-	 * Set the value of [sender_email] column.
-	 * 
-	 * @param      string $v new value
-	 * @return     SubscriberGroup The current object (for fluent API support)
-	 */
-	public function setSenderEmail($v)
-	{
-		if ($v !== null) {
-			$v = (string) $v;
-		}
-
-		if ($this->sender_email !== $v) {
-			$this->sender_email = $v;
-			$this->modifiedColumns[] = SubscriberGroupPeer::SENDER_EMAIL;
-		}
-
-		return $this;
-	} // setSenderEmail()
 
 	/**
 	 * Set the value of [is_default] column.
@@ -564,13 +528,12 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 
 			$this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
 			$this->name = ($row[$startcol + 1] !== null) ? (string) $row[$startcol + 1] : null;
-			$this->sender_email = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
-			$this->is_default = ($row[$startcol + 3] !== null) ? (boolean) $row[$startcol + 3] : null;
-			$this->description = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
-			$this->created_at = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
-			$this->updated_at = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
-			$this->created_by = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
-			$this->updated_by = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
+			$this->is_default = ($row[$startcol + 2] !== null) ? (boolean) $row[$startcol + 2] : null;
+			$this->description = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
+			$this->created_at = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
+			$this->updated_at = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+			$this->created_by = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
+			$this->updated_by = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -579,7 +542,7 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 9; // 9 = SubscriberGroupPeer::NUM_COLUMNS - SubscriberGroupPeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 8; // 8 = SubscriberGroupPeer::NUM_COLUMNS - SubscriberGroupPeer::NUM_LAZY_LOAD_COLUMNS).
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating SubscriberGroup object", $e);
@@ -995,24 +958,21 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 				return $this->getName();
 				break;
 			case 2:
-				return $this->getSenderEmail();
-				break;
-			case 3:
 				return $this->getIsDefault();
 				break;
-			case 4:
+			case 3:
 				return $this->getDescription();
 				break;
-			case 5:
+			case 4:
 				return $this->getCreatedAt();
 				break;
-			case 6:
+			case 5:
 				return $this->getUpdatedAt();
 				break;
-			case 7:
+			case 6:
 				return $this->getCreatedBy();
 				break;
-			case 8:
+			case 7:
 				return $this->getUpdatedBy();
 				break;
 			default:
@@ -1041,13 +1001,12 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 		$result = array(
 			$keys[0] => $this->getId(),
 			$keys[1] => $this->getName(),
-			$keys[2] => $this->getSenderEmail(),
-			$keys[3] => $this->getIsDefault(),
-			$keys[4] => $this->getDescription(),
-			$keys[5] => $this->getCreatedAt(),
-			$keys[6] => $this->getUpdatedAt(),
-			$keys[7] => $this->getCreatedBy(),
-			$keys[8] => $this->getUpdatedBy(),
+			$keys[2] => $this->getIsDefault(),
+			$keys[3] => $this->getDescription(),
+			$keys[4] => $this->getCreatedAt(),
+			$keys[5] => $this->getUpdatedAt(),
+			$keys[6] => $this->getCreatedBy(),
+			$keys[7] => $this->getUpdatedBy(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aUserRelatedByCreatedBy) {
@@ -1094,24 +1053,21 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 				$this->setName($value);
 				break;
 			case 2:
-				$this->setSenderEmail($value);
-				break;
-			case 3:
 				$this->setIsDefault($value);
 				break;
-			case 4:
+			case 3:
 				$this->setDescription($value);
 				break;
-			case 5:
+			case 4:
 				$this->setCreatedAt($value);
 				break;
-			case 6:
+			case 5:
 				$this->setUpdatedAt($value);
 				break;
-			case 7:
+			case 6:
 				$this->setCreatedBy($value);
 				break;
-			case 8:
+			case 7:
 				$this->setUpdatedBy($value);
 				break;
 		} // switch()
@@ -1140,13 +1096,12 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 
 		if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
 		if (array_key_exists($keys[1], $arr)) $this->setName($arr[$keys[1]]);
-		if (array_key_exists($keys[2], $arr)) $this->setSenderEmail($arr[$keys[2]]);
-		if (array_key_exists($keys[3], $arr)) $this->setIsDefault($arr[$keys[3]]);
-		if (array_key_exists($keys[4], $arr)) $this->setDescription($arr[$keys[4]]);
-		if (array_key_exists($keys[5], $arr)) $this->setCreatedAt($arr[$keys[5]]);
-		if (array_key_exists($keys[6], $arr)) $this->setUpdatedAt($arr[$keys[6]]);
-		if (array_key_exists($keys[7], $arr)) $this->setCreatedBy($arr[$keys[7]]);
-		if (array_key_exists($keys[8], $arr)) $this->setUpdatedBy($arr[$keys[8]]);
+		if (array_key_exists($keys[2], $arr)) $this->setIsDefault($arr[$keys[2]]);
+		if (array_key_exists($keys[3], $arr)) $this->setDescription($arr[$keys[3]]);
+		if (array_key_exists($keys[4], $arr)) $this->setCreatedAt($arr[$keys[4]]);
+		if (array_key_exists($keys[5], $arr)) $this->setUpdatedAt($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setCreatedBy($arr[$keys[6]]);
+		if (array_key_exists($keys[7], $arr)) $this->setUpdatedBy($arr[$keys[7]]);
 	}
 
 	/**
@@ -1160,7 +1115,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 
 		if ($this->isColumnModified(SubscriberGroupPeer::ID)) $criteria->add(SubscriberGroupPeer::ID, $this->id);
 		if ($this->isColumnModified(SubscriberGroupPeer::NAME)) $criteria->add(SubscriberGroupPeer::NAME, $this->name);
-		if ($this->isColumnModified(SubscriberGroupPeer::SENDER_EMAIL)) $criteria->add(SubscriberGroupPeer::SENDER_EMAIL, $this->sender_email);
 		if ($this->isColumnModified(SubscriberGroupPeer::IS_DEFAULT)) $criteria->add(SubscriberGroupPeer::IS_DEFAULT, $this->is_default);
 		if ($this->isColumnModified(SubscriberGroupPeer::DESCRIPTION)) $criteria->add(SubscriberGroupPeer::DESCRIPTION, $this->description);
 		if ($this->isColumnModified(SubscriberGroupPeer::CREATED_AT)) $criteria->add(SubscriberGroupPeer::CREATED_AT, $this->created_at);
@@ -1229,7 +1183,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	public function copyInto($copyObj, $deepCopy = false)
 	{
 		$copyObj->setName($this->name);
-		$copyObj->setSenderEmail($this->sender_email);
 		$copyObj->setIsDefault($this->is_default);
 		$copyObj->setDescription($this->description);
 		$copyObj->setCreatedAt($this->created_at);
@@ -1747,7 +1700,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	{
 		$this->id = null;
 		$this->name = null;
-		$this->sender_email = null;
 		$this->is_default = null;
 		$this->description = null;
 		$this->created_at = null;

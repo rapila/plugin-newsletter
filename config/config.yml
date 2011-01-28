@@ -6,7 +6,8 @@ newsletter_plugin:
     height: 600
     toolbar_Full: [["Bold","Italic","-"],["Link","Unlink"],["BulletedList"],["Undo","Redo","-","RemoveFormat"],["Maximize","Styles","Format"],["Image", "PickImage"],["Source"]]
   sender_name: rapila
-  sender_email_address: 'noreply@example.com'
+  sender_email_addresses:
+    - 'noreply@example.com'
   #requires_authentication options true, user_role rolekey, default: false
   unsubscribe_page_name: subscribe
 

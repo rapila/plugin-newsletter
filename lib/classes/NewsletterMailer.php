@@ -13,7 +13,7 @@ class NewsletterMailer {
 
 	private $aInvalidEmails = array();
 	
-	public function __construct($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink) {
+	public function __construct($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $sSenderEmailAddress) {
 		if($oNewsletter === null) {
 			throw new Exception('Error in'.__METHOD__.': requires a Newsletter object, null given');
 		}
@@ -21,7 +21,7 @@ class NewsletterMailer {
 		$this->oNewsletter = $oNewsletter;
 		$this->bUseSubscriberGroups = MailGroupInputWidgetModule::hasSubscriberGroups();
 		$this->sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', "Newsletter Plugin Sender Name");
-		$this->sSenderEmailAddress = Settings::getSetting('newsletter_plugin', 'sender_email_address', 'noreply@'.LinkUtil::getHostName());
+		$this->sSenderEmailAddress = $sSenderEmailAddress;
 		if($bRequiresUnsubsribeLink) {
 			// unsubscribe page is required, a page that contains a content object NewsletterFrontendModule, ie the subscribe page
 			$this->oUnsubscribePage = PagePeer::getPageByName(Settings::getSetting('newsletter', 'unsubscribe_page_name', 'subscribe'));
