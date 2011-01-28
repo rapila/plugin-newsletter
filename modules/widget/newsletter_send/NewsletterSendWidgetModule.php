@@ -30,6 +30,13 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		}
 	}
 	
+	public function getSenderEmails() {
+		ErrorHandler::log(Settings::getSetting('newsletter_plugin', 'sender_email_addresses'));
+		$aResult = Settings::getSetting('newsletter_plugin', 'sender_email_addresses');
+		ErrorHandler::log($aResult);
+		return $aResult;
+	}
+	
 	public function getExpectedBatchCount($aMailGroups = null) {
 		return floor(SubscriberPeer::countSubscribersBySubscriberGroupMembership($aMailGroups)/$this->iBatchSize);
 	}

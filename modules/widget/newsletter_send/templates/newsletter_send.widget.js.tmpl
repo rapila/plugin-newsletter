@@ -47,7 +47,7 @@ Widget.types.newsletter_send = {
 		
 		var send_markup = jQuery.parseHTML('{{includeTemplate=send}}');
 		send_markup.append(send_progress);
-		
+		console.log(this.getSenderEmails());
 		var mail_groups = send_markup.find("select[name='mail_group_ids[]']");
 		mail_groups.prepareWidget();
 	

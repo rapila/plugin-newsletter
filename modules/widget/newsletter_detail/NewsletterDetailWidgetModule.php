@@ -56,7 +56,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		return new Template($sTemplateName.$sType, array(DIRNAME_TEMPLATES, 'newsletter'));
 	}
 
-	public static function getMatchingCustomTemplates($aPostfix = array(self::CONTENT_TEMPLATE_SUFFIX, self::CSS_TEMPLATE_SUFFIX)) {
+	public function getMatchingCustomTemplates($aPostfix = array(self::CONTENT_TEMPLATE_SUFFIX, self::CSS_TEMPLATE_SUFFIX)) {
 		$aMatchingTemplates = array();
 		$aTemplateList = ResourceFinder::findResourceByExpressions(array(DIRNAME_TEMPLATES, self::NEWSLETTER_DIRNAME, '/.+.content.tmpl/'));
 		foreach($aTemplateList as $sTemplateShortPath => $sTemplatePath) {
