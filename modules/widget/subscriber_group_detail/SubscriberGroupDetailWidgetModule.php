@@ -21,7 +21,6 @@ class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 		$oFlash = Flash::getFlash();
 		$oFlash->setArrayToCheck($aSubscriberGroupData);
 		$oFlash->checkForValue('name', 'name_required');
-		$oFlash->checkForEmail('sender_email', 'valid_sender_email_required');
 		$oFlash->finishReporting();
 	}
 	
@@ -33,7 +32,6 @@ class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 			$oSubscriberGroup->setCreatedAt(date('c'));
 		}
 		$oSubscriberGroup->setName($aSubscriberGroupData['name']);
-		$oSubscriberGroup->setSenderEmail($aSubscriberGroupData['sender_email']);
 
 		$this->validate($aSubscriberGroupData);
     if(!Flash::noErrors()) {

@@ -29,9 +29,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 			if(isset($_REQUEST['subscriber_group_id'])) {
 				$oSubscriber->deleteSubscriberGroupMembership($_REQUEST['subscriber_group_id']);
 			} else {
-				if(SubscriberGroupPeer::hasSubscriberGroups() === false) {
-					$oSubscriber->delete();
-				}
+				$oSubscriber->delete();
 			}
 		}
 		// display unsubscribe confirmation international

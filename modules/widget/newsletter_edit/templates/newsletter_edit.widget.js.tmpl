@@ -4,7 +4,7 @@ Widget.types.newsletter_edit = {
 		this._element.append(this.content);
 		
 		var mode_dropdown = this._element.find("select[name='display_mode']");
-		var subscriber_group_dropdown = this._element.find("select[name='subscriber_group_id']");
+		var subscriber_group_dropdown = this._element.find("select[name='subscriber_group_id[]']");
 		var subscriber_group_elements = this._element.find(".subscriber_group_elements");
 
 		var display_data = this.getDisplayMode();
