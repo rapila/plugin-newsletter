@@ -44,6 +44,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 	}
 	
 	private function newsletterSubscribe($aOptions) {
+		// ErrorHandler::log($aOptions['subscriber_group_id']);
 		if(isset($aOptions['subscriber_group_id']) && $aOptions['subscriber_group_id'] !== null) {
 			if(!SubscriberGroupPeer::retrieveByPK($aOptions['subscriber_group_id'])) {
 				throw new Exception(__CLASS__.': configured subscriber_group_id '.$aOptions['subscriber_group_id'].' does not exist!');
