@@ -92,7 +92,6 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate);
 		$oEmail->setSender($sSenderName, $sSenderEmail);
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
-		// $oEmail->addBlindCarbonCopyRecipient($sSenderEmail, $sSenderEmail);
 		$oEmail->send();
 	}
 	
