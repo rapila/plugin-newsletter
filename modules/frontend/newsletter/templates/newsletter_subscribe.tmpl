@@ -4,7 +4,7 @@
     <input type="hidden" name="subscriber_group_id" value="{{subscriber_group_id}}" />{{identifierContext=end;name=subscriber_group_id}}
     <label for="subscriber_email">{{writeString=wns.subscriber.email}}</label>
     <input type="text" name="subscriber_email" id="subscriber_email" value="{{writeRequestValue=subscriber_email}}" /><br />{{writeFlashValue=email_required_for_subscription}}{{writeFlashValue=email_valid}}
-    <label>&nbsp;</label><button type="submit" class="subscribe" id="send" title="">{{writeString=wns.newsletter.subscribe}}</button>
+    <label>&nbsp;</label><button type="submit" class="subscribe" id="send" title="" name="newsletter_subscribe" value="1">{{writeString=wns.newsletter.subscribe}}</button>
   </form>{{identifierContext=start;name=message}}
   <p class="form_message"><br />{{message}}</p>{{identifierContext=end;name=message}}
 </fieldset>
