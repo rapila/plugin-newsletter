@@ -34,11 +34,25 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 			return self::getNewsletterBodyTemplateByName($sTemplateName)->__toString();
 		}
 		$oNewsletter = NewsletterPeer::retrieveByPK($this->iNewsletterId);
-		if($oNewsletter !== null && $sTemplateName === null && $oNewsletter->getNewsletterBody() !== null) {
+		if($oNewsletter !== null && $oNewsletter->getNewsletterBody() !== null) {
 			return RichtextUtil::parseStorageForBackendOutput(stream_get_contents($oNewsletter->getNewsletterBody()))->__toString();
+		} else if($oNewsletter !== null) {
+			$sTemplateName = $oNewsletter->getTemplateName();
+			return self::getNewsletterBodyTemplateByName($sTemplateName)->__toString();
 		}
-		if($sTemplateName === null) $sTemplateName = $oNewsletter->getTemplateName();
-		return $sTemplateName;
+		return null;
+	}
+	
+	public function newsletterContentCss($sTemplateName = null) {
+		if($sTemplateName) {
+			return self::getNewsletterCssTemplateByName($sTemplateName)->render();
+		}
+		$oNewsletter = NewsletterPeer::retrieveByPK($this->iNewsletterId);
+		if($oNewsletter !== null) {
+			$sTemplateName = $oNewsletter->getTemplateName();
+			return self::getNewsletterCssTemplateByName($sTemplateName)->render();
+		}
+		return null;
 	}
 	
 	public static function getNewsletterCssTemplateByName($sTemplateName=null) {

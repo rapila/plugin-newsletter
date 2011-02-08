@@ -15,10 +15,9 @@ Widget.types.newsletter_detail = {
 			});
 			
 			var allow_load_template = _this.auto_open; // add other conditions for loading template apart from is new
-			var newletter_detail = _this;
 			var template_select = _this.content.find("select[name='template_name']").change(function() {
 				if(allow_load_template) {
-					newletter_detail.update_newsletter_body(newletter_detail.getNewsletterBody(template_select.val()));
+					_this.update_newsletter_body(template_select.val());
 				}
 			});
 			// prepare template options
@@ -90,7 +89,7 @@ Widget.types.newsletter_detail = {
 		}).attr('checked', newsletter_data.IsApproved);
 
 		this.send_info_text(newsletter_data.IsApproved);
-		this.update_newsletter_body(this.getNewsletterBody());
+		this.update_newsletter_body();
 		this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.newsletter}} "+newsletter_data.Subject);
 	},
 	
@@ -99,22 +98,34 @@ Widget.types.newsletter_detail = {
 		if(!newsletter_text.attr('data-widget-type')) {
 			newsletter_text.attr('data-widget-type', 'rich_text').prepareWidget(function(widget) {
 				widget.settings.height = 400;
+				widget.settings.contentsCss = [];
+				if(newsletter_text.data('css')) {
+					widget.settings.inline_css = newsletter_text.data('css');
+				}
 				widget.settings.toolbar_Full = [
 					['Bold','Italic','-'],
 					['Link','Unlink'],
 					['BulletedList'],
 					['Undo','Redo','-','RemoveFormat'],
-					['Image', 'PickImage'],['Source']],['Maximize','Styles','Format'];
+					['Image', 'PickImage'],['Source'],['Maximize','Styles','Format']];
 			}, jQuery.noop);
 		}
 	},
 	
-	update_newsletter_body: function(newsletter_body) {
+	update_newsletter_body: function(newsletter_template) {
+		var newsletter_body = this.getNewsletterBody(newsletter_template);
 		var newsletter_text = this.get_newsletter_text();
 		newsletter_text.find('textarea').val(newsletter_body);
 		if(newsletter_text.data('widget')) {
 			newsletter_text.data('widget').set_data(newsletter_body);
 		}
+		this.newsletterContentCss(newsletter_template, function(css) {
+			if(newsletter_text.data('widget')) {
+				newsletter_text.data('widget').set_inline_css(css);
+			} else {
+				newsletter_text.data('css', css);
+			}
+		});
 	},
 	
 	get_newsletter_text: function() {
