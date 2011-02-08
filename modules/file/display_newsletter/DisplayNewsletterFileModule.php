@@ -10,15 +10,21 @@ class DisplayNewsletterFileModule extends FileModule {
 	public function __construct($aRequestPath) {
 		parent::__construct($aRequestPath);
 		
+		$sBase = Manager::usePath();
 		$iId = Manager::usePath();
 		
-		$this->oMailing = NewsletterMailingPeer::retrieveByPK($iId);
-		
-		if($this->oMailing === null) {
-			throw new Exception('No such newsletter exists');
+		if($sBase === 'newsletter') {
+			$this->oNewsletter = NewsletterPeer::retrieveByPK($iId);
+			if($this->oNewsletter === null) {
+				throw new Exception('No such newsletter exists');
+			}
+		} else if ($sBase === 'mailing') {
+			$this->oMailing = NewsletterMailingPeer::retrieveByPK($iId);
+			if($this->oMailing === null) {
+				throw new Exception('No such mailing exists');
+			}
+			$this->oNewsletter = $this->oMailing->getNewsletter();
 		}
-		
-		$this->oNewsletter = $this->oMailing->getNewsletter();
 	}
 
 	public function renderFile() {
@@ -35,7 +41,13 @@ class DisplayNewsletterFileModule extends FileModule {
 		}
 		$oNewsletterTemplate->replaceIdentifier('newsletter_content', $oNewsletterContent, null, Template::LEAVE_IDENTIFIERS);
 		$oNewsletterTemplate->replaceIdentifier('language', $this->oNewsletter->getLanguageId());
-		$oNewsletterTemplate->replaceIdentifier('newsletter_date', LocaleUtil::localizeDate($this->oMailing->getDateSent(null)->getTimestamp(), $this->oNewsletter->getLanguageId()));
+		if($this->oMailing !== null) {
+			$oNewsletterTemplate->replaceIdentifier('newsletter_date', LocaleUtil::localizeDate($this->oMailing->getDateSent(null)->getTimestamp(), $this->oNewsletter->getLanguageId()));
+			$oNewsletterTemplate->replaceIdentifier('newsletter_timestamp', $this->oMailing->getDateSent(null)->getTimestamp());
+		} else {
+			$oNewsletterTemplate->replaceIdentifier('newsletter_date', LocaleUtil::localizeDate($this->oNewsletter->getCreatedAt(null)->getTimestamp(), $this->oNewsletter->getLanguageId()));
+			$oNewsletterTemplate->replaceIdentifier('newsletter_timestamp', $this->oNewsletter->getCreatedAt(null)->getTimestamp());
+		}
 		$oNewsletterTemplate->replaceIdentifier('recipient', StringPeer::getString('newsletter.recipient', $this->oNewsletter->getLanguageId()));
 
 		$oNewsletterTemplate->render();

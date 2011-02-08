@@ -32,7 +32,7 @@ class NewsletterMailer {
 		}
 	}
 	
-	public function send($mSubscriberGroupId = null) {
+	public function send() {
 		// get newsletter email main template and template body and css by template name
 		$oEmailTemplate = new Template('main', array(DIRNAME_TEMPLATES, 'newsletter'));
 		$oEmailTemplate->replaceIdentifier('newsletter_template_css', new Template("{$this->oNewsletter->getTemplateName()}.css", array(DIRNAME_TEMPLATES, 'newsletter')));
@@ -48,7 +48,9 @@ class NewsletterMailer {
 		}
 		$oEmailTemplate->replaceIdentifier('newsletter_content', $oEMailContent, null, Template::LEAVE_IDENTIFIERS);
 		$oEmailTemplate->replaceIdentifier('language', $this->oNewsletter->getLanguageId());
+		$oEmailTemplate->replaceIdentifier('newsletter_link', LinkUtil::absoluteLink(LinkUtil::link(array('display_newsletter', 'newsletter', $this->oNewsletter->getId()), 'FrontendManager')));
 		$oEmailTemplate->replaceIdentifier('newsletter_date', LocaleUtil::localizeDate(null, $this->oNewsletter->getLanguageId()));
+		$oEmailTemplate->replaceIdentifier('newsletter_timestamp', time());
 
 		// process templates with each recipient, depending on whether recipient is object and object of Subscriber or string
 		foreach($this->aRecipients as $mRecipient) {
