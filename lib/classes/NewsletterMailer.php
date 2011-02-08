@@ -70,7 +70,13 @@ class NewsletterMailer {
 		}
 		// send newsletter and store invalid emails
 		try {
-			$oEMail = new EMail($this->oNewsletter->getSubject(), MIMEMultipart::alternativeMultipartForTemplate($oEmailTemplateInstance), true);
+			$sPlainTextMethod = Settings::getSetting('newsletter_plugin', 'plain_text_alternative_method', 'markdown');
+			$oEMail = null;
+			if($sPlainTextMethod === null || $sPlainTextMethod === false) {
+				$oEMail = new EMail($this->oNewsletter->getSubject(), $oEmailTemplateInstance, true);
+			} else {
+				$oEMail = new EMail($this->oNewsletter->getSubject(), MIMEMultipart::alternativeMultipartForTemplate($oEmailTemplateInstance, null, null, $sPlainTextMethod), true);
+			}
 			if(is_object($mRecipient)) {
 				$oEMail->addRecipient($mRecipient->getEmail(), $mRecipient->getName());
 			} else {

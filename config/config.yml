@@ -14,7 +14,10 @@ newsletter_plugin:
   
   #requires_authentication options true, user_role rolekey, default: false
   unsubscribe_page_name: subscribe
-
+  
+  #how to convert to plain-text alternative set to null or false to send only html emails
+  plain_text_alternative_method: markdown
+  
   subscriber_groups_require_authentication: 
     1: manager
 
