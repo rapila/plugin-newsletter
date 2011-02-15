@@ -24,7 +24,7 @@ class SubscriberDetailWidgetModule extends PersistentWidgetModule {
 		$oFlash->checkForValue('name', 'name_required');
 		$oFlash->checkForEmail('email', 'valid_email');
 		if(SubscriberQuery::create()->exclude($oSubscriber)->filterByEmail($aSubscriberData['email'])->count() > 0) {
-			$oFlash->addMessage('email_unique');
+			$oFlash->addMessage('duplicate_email');
 		}
 		$oFlash->finishReporting();
 	}
