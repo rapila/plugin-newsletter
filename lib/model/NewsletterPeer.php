@@ -10,17 +10,7 @@
  * @package    model
  */
 class NewsletterPeer extends BaseNewsletterPeer {
-  
-  public static function getBySubjectSearch($sSearch=null, $sOrderField='created_at', $sSortOrder='desc') {
-    $oCriteria = new Criteria();
-    $oCriteria->add(self::SUBJECT, "%$sSearch%", Criteria::LIKE);
-    Util::addSortColumn($oCriteria, constant('self::'.strtoupper($sOrderField)), $sSortOrder);
-    if($sOrderField != 'SUBJECT') {
-      $oCriteria->addAscendingOrderByColumn(self::SUBJECT);
-    }
-    return self::doSelect($oCriteria);
-  }
-  
+
   public static function addSearchToCriteria($sSearch, $oCriteria) {
     $oCriteria->add(self::SUBJECT, "%$sSearch%", Criteria::LIKE);
   }

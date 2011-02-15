@@ -22,20 +22,11 @@ class SubscriberPeer extends BaseSubscriberPeer {
 		return self::$TEMPLATE_LINKS['using_subscriber_groups'];
 	}
 	
-	public static function getBySearch($sSearch=null, $sOrderField='name', $sSortOrder='asc') {
-		$oCriteria = new Criteria();
-		if($sSearch !== null) {
-			$oSearchCriterion = $oCriteria->getNewCriterion(self::NAME, "%$sSearch%", Criteria::LIKE);
-			$oSearchCriterion->addOr($oCriteria->getNewCriterion(self::EMAIL, "%$sSearch%", Criteria::LIKE));
-			$oCriteria->add($oSearchCriterion);
-		}
-		Util::addSortColumn($oCriteria, $sOrderField, $sSortOrder);
-		if($sOrderField != 'name') {
-			$oCriteria->addAscendingOrderByColumn(self::NAME);
-		} else {
-			$oCriteria->addAscendingOrderByColumn(self::EMAIL);
-		}
-		return self::doSelect($oCriteria);
+	
+  public static function addSearchToCriteria($sSearch, $oCriteria) {
+		$oSearchCriterion = $oCriteria->getNewCriterion(self::NAME, "%$sSearch%", Criteria::LIKE);
+		$oSearchCriterion->addOr($oCriteria->getNewCriterion(self::EMAIL, "%$sSearch%", Criteria::LIKE));
+		$oCriteria->add($oSearchCriterion);
 	}
 	
 	public static function getByEmail($sEmail) {
