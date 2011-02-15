@@ -49,6 +49,7 @@ class DisplayNewsletterFileModule extends FileModule {
 			$oNewsletterTemplate->replaceIdentifier('newsletter_timestamp', $this->oNewsletter->getCreatedAt(null)->getTimestamp());
 		}
 		$oNewsletterTemplate->replaceIdentifier('recipient', StringPeer::getString('newsletter.recipient', $this->oNewsletter->getLanguageId()));
+		$oNewsletterTemplate->replaceIdentifier('subject', $this->oNewsletter->getSubject());
 
 		$oNewsletterTemplate->render();
 	}
