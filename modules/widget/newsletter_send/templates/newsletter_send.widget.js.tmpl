@@ -104,7 +104,6 @@ Widget.types.newsletter_send = {
 		markup.find("select[name='mail_group_ids[]']").hide();
 		progress.show();
 		this.sendNewsletter(mail_groups, sender, 0, function(result) {
-			console.log("arg",arguments[1]);
 			if(result === true || result === false) {
 				progress.progressbar('option', 'value', 1);
 				this.handle_send_response(result, markup);
