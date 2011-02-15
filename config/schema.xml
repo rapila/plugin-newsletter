@@ -1,49 +1,52 @@
-  <table name="newsletters" phpName="Newsletter">
-    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
-    <column name="subject" type="varchar" size="255" required="true" />
-    <column name="newsletter_body" type="blob" />
-    <column name="language_id" type="varchar" size="3" required="true" />
-    <column name="is_approved" type="boolean" required="true" default="0" />
-    <column name="is_html" type="boolean" required="true" default="1" />
-    <column name="template_name" type="varchar" size="60" />
-  </table>  
-  
-  <table name="newsletter_mailings" phpName="NewsletterMailing">
-    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
-    <column name="date_sent" type="timestamp" required="true" />
-    <column name="subscriber_group_id" type="integer" required="false" />
-    <foreign-key foreignTable="subscriber_groups">
-      <reference local="subscriber_group_id" foreign="id" />
-    </foreign-key>
-    <column name="external_mail_group_id" type="varchar" required="false" />
-    <column name="newsletter_id" type="integer" required="true" />
-    <foreign-key foreignTable="newsletters" onDelete="cascade">
-      <reference local="newsletter_id" foreign="id" />
-    </foreign-key>
-    <column name="created_by" type="integer" required="true" />
-  </table>
-  
-  <table name="subscribers" phpName="Subscriber">
-    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
-    <column name="name" type="varchar" size="80" required="true" />
-    <column name="preferred_language_id" type="varchar" size="3" required="true" />
-    <column name="email" type="varchar" size="255" />
-  </table>
-  
-  <table name="subscriber_group_memberships" phpName="SubscriberGroupMembership">
-    <column name="subscriber_id" type="integer" required="true" primaryKey="true" />
-    <foreign-key foreignTable="subscribers" onDelete="cascade">
-      <reference local="subscriber_id" foreign="id" />
-    </foreign-key>
-    <column name="subscriber_group_id" type="integer" required="true" primaryKey="true" />
-    <foreign-key foreignTable="subscriber_groups" onDelete="cascade">
-      <reference local="subscriber_group_id" foreign="id" />
-    </foreign-key>
-  </table>
-  
-  <table name="subscriber_groups" phpName="SubscriberGroup">
-    <column name="id" type="integer" required="true" autoIncrement="true" primaryKey="true" />
-    <column name="name" type="varchar" size="80" required="true" />
-    <column name="is_default" type="boolean" required="true" default="0" />
-    <column name="description" type="varchar" size="255" />
-  </table>
+	<table name="newsletters" phpName="Newsletter">
+		<column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+		<column name="subject" type="varchar" size="255" required="true" />
+		<column name="newsletter_body" type="blob" />
+		<column name="language_id" type="varchar" size="3" required="true" />
+		<column name="is_approved" type="boolean" required="true" default="0" />
+		<column name="is_html" type="boolean" required="true" default="1" />
+		<column name="template_name" type="varchar" size="60" />
+	</table>	
+	
+	<table name="newsletter_mailings" phpName="NewsletterMailing">
+		<column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+		<column name="date_sent" type="timestamp" required="true" />
+		<column name="subscriber_group_id" type="integer" required="false" />
+		<foreign-key foreignTable="subscriber_groups">
+			<reference local="subscriber_group_id" foreign="id" />
+		</foreign-key>
+		<column name="external_mail_group_id" type="varchar" required="false" />
+		<column name="newsletter_id" type="integer" required="true" />
+		<foreign-key foreignTable="newsletters" onDelete="cascade">
+			<reference local="newsletter_id" foreign="id" />
+		</foreign-key>
+		<column name="created_by" type="integer" required="true" />
+	</table>
+	
+	<table name="subscribers" phpName="Subscriber">
+		<column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+		<column name="name" type="varchar" size="80" required="true" />
+		<column name="preferred_language_id" type="varchar" size="3" required="true" />
+		<column name="email" type="varchar" size="255" />
+		<unique>
+			<unique-column name="email"/>
+		</unique>
+	</table>
+	
+	<table name="subscriber_group_memberships" phpName="SubscriberGroupMembership">
+		<column name="subscriber_id" type="integer" required="true" primaryKey="true" />
+		<foreign-key foreignTable="subscribers" onDelete="cascade">
+			<reference local="subscriber_id" foreign="id" />
+		</foreign-key>
+		<column name="subscriber_group_id" type="integer" required="true" primaryKey="true" />
+		<foreign-key foreignTable="subscriber_groups" onDelete="cascade">
+			<reference local="subscriber_group_id" foreign="id" />
+		</foreign-key>
+	</table>
+	
+	<table name="subscriber_groups" phpName="SubscriberGroup">
+		<column name="id" type="integer" required="true" autoIncrement="true" primaryKey="true" />
+		<column name="name" type="varchar" size="80" required="true" />
+		<column name="is_default" type="boolean" required="true" default="0" />
+		<column name="description" type="varchar" size="255" />
+	</table>
