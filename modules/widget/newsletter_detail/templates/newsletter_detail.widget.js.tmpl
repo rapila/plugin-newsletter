@@ -80,8 +80,8 @@ Widget.types.newsletter_detail = {
 		this.content.find(".created_info").text(newsletter_data.CreatedInfo);
 		var is_approved = this.content.find("input[name='is_approved']");
 		if(newsletter_data.HasBeedSent) {
-			this.content.find('input').attr('disabled', true);
-			this.content.find('select').attr('disabled', true);
+			// this.content.find('input').attr('disabled', true);
+			// this.content.find('select').attr('disabled', true);
 			// is_approved.attr('disabled', true);
 		}
 		is_approved.bind('change', function() {
