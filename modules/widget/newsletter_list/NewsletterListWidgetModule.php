@@ -23,7 +23,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'subject', 'language_id', 'is_html', 'template_name', 'is_approved', 'group_sent_to', 'last_sent', 'send', 'delete');
+		return array('id', 'subject', 'language_id', 'is_html', 'template_name', 'is_approved', 'group_sent_to', 'last_sent_localized', 'send', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -53,7 +53,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 			case 'group_sent_to':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.subscriber_group');
 				break;
-			case 'last_sent':
+			case 'last_sent_localized':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.last_sent');
 				break;
 			case 'send':
@@ -78,14 +78,11 @@ class NewsletterListWidgetModule extends WidgetModule {
 		if($sDisplayColumn === 'group_sent_to') {
 			return NewsletterMailingPeer::SUBSCRIBER_GROUP_ID;
 		}
-		if($sDisplayColumn === 'updated_at_formatted') {
+		if($sDisplayColumn === 'last_sent_localized') {
 			return NewsletterPeer::UPDATED_AT;
 		}
 		if($sDisplayColumn === 'subscriber_group_id') {
 			return NewsletterMailingPeer::SUBSCRIBER_GROUP_ID;
-		}
-		if($sDisplayColumn === 'last_sent') {
-			return NewsletterMailingPeer::DATE_SENT;
 		}
 		return null;
 	}

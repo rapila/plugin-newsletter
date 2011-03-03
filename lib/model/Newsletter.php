@@ -17,6 +17,10 @@ class Newsletter extends BaseNewsletter {
 		return $sDate.$this->getName();
 	}
 	
+	public function getDisplayLink() {
+		return LinkUtil::link(array('display_newsletter', 'newsletter', $this->getId()), 'FileManager');
+	}
+	
 	public function hasNewsletterMailings() {
 		return $this->countNewsletterMailings() > 0;
 	}
@@ -34,13 +38,22 @@ class Newsletter extends BaseNewsletter {
 		return $aResult[0]. ' (+'.($iCount-1).')';
 	}
 	
-	public function getLastSent() {
-		$aMailings = $this->getNewsletterMailings();
-		$iCount = count($aMailings);
-		if($iCount > 0) {
-			LocaleUtil::localizeDate($aMailings[$iCount-1]->getDateSent('c'));
+	public function getLastSent($oMailing = null) {
+		if($oMailing === null) {
+			$oMailing = $this->getFirstMailing();
 		}
-		return null;
+		if($oMailing !== null) {
+			return $oMailing->getDateSent(null)->getTimestamp();
+		}
+		return $this->getCreatedAt(null)->getTimestamp();
+	}
+	
+	public function getLastSentLocalized($sFormat = 'x') {
+		return LocaleUtil::localizeDate($this->getLastSent(), null, $sFormat);
+	}
+	
+	public function getFirstMailing() {
+		return NewsletterMailingQuery::create()->filterByNewsletter($this)->orderByCreatedAt()->findOne();
 	}
 	
 }
