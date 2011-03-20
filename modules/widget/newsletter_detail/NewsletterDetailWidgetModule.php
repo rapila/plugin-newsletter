@@ -5,7 +5,6 @@
 class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 	private $sLanguageId = null;
 	private $iNewsletterId;
-	private $oRichtextWidget;
 	private $iBatchSize = 50;
 
 	const NEWSLETTER_DIRNAME = 'newsletter';
