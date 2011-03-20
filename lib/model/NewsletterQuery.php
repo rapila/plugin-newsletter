@@ -2,16 +2,14 @@
 
 
 /**
- * Skeleton subclass for performing query and update operations on the 'newsletters' table.
- *
- * 
- *
- * You should add additional methods to this class to meet the
- * application requirements.  This class will only be generated as
- * long as it does not already exist in the output directory.
- *
  * @package    propel.generator.model
  */
 class NewsletterQuery extends BaseNewsletterQuery {
+	public function filterApprovedForLanguage($sLanguageId = null) {
+		$sLanguageId = $sLanguageId === null ? Session::language() : $sLanguageId;
+		$this->condition('language_null', 'Newsletter.LanguageId is null');
+		$this->condition('language_'.$sLanguageId, 'Newsletter.LanguageId = ?', $sLanguageId);
+		return $this->filterByIsApproved(true)->where(array('language_null', 'language_'.$sLanguageId), Criteria::LOGICAL_OR);
+	}
+}
 
-} // NewsletterQuery

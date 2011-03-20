@@ -49,7 +49,7 @@ class NewsletterMailer {
 		$oEmailTemplate->replaceIdentifier('newsletter_content', $oEMailContent, null, Template::LEAVE_IDENTIFIERS);
 		$oEmailTemplate->replaceIdentifier('subject', $this->oNewsletter->getSubject());
 		$oEmailTemplate->replaceIdentifier('language', $this->oNewsletter->getLanguageId());
-		$oEmailTemplate->replaceIdentifier('newsletter_link', LinkUtil::absoluteLink(LinkUtil::link(array('display_newsletter', 'newsletter', $this->oNewsletter->getId()), 'FileManager')));
+		$oEmailTemplate->replaceIdentifier('newsletter_link', LinkUtil::absoluteLink($this->oNewsletter->getDisplayLink()));
 		$oEmailTemplate->replaceIdentifier('newsletter_date', LocaleUtil::localizeDate(null, $this->oNewsletter->getLanguageId()));
 		$oEmailTemplate->replaceIdentifier('newsletter_timestamp', time());
 

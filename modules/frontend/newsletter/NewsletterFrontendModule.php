@@ -2,7 +2,7 @@
 
 class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBasedFrontendModule {
 	
-	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display');
+	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display_list', 'newsletter_display_detail');
 	private $oSubscriber;
 	
 	public function __construct($oLanguageObject = null, $aRequestPath = null, $iId = 1) {
@@ -17,8 +17,11 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 		if($aOptions['display_mode'] === 'newsletter_subscribe') {
 			return $this->newsletterSubscribe($aOptions);
 		}
-		if($aOptions['display_mode'] === 'newsletter_display') {
-			
+		if($aOptions['display_mode'] === 'newsletter_display_list') {
+			return $this->displayNewsletterList();
+		}
+		if($aOptions['display_mode'] === 'newsletter_display_detail') {
+			return $this->displayNewsletterDetail();
 		}		
 	}
 	
@@ -36,11 +39,25 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 		return $this->constructTemplate('unsubscribe_confirm');
 	}
 	
-	private function displayNewsletters() {
-		// order by distinct newsletter mailings, first date with a view
-		// show archive
-		// show last
-		// create file module for rendering newsletter for see in browser
+	private function displayNewsletterList() {
+		$aRecentNewsletters = NewsletterQuery::create()->filterApprovedForLanguage(Session::language())->orderByCreatedAt(Criteria::DESC)->limit(10)->find();
+		// Util::dumpAll($aRecentNewsletters);
+		$oTemplate = $this->constructTemplate('newsletter_display_list');
+		foreach($aRecentNewsletters as $oNewsletter) {
+			$oItemTemplate = $this->constructTemplate('newsletter_list_item');
+			$oItemTemplate->replaceIdentifier('subject', $oNewsletter->getSubject());
+			$oItemTemplate->replaceIdentifier('newsletter_link', $oNewsletter->getDisplayLink());
+			$oItemTemplate->replaceIdentifier('date', $oNewsletter->getLastSent());
+			$oItemTemplate->replaceIdentifier('template_name', $oNewsletter->getTemplateName());
+			$oItemTemplate->replaceIdentifier('language_id', $oNewsletter->getLanguageId());
+
+			$oTemplate->replaceIdentifierMultiple('newsletter_item', $oItemTemplate);
+		}
+		return $oTemplate;
+	}
+	
+	private function displayNewsletterDetail() {
+		
 	}
 	
 	private function newsletterSubscribe($aOptions) {
@@ -105,7 +122,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 	}
 	
 	public function getWidget() {
-		$aOptions = @unserialize($this->getData());	
+		$aOptions = @unserialize($this->getData()); 
 		$oWidget = new NewsletterEditWidgetModule(null, $this);
 		$oWidget->setDisplayMode($aOptions);
 		return $oWidget;
