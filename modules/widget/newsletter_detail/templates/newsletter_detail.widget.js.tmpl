@@ -46,10 +46,10 @@ Widget.types.newsletter_detail = {
 			}
 		});
 		
-		this.handle('saving', function() {
+		this.handle('saving', function(event, data) {
 			var text = this.get_newsletter_text();
 			if(text.data('widget')) {
-				text.data('widget').data_to_textarea();
+				data.newsletter_body = text.data('widget').get_data();
 			}
 			this.detail_widget.clear_validation();
 		}.bind(this));
