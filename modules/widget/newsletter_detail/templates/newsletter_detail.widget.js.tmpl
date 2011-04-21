@@ -108,9 +108,6 @@ Widget.types.newsletter_detail = {
 			newsletter_text.attr('data-widget-type', 'rich_text').prepareWidget(function(widget) {
 				widget.settings.height = 400;
 				widget.settings.contentsCss = [];
-				if(newsletter_text.data('css')) {
-					widget.settings.inline_css = newsletter_text.data('css');
-				}
 				widget.settings.toolbar_Full = [
 					['Bold','Italic','-'],
 					['Link','Unlink'],
@@ -122,18 +119,14 @@ Widget.types.newsletter_detail = {
 	},
 	
 	update_newsletter_body: function(newsletter_template) {
+		var _this = this;
 		var newsletter_body = this.getNewsletterBody(newsletter_template);
 		var newsletter_text = this.get_newsletter_text();
-		newsletter_text.find('textarea').val(newsletter_body);
-		if(newsletter_text.data('widget')) {
-			newsletter_text.data('widget').set_data(newsletter_body);
-		}
-		this.newsletterContentCss(newsletter_template, function(css) {
-			if(newsletter_text.data('widget')) {
-				newsletter_text.data('widget').set_inline_css(css);
-			} else {
-				newsletter_text.data('css', css);
-			}
+		newsletter_text.ensureWidget(function(widget) {
+			widget.set_data(newsletter_body);
+			_this.newsletterContentCss(newsletter_template, function(css) {
+				widget.set_inline_css(css);
+			});
 		});
 	},
 	
