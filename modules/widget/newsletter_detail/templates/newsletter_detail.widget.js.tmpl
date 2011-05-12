@@ -9,7 +9,6 @@ Widget.types.newsletter_detail = {
 				width: 800,
 				height: 660
 			});
-			widget.content = _this.content;
 			_this.accordion = jQuery(widget.content.find('div.accordion')).accordion({active: 0, autoHeight: false, clearStyle: true, collapsible:false}).
 			bind('accordionchangestart', function(event, ui) {
 			});
