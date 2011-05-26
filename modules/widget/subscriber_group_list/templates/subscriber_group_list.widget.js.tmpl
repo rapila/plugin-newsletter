@@ -2,7 +2,7 @@ jQuery(document).ready(function() {
 	var subscriber_group_list = jQuery('table.subscriber_group_list');
 	subscriber_group_list.each(function() {
 		jQuery(this).prepareWidget(function(widget) {
-			Widget.callStaticWidgetMethod('detail', 'connect_detail_with_list', 'subscriber_group', widget, 'setSubscriberGroupId');
+			Widget.callStatic('detail', 'connect_detail_with_list', 'subscriber_group', widget, 'setSubscriberGroupId');
 			widget.handle('list.cell-click', function(event, rowIndex, col, row, cell) {
 				if(col.identifier === 'delete') {
 					var name = widget.cell_for_identifier('name', row).text();
