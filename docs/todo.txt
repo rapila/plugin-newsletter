@@ -39,6 +39,12 @@ BUGS and Insecurities ----------------------------------------------------------
 
 Newsletter Title 
 
+Disable inputs if sent
+improve send dialog
+preset groups to sendermail
+make progressbar smoother, make resend rate smaller or do some interpolation of progressbar, recalculate at
+
+
 
 DONE ARCHIVE ------------------------------------------------------------------------------------------------------------------------
 - Newsletters are not finished yet, preview etc
