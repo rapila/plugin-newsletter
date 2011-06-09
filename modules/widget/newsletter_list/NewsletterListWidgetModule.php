@@ -70,28 +70,28 @@ class NewsletterListWidgetModule extends WidgetModule {
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_ICON;
 				$aResult['is_sortable'] = false;
 				break;
-	}
+		}
 		return $aResult;
 	}
 	
-	public function getDatabaseColumnForDisplayColumn($sDisplayColumn) {
-		if($sDisplayColumn === 'group_sent_to') {
+	public function getDatabaseColumnForColumn($sColumnIdentifier) {
+		if($sColumnIdentifier === 'group_sent_to') {
 			return NewsletterMailingPeer::SUBSCRIBER_GROUP_ID;
 		}
-		if($sDisplayColumn === 'last_sent_localized') {
+		if($sColumnIdentifier === 'last_sent_localized') {
 			return NewsletterPeer::UPDATED_AT;
 		}
-		if($sDisplayColumn === 'subscriber_group_id') {
+		if($sColumnIdentifier === 'subscriber_group_id') {
 			return NewsletterMailingPeer::SUBSCRIBER_GROUP_ID;
 		}
 		return null;
 	}
 	
-	public function getFilterTypeForColumn($sColumnName) {
-		if($sColumnName === 'subscriber_group_id') {
+	public function getFilterTypeForColumn($sColumnIdentifier) {
+		if($sColumnIdentifier === 'subscriber_group_id') {
 			return CriteriaListWidgetDelegate::FILTER_TYPE_IS;
 		}
-		if($sColumnName === 'language_id') {
+		if($sColumnIdentifier === 'language_id') {
 			return CriteriaListWidgetDelegate::FILTER_TYPE_IS;
 		}
 		return null;
