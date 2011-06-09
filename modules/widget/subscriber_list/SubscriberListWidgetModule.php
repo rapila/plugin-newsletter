@@ -49,15 +49,15 @@ class SubscriberListWidgetModule extends WidgetModule {
 		return $aResult;
 	}
 	
-	public function getDatabaseColumnForDisplayColumn($sDisplayColumn) {
-		if($sDisplayColumn === 'subscriber_group_id') {
+	public function getDatabaseColumnForColumn($sColumnIdentifier) {
+		if($sColumnIdentifier === 'subscriber_group_id') {
 			return SubscriberGroupPeer::ID;
 		}
 		return null;
 	}
 	
-	public function getFilterTypeForColumn($sColumnName) {
-		if($sColumnName === 'subscriber_group_id') {
+	public function getFilterTypeForColumn($sColumnIdentifier) {
+		if($sColumnIdentifier === 'subscriber_group_id') {
 			return CriteriaListWidgetDelegate::FILTER_TYPE_MANUAL;
 		}
 		return null;
