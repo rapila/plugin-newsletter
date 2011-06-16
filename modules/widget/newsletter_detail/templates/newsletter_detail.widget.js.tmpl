@@ -82,7 +82,7 @@ Widget.types.newsletter_detail = {
 		var _this = this;
 		var newsletter_data = this.getNewsletterData();
 		this.content.find("input[name='subject']").val(newsletter_data.Subject);
-		this.content.find("select[name='language_id']").val(newsletter_data.LanguageId);
+		this.content.find("select[name='language_id']").val(newsletter_data.LanguageId || '');
 		this.content.find("select[name='template_name']").val(newsletter_data.TemplateName || '');
 		this.content.find(".updated_info").text(newsletter_data.UpdatedInfo);
 		this.content.find(".created_info").text(newsletter_data.CreatedInfo);
