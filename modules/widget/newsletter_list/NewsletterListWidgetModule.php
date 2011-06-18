@@ -104,4 +104,11 @@ class NewsletterListWidgetModule extends WidgetModule {
 	public function getLanguageName() {
 		return StringPeer::getString('language.'.$this->oDelegateProxy->getLanguageId(), null, $this->oDelegateProxy->getLanguageId());
 	}
+	
+  public function getCriteria() {
+		$oCriteria = new Criteria();
+    $oCriteria->addJoin(NewsletterPeer::ID, NewsletterMailingPeer::NEWSLETTER_ID, Criteria::LEFT_JOIN);
+		return $oCriteria;
+	}
+
 }
