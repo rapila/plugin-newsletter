@@ -93,8 +93,8 @@ Widget.types.newsletter_detail = {
 			// is_approved.attr('disabled', true);
 		}
 		is_approved.bind('change', function() {
-			_this.send_info_text(jQuery(this).attr('checked'));
-		}).attr('checked', newsletter_data.IsApproved);
+			_this.send_info_text(jQuery(this).prop('checked'));
+		}).prop('checked', newsletter_data.IsApproved);
 
 		this.send_info_text(newsletter_data.IsApproved);
 		this.update_newsletter_body();
