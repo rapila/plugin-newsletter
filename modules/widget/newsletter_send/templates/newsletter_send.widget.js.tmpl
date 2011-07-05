@@ -26,13 +26,13 @@ Widget.types.newsletter_send = {
 			autoOpen: true,
 			buttons: [{
 				text: "{{writeString=wns.newsletter.send_test}}",
-				className: 'primary ui-state-highlight',
+				'class:' 'primary ui-state-highlight',
 				click: function() {
 					test_markup.submit();
 				}
 			}, {
 				text: "{{writeString=wns.cancel}}",
-				className: 'secondary ui-state-default',
+				'class': 'secondary ui-state-default',
 				click: function() {
 					test_markup.dialog('close');
 				}
@@ -66,13 +66,13 @@ Widget.types.newsletter_send = {
 			autoOpen: true,
 			buttons: [{
 				text: "{{writeString=wns.newsletter.send_hot}}",
-				className: 'primary ui-state-highlight',
+				'class': 'primary ui-state-highlight',
 				click: function() {
 					send_markup.submit();
 				}
 			}, {
 				text: "{{writeString=wns.cancel}}",
-				className: 'secondary ui-state-default',
+				'class': 'secondary ui-state-default',
 				click: function() {
 					send_markup.dialog('close');
 				}
