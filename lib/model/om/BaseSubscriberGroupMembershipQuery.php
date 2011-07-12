@@ -69,7 +69,7 @@ abstract class BaseSubscriberGroupMembershipQuery extends ModelCriteria
 	 * @param     string $modelName The phpName of a model, e.g. 'Book'
 	 * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
 	 */
-	public function __construct($dbName = 'mini_cms', $modelName = 'SubscriberGroupMembership', $modelAlias = null)
+	public function __construct($dbName = 'rapila', $modelName = 'SubscriberGroupMembership', $modelAlias = null)
 	{
 		parent::__construct($dbName, $modelName, $modelAlias);
 	}
@@ -616,7 +616,7 @@ abstract class BaseSubscriberGroupMembershipQuery extends ModelCriteria
 	 *
 	 * @param      int $nbDays Maximum age of the latest update in days
 	 *
-	 * @return     SubscriberGroupMembershipQuery The current query, for fuid interface
+	 * @return     SubscriberGroupMembershipQuery The current query, for fluid interface
 	 */
 	public function recentlyUpdated($nbDays = 7)
 	{
@@ -628,7 +628,7 @@ abstract class BaseSubscriberGroupMembershipQuery extends ModelCriteria
 	 *
 	 * @param      int $nbDays Maximum age of in days
 	 *
-	 * @return     SubscriberGroupMembershipQuery The current query, for fuid interface
+	 * @return     SubscriberGroupMembershipQuery The current query, for fluid interface
 	 */
 	public function recentlyCreated($nbDays = 7)
 	{
@@ -638,7 +638,7 @@ abstract class BaseSubscriberGroupMembershipQuery extends ModelCriteria
 	/**
 	 * Order by update date desc
 	 *
-	 * @return     SubscriberGroupMembershipQuery The current query, for fuid interface
+	 * @return     SubscriberGroupMembershipQuery The current query, for fluid interface
 	 */
 	public function lastUpdatedFirst()
 	{
@@ -648,7 +648,7 @@ abstract class BaseSubscriberGroupMembershipQuery extends ModelCriteria
 	/**
 	 * Order by update date asc
 	 *
-	 * @return     SubscriberGroupMembershipQuery The current query, for fuid interface
+	 * @return     SubscriberGroupMembershipQuery The current query, for fluid interface
 	 */
 	public function firstUpdatedFirst()
 	{
@@ -658,7 +658,7 @@ abstract class BaseSubscriberGroupMembershipQuery extends ModelCriteria
 	/**
 	 * Order by create date desc
 	 *
-	 * @return     SubscriberGroupMembershipQuery The current query, for fuid interface
+	 * @return     SubscriberGroupMembershipQuery The current query, for fluid interface
 	 */
 	public function lastCreatedFirst()
 	{
@@ -668,7 +668,7 @@ abstract class BaseSubscriberGroupMembershipQuery extends ModelCriteria
 	/**
 	 * Order by create date asc
 	 *
-	 * @return     SubscriberGroupMembershipQuery The current query, for fuid interface
+	 * @return     SubscriberGroupMembershipQuery The current query, for fluid interface
 	 */
 	public function firstCreatedFirst()
 	{

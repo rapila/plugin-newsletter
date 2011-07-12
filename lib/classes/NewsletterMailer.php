@@ -25,9 +25,12 @@ class NewsletterMailer {
 		$this->sSenderEmailAddress = $sSenderEmailAddress;
 		if($bRequiresUnsubsribeLink) {
 			// unsubscribe page is required, a page that contains a content object NewsletterFrontendModule, ie the subscribe page
-			$this->oUnsubscribePage = PagePeer::getPageByName(Settings::getSetting('newsletter_plugin', 'unsubscribe_page_name', 'subscribe'));
+			$this->oUnsubscribePage = PagePeer::getPageByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
 			if ($this->oUnsubscribePage === null) {
-				throw new Exception('Error in'.__METHOD__.': a public and hidden unsubscribe page is required for unsubscribe to function');
+				$this->oUnsubscribePage = PagePeer::getPageByName(Settings::getSetting('newsletter_plugin', 'unsubscribe_page_name', 'subscribe'));
+				if ($this->oUnsubscribePage === null) {
+					throw new Exception('Error in'.__METHOD__.': a public and hidden unsubscribe page is required for unsubscribe to function');
+				}
 			}
 		}
 	}

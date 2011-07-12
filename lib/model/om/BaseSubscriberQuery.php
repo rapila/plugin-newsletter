@@ -73,7 +73,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 * @param     string $modelName The phpName of a model, e.g. 'Book'
 	 * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
 	 */
-	public function __construct($dbName = 'mini_cms', $modelName = 'Subscriber', $modelAlias = null)
+	public function __construct($dbName = 'rapila', $modelName = 'Subscriber', $modelAlias = null)
 	{
 		parent::__construct($dbName, $modelName, $modelAlias);
 	}
@@ -591,7 +591,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 *
 	 * @param      int $nbDays Maximum age of the latest update in days
 	 *
-	 * @return     SubscriberQuery The current query, for fuid interface
+	 * @return     SubscriberQuery The current query, for fluid interface
 	 */
 	public function recentlyUpdated($nbDays = 7)
 	{
@@ -603,7 +603,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	 *
 	 * @param      int $nbDays Maximum age of in days
 	 *
-	 * @return     SubscriberQuery The current query, for fuid interface
+	 * @return     SubscriberQuery The current query, for fluid interface
 	 */
 	public function recentlyCreated($nbDays = 7)
 	{
@@ -613,7 +613,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	/**
 	 * Order by update date desc
 	 *
-	 * @return     SubscriberQuery The current query, for fuid interface
+	 * @return     SubscriberQuery The current query, for fluid interface
 	 */
 	public function lastUpdatedFirst()
 	{
@@ -623,7 +623,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	/**
 	 * Order by update date asc
 	 *
-	 * @return     SubscriberQuery The current query, for fuid interface
+	 * @return     SubscriberQuery The current query, for fluid interface
 	 */
 	public function firstUpdatedFirst()
 	{
@@ -633,7 +633,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	/**
 	 * Order by create date desc
 	 *
-	 * @return     SubscriberQuery The current query, for fuid interface
+	 * @return     SubscriberQuery The current query, for fluid interface
 	 */
 	public function lastCreatedFirst()
 	{
@@ -643,7 +643,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
 	/**
 	 * Order by create date asc
 	 *
-	 * @return     SubscriberQuery The current query, for fuid interface
+	 * @return     SubscriberQuery The current query, for fluid interface
 	 */
 	public function firstCreatedFirst()
 	{

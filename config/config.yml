@@ -13,7 +13,7 @@ newsletter_plugin:
   #   - 'noreply@example.com'
   
   #requires_authentication options true, user_role rolekey, default: false
-  unsubscribe_page_name: subscribe
+  unsubscribe_page: subscribe #a page identifier
   
   #how to convert to plain-text alternative set to null or false to send only html emails
   plain_text_alternative_method: markdown
