@@ -7,7 +7,7 @@ class MailGroupInputWidgetModule extends WidgetModule {
 	public function getMailGroups() {
 		$aMailGroups = self::getSubscriberGroups();
 		// if filter is implemented in project this allows to add on-the-fly mail groups
-		FilterModule::getFilters()->handleExternalMailGroups(array('mail_groups' => &$aMailGroups));
+		FilterModule::getFilters()->handleExternalMailGroups(array(&$aMailGroups));
 		return $aMailGroups;
 	}
 	

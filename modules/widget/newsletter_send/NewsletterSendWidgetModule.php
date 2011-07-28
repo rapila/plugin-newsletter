@@ -50,11 +50,12 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		$aRecipients = SubscriberPeer::getSubscribersBySubscriberGroupMembership($aMailGroups, $iBatchNumber*$this->iBatchSize, $this->iBatchSize);
 		
 		$bRequiresUnsubsribeLink = true;
+		// FIXME: what if SOME of the mail groups are external?
 		if(count($aRecipients) === 0) {
 			$bRequiresUnsubsribeLink = false;
 			// no normal newsletter to internal subscriber_group, no unsubscribe required
 			// add or use external mail group recipients if implemented and exist
-			FilterModule::getFilters()->handleExternalMailGroupsRecipients($aMailGroups, array('recepients' => &$aRecipients));
+			FilterModule::getFilters()->handleExternalMailGroupsRecipients($aMailGroups, array(&$aRecipients));
 		}
 		
 		// send newsletter if newsletter is chosen and there are recipients
