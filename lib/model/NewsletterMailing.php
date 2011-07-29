@@ -13,8 +13,12 @@ class NewsletterMailing extends BaseNewsletterMailing {
 		return $this->getDateSentFormatted().StringUtil::truncate($sNewsletterName, $iLength);
 	}
 	
-	public function getDateSentFormatted() {
-		return '['.$this->getDateSent('Y-m-d').'] ';
+	public function getDateSentFormatted($sAddTimeFormat = null) {
+		$sTime = LocaleUtil::localizeDate($this->date_sent);
+		if($sAddTimeFormat) {
+			$sTime .=' '.$this->getDateSent($sAddTimeFormat);
+		}
+		return $sTime;
 	}
 
 	/**
@@ -30,7 +34,7 @@ class NewsletterMailing extends BaseNewsletterMailing {
 	
 	public function getSubscriberGroupName() {
 		if($this->getSubscriberGroup()) {
-			return $this->getSubscriberGroup()->getName();
+			return StringPeer::getString('subscriber_group_display_name.'.$this->getSubscriberGroup()->getName(), null, $this->getSubscriberGroup()->getName());
 		}
 		return null;
 	}

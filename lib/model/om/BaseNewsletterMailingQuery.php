@@ -11,9 +11,9 @@
  * @method     NewsletterMailingQuery orderBySubscriberGroupId($order = Criteria::ASC) Order by the subscriber_group_id column
  * @method     NewsletterMailingQuery orderByExternalMailGroupId($order = Criteria::ASC) Order by the external_mail_group_id column
  * @method     NewsletterMailingQuery orderByNewsletterId($order = Criteria::ASC) Order by the newsletter_id column
- * @method     NewsletterMailingQuery orderByCreatedBy($order = Criteria::ASC) Order by the created_by column
  * @method     NewsletterMailingQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     NewsletterMailingQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
+ * @method     NewsletterMailingQuery orderByCreatedBy($order = Criteria::ASC) Order by the created_by column
  * @method     NewsletterMailingQuery orderByUpdatedBy($order = Criteria::ASC) Order by the updated_by column
  *
  * @method     NewsletterMailingQuery groupById() Group by the id column
@@ -21,9 +21,9 @@
  * @method     NewsletterMailingQuery groupBySubscriberGroupId() Group by the subscriber_group_id column
  * @method     NewsletterMailingQuery groupByExternalMailGroupId() Group by the external_mail_group_id column
  * @method     NewsletterMailingQuery groupByNewsletterId() Group by the newsletter_id column
- * @method     NewsletterMailingQuery groupByCreatedBy() Group by the created_by column
  * @method     NewsletterMailingQuery groupByCreatedAt() Group by the created_at column
  * @method     NewsletterMailingQuery groupByUpdatedAt() Group by the updated_at column
+ * @method     NewsletterMailingQuery groupByCreatedBy() Group by the created_by column
  * @method     NewsletterMailingQuery groupByUpdatedBy() Group by the updated_by column
  *
  * @method     NewsletterMailingQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -38,9 +38,13 @@
  * @method     NewsletterMailingQuery rightJoinNewsletter($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Newsletter relation
  * @method     NewsletterMailingQuery innerJoinNewsletter($relationAlias = null) Adds a INNER JOIN clause to the query using the Newsletter relation
  *
- * @method     NewsletterMailingQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
- * @method     NewsletterMailingQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
- * @method     NewsletterMailingQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
+ * @method     NewsletterMailingQuery leftJoinUserRelatedByCreatedBy($relationAlias = null) Adds a LEFT JOIN clause to the query using the UserRelatedByCreatedBy relation
+ * @method     NewsletterMailingQuery rightJoinUserRelatedByCreatedBy($relationAlias = null) Adds a RIGHT JOIN clause to the query using the UserRelatedByCreatedBy relation
+ * @method     NewsletterMailingQuery innerJoinUserRelatedByCreatedBy($relationAlias = null) Adds a INNER JOIN clause to the query using the UserRelatedByCreatedBy relation
+ *
+ * @method     NewsletterMailingQuery leftJoinUserRelatedByUpdatedBy($relationAlias = null) Adds a LEFT JOIN clause to the query using the UserRelatedByUpdatedBy relation
+ * @method     NewsletterMailingQuery rightJoinUserRelatedByUpdatedBy($relationAlias = null) Adds a RIGHT JOIN clause to the query using the UserRelatedByUpdatedBy relation
+ * @method     NewsletterMailingQuery innerJoinUserRelatedByUpdatedBy($relationAlias = null) Adds a INNER JOIN clause to the query using the UserRelatedByUpdatedBy relation
  *
  * @method     NewsletterMailing findOne(PropelPDO $con = null) Return the first NewsletterMailing matching the query
  * @method     NewsletterMailing findOneOrCreate(PropelPDO $con = null) Return the first NewsletterMailing matching the query, or a new NewsletterMailing object populated from the query conditions when no match is found
@@ -50,9 +54,9 @@
  * @method     NewsletterMailing findOneBySubscriberGroupId(int $subscriber_group_id) Return the first NewsletterMailing filtered by the subscriber_group_id column
  * @method     NewsletterMailing findOneByExternalMailGroupId(string $external_mail_group_id) Return the first NewsletterMailing filtered by the external_mail_group_id column
  * @method     NewsletterMailing findOneByNewsletterId(int $newsletter_id) Return the first NewsletterMailing filtered by the newsletter_id column
- * @method     NewsletterMailing findOneByCreatedBy(int $created_by) Return the first NewsletterMailing filtered by the created_by column
  * @method     NewsletterMailing findOneByCreatedAt(string $created_at) Return the first NewsletterMailing filtered by the created_at column
  * @method     NewsletterMailing findOneByUpdatedAt(string $updated_at) Return the first NewsletterMailing filtered by the updated_at column
+ * @method     NewsletterMailing findOneByCreatedBy(int $created_by) Return the first NewsletterMailing filtered by the created_by column
  * @method     NewsletterMailing findOneByUpdatedBy(int $updated_by) Return the first NewsletterMailing filtered by the updated_by column
  *
  * @method     array findById(int $id) Return NewsletterMailing objects filtered by the id column
@@ -60,9 +64,9 @@
  * @method     array findBySubscriberGroupId(int $subscriber_group_id) Return NewsletterMailing objects filtered by the subscriber_group_id column
  * @method     array findByExternalMailGroupId(string $external_mail_group_id) Return NewsletterMailing objects filtered by the external_mail_group_id column
  * @method     array findByNewsletterId(int $newsletter_id) Return NewsletterMailing objects filtered by the newsletter_id column
- * @method     array findByCreatedBy(int $created_by) Return NewsletterMailing objects filtered by the created_by column
  * @method     array findByCreatedAt(string $created_at) Return NewsletterMailing objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return NewsletterMailing objects filtered by the updated_at column
+ * @method     array findByCreatedBy(int $created_by) Return NewsletterMailing objects filtered by the created_by column
  * @method     array findByUpdatedBy(int $updated_by) Return NewsletterMailing objects filtered by the updated_by column
  *
  * @package    propel.generator.model.om
@@ -306,37 +310,6 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
 	}
 
 	/**
-	 * Filter the query on the created_by column
-	 * 
-	 * @param     int|array $createdBy The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
-	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-	 *
-	 * @return    NewsletterMailingQuery The current query, for fluid interface
-	 */
-	public function filterByCreatedBy($createdBy = null, $comparison = null)
-	{
-		if (is_array($createdBy)) {
-			$useMinMax = false;
-			if (isset($createdBy['min'])) {
-				$this->addUsingAlias(NewsletterMailingPeer::CREATED_BY, $createdBy['min'], Criteria::GREATER_EQUAL);
-				$useMinMax = true;
-			}
-			if (isset($createdBy['max'])) {
-				$this->addUsingAlias(NewsletterMailingPeer::CREATED_BY, $createdBy['max'], Criteria::LESS_EQUAL);
-				$useMinMax = true;
-			}
-			if ($useMinMax) {
-				return $this;
-			}
-			if (null === $comparison) {
-				$comparison = Criteria::IN;
-			}
-		}
-		return $this->addUsingAlias(NewsletterMailingPeer::CREATED_BY, $createdBy, $comparison);
-	}
-
-	/**
 	 * Filter the query on the created_at column
 	 * 
 	 * @param     string|array $createdAt The value to use as filter.
@@ -396,6 +369,37 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
 			}
 		}
 		return $this->addUsingAlias(NewsletterMailingPeer::UPDATED_AT, $updatedAt, $comparison);
+	}
+
+	/**
+	 * Filter the query on the created_by column
+	 * 
+	 * @param     int|array $createdBy The value to use as filter.
+	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    NewsletterMailingQuery The current query, for fluid interface
+	 */
+	public function filterByCreatedBy($createdBy = null, $comparison = null)
+	{
+		if (is_array($createdBy)) {
+			$useMinMax = false;
+			if (isset($createdBy['min'])) {
+				$this->addUsingAlias(NewsletterMailingPeer::CREATED_BY, $createdBy['min'], Criteria::GREATER_EQUAL);
+				$useMinMax = true;
+			}
+			if (isset($createdBy['max'])) {
+				$this->addUsingAlias(NewsletterMailingPeer::CREATED_BY, $createdBy['max'], Criteria::LESS_EQUAL);
+				$useMinMax = true;
+			}
+			if ($useMinMax) {
+				return $this;
+			}
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+		}
+		return $this->addUsingAlias(NewsletterMailingPeer::CREATED_BY, $createdBy, $comparison);
 	}
 
 	/**
@@ -565,24 +569,24 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
 	 *
 	 * @return    NewsletterMailingQuery The current query, for fluid interface
 	 */
-	public function filterByUser($user, $comparison = null)
+	public function filterByUserRelatedByCreatedBy($user, $comparison = null)
 	{
 		return $this
-			->addUsingAlias(NewsletterMailingPeer::UPDATED_BY, $user->getId(), $comparison);
+			->addUsingAlias(NewsletterMailingPeer::CREATED_BY, $user->getId(), $comparison);
 	}
 
 	/**
-	 * Adds a JOIN clause to the query using the User relation
+	 * Adds a JOIN clause to the query using the UserRelatedByCreatedBy relation
 	 * 
 	 * @param     string $relationAlias optional alias for the relation
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
 	 * @return    NewsletterMailingQuery The current query, for fluid interface
 	 */
-	public function joinUser($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+	public function joinUserRelatedByCreatedBy($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		$tableMap = $this->getTableMap();
-		$relationMap = $tableMap->getRelation('User');
+		$relationMap = $tableMap->getRelation('UserRelatedByCreatedBy');
 		
 		// create a ModelJoin object for this join
 		$join = new ModelJoin();
@@ -597,14 +601,14 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
 			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
 			$this->addJoinObject($join, $relationAlias);
 		} else {
-			$this->addJoinObject($join, 'User');
+			$this->addJoinObject($join, 'UserRelatedByCreatedBy');
 		}
 		
 		return $this;
 	}
 
 	/**
-	 * Use the User relation User object
+	 * Use the UserRelatedByCreatedBy relation User object
 	 *
 	 * @see       useQuery()
 	 * 
@@ -614,11 +618,75 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
 	 *
 	 * @return    UserQuery A secondary query class using the current class as primary query
 	 */
-	public function useUserQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+	public function useUserRelatedByCreatedByQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		return $this
-			->joinUser($relationAlias, $joinType)
-			->useQuery($relationAlias ? $relationAlias : 'User', 'UserQuery');
+			->joinUserRelatedByCreatedBy($relationAlias, $joinType)
+			->useQuery($relationAlias ? $relationAlias : 'UserRelatedByCreatedBy', 'UserQuery');
+	}
+
+	/**
+	 * Filter the query by a related User object
+	 *
+	 * @param     User $user  the related object to use as filter
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    NewsletterMailingQuery The current query, for fluid interface
+	 */
+	public function filterByUserRelatedByUpdatedBy($user, $comparison = null)
+	{
+		return $this
+			->addUsingAlias(NewsletterMailingPeer::UPDATED_BY, $user->getId(), $comparison);
+	}
+
+	/**
+	 * Adds a JOIN clause to the query using the UserRelatedByUpdatedBy relation
+	 * 
+	 * @param     string $relationAlias optional alias for the relation
+	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+	 *
+	 * @return    NewsletterMailingQuery The current query, for fluid interface
+	 */
+	public function joinUserRelatedByUpdatedBy($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+	{
+		$tableMap = $this->getTableMap();
+		$relationMap = $tableMap->getRelation('UserRelatedByUpdatedBy');
+		
+		// create a ModelJoin object for this join
+		$join = new ModelJoin();
+		$join->setJoinType($joinType);
+		$join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+		if ($previousJoin = $this->getPreviousJoin()) {
+			$join->setPreviousJoin($previousJoin);
+		}
+		
+		// add the ModelJoin to the current object
+		if($relationAlias) {
+			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+			$this->addJoinObject($join, $relationAlias);
+		} else {
+			$this->addJoinObject($join, 'UserRelatedByUpdatedBy');
+		}
+		
+		return $this;
+	}
+
+	/**
+	 * Use the UserRelatedByUpdatedBy relation User object
+	 *
+	 * @see       useQuery()
+	 * 
+	 * @param     string $relationAlias optional alias for the relation,
+	 *                                   to be used as main alias in the secondary query
+	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+	 *
+	 * @return    UserQuery A secondary query class using the current class as primary query
+	 */
+	public function useUserRelatedByUpdatedByQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+	{
+		return $this
+			->joinUserRelatedByUpdatedBy($relationAlias, $joinType)
+			->useQuery($relationAlias ? $relationAlias : 'UserRelatedByUpdatedBy', 'UserQuery');
 	}
 
 	/**

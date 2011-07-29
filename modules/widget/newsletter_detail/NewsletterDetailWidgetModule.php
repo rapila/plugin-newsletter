@@ -25,6 +25,23 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$aResult['UpdatedInfo'] = Util::formatUpdatedInfo($oNewsletter);
 		$aResult['SessionUserEmail'] = Session::getSession()->getUser()->getEmail();
 		$aResult['HasBeedSent'] = $oNewsletter->countNewsletterMailings() > 0;
+		$aNewsletterMailings = array();
+		$oCriteria = new Criteria();
+		$oCriteria->addDescendingOrderByColumn(NewsletterMailingPeer::DATE_SENT);
+		foreach($oNewsletter->getNewsletterMailings($oCriteria) as $oNewletterMailing) {
+			$aNewsletterMailingInfo = array();
+			$aNewsletterMailingInfo['UserInitials'] = Util::getCreatedByIfSet($oNewletterMailing);
+			$aNewsletterMailingInfo['DateSent'] = $oNewletterMailing->getDateSentFormatted('h:m');
+			if($oNewletterMailing->getSubscriberGroupName()) {
+				$aNewsletterMailingInfo['MailGroupName'] = $oNewletterMailing->getSubscriberGroupName();
+				$aNewsletterMailingInfo['MailGroupType'] = StringPeer::getString('wns.mail_group.subscribers');
+			} else {
+				$aNewsletterMailingInfo['MailGroupName'] = $oNewletterMailing->getMailGroupId();
+				$aNewsletterMailingInfo['MailGroupType'] = StringPeer::getString('wns.mail_group.external');
+			}
+			$aNewsletterMailings[] = $aNewsletterMailingInfo;
+		}
+		$aResult['newsletter_mailings'] = $aNewsletterMailings;
 		return $aResult;
 	}
 	

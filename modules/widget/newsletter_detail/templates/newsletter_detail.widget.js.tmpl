@@ -2,11 +2,13 @@ Widget.types.newsletter_detail = {
 	initialize: function() {
 		this.init_content();
 		var _this = this;
+		this.newsletter_mailing_prototype = jQuery.parseHTML("{{includeTemplate=newsletter_mailing}}", true, 'table');
+
 		Widget.create('detail', function(widget) {
 			_this.detail_widget = widget.set_instance(_this);
 			jQuery.extend(widget.settings, {
 				title: "{{writeString=wns.new_entry}}",
-				width: 800,
+				width: 760,
 				height: 660
 			});
 			_this.accordion = jQuery(widget.content.find('div.accordion')).accordion({active: 0, autoHeight: false, clearStyle: true, collapsible:false}).
@@ -87,14 +89,21 @@ Widget.types.newsletter_detail = {
 		this.content.find(".updated_info").text(newsletter_data.UpdatedInfo);
 		this.content.find(".created_info").text(newsletter_data.CreatedInfo);
 		var is_approved = this.content.find("input[name='is_approved']");
-		if(newsletter_data.HasBeedSent) {
-			// this.content.find('input').attr('disabled', true);
-			// this.content.find('select').attr('disabled', true);
-			// is_approved.attr('disabled', true);
-		}
+		
 		is_approved.bind('change', function() {
 			_this.send_info_text(jQuery(this).prop('checked'));
 		}).prop('checked', newsletter_data.IsApproved);
+		
+		// newsletter mailings
+		var mailing_list = this.content.find(".mailing_list");
+		jQuery.each(newsletter_data.newsletter_mailings, function(i, params) {
+			var newsletter_mailing = _this.newsletter_mailing_prototype.clone();
+			newsletter_mailing.find('.date_sent').text(params.DateSent);
+			newsletter_mailing.find('.mail_group_type').text(params.MailGroupType);
+			newsletter_mailing.find('.mail_group_name').text(params.MailGroupName);
+			newsletter_mailing.find('.user_initials').text(params.UserInitials);
+			mailing_list.append(newsletter_mailing);		
+		});
 
 		this.send_info_text(newsletter_data.IsApproved);
 		this.update_newsletter_body();

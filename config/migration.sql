@@ -10,3 +10,10 @@ ALTER TABLE `newsletters` DROP `date_published`;
 #220
 ALTER TABLE `subscribers` ADD `updated_by` INT UNSIGNED NOT NULL ,
 ADD `updated_at` DATETIME NOT NULL;
+
+#20110727.2143
+ALTER TABLE `newsletter_mailings` 
+ADD `updated_by` INT UNSIGNED NOT NULL ,
+ADD `created_at` DATETIME NOT NULL ,
+ADD `updated_at` DATETIME NOT NULL;
+

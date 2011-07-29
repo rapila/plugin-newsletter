@@ -1,9 +1,10 @@
 <form>
 	<div class="accordion">
-		<h3><a href="#">Newsletter Konfiguration</a></h3>
+		<h3><a href="#">Newsletter Info</a></h3>
 		<div class="general_info">
 			<div class="status_section">
 				<div class="hide_if_not_saved">
+					<input type="checkbox" name="is_approved" /><label for="is_approved" style="display:inline-block;white-space:nowrap;">{{writeString=wns.newsletter.is_approved}} <span class="status_send_info"></span></label><br /><br />
 					<label>{{writeString=wns.created_info}}:</label><span class="created_info status"></span><br />
 					<label>{{writeString=wns.updated.info}}:</label><span class="updated_info status"></span><br />
 				</div>
@@ -20,13 +21,16 @@
 				<label for="language_id">{{writeString=wns.language}}</label>
 				<select name="language_id" class="ui-widget-content input_short" style="width:auto;" data-widget-type="language_input"></select><br />
 			</div><br style="clear:both;" />
+			<fieldset class="option_groups"><legend>{{writeString=wns.newsletter_mailings}}</legend>
+				<table class="mailing_list ui-list">
+				</table>
+			</fieldset>
 		</div>
 		<h3><a href="#">Newsletter Text</a></h3>
 		<div class="accordion_content"	style="display:none;">
 			<div class="newsletter_body">
 				<textarea name="newsletter_body" class="ui-widget-content" rows="20"></textarea>
 			</div>
-			<input type="checkbox" name="is_approved" /><label for="is_approved" style="display:inline-block;">{{writeString=wns.newsletter.is_approved}} <span class="status_send_info"></span></label>
 		</div>
 	</div>
 </form>

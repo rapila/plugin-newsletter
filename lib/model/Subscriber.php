@@ -57,14 +57,11 @@ class Subscriber extends BaseSubscriber {
 			$this->delete();
 			return;
 		}
-		// if they are registered already, remove them, they do not have to be added
+		// remove all
 		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
-			if(in_array($oSubscriberGroupMembership->getSubscriberGroupId(), $aSubscriberGroupIds)) {
-				unset($aSubscriberGroupIds[$oSubscriberGroupMembership->getSubscriberGroupId()]);
-			} else {
-				$oSubscriberGroupMembership->delete();
-			}
+			$oSubscriberGroupMembership->delete();
 		}
+		// create new
 		foreach($aSubscriberGroupIds as $iSubscriberGroupId) {
 			$this->addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId);
 		}

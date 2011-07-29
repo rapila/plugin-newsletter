@@ -23,7 +23,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'subject', 'language_id', 'is_html', 'template_name', 'is_approved', 'group_sent_to', 'last_sent_localized', 'send', 'display_id', 'delete');
+		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'group_sent_to', 'last_sent_localized', 'send_test', 'send', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -41,9 +41,6 @@ class NewsletterListWidgetModule extends WidgetModule {
 				$aResult['heading_filter'] = array('language_input', $this->oLanguageFilter->getSessionKey());
 				$aResult['is_sortable'] = false;
 				break;
-			case 'is_html':
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.is_html');
-				break;
 			case 'template_name':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.template_name');
 				break;
@@ -56,17 +53,19 @@ class NewsletterListWidgetModule extends WidgetModule {
 			case 'last_sent_localized':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.last_sent');
 				break;
+			case 'send_test':
+				$aResult['field_name'] = 'circle-triangle-e';
+				$aResult['heading'] = StringPeer::getString('wns.newsletter.send_test');
+				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_ICON;
+				$aResult['is_sortable'] = false;
+				break;			
 			case 'send':
 				$aResult['field_name'] = 'is_approved';
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.send');
 				$aResult['icon_true'] = 'play';
-				$aResult['icon_false'] = 'circle-triangle-e';
+				$aResult['icon_false'] = 'play';
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_BOOLEAN;
 				$aResult['is_sortable'] = false;
-				break;
-			case 'display_id':
-				$aResult['heading'] = StringPeer::getString('wns.id');
-				$aResult['field_name'] = 'id';
 				break;
 			case 'delete':
 				$aResult['field_name'] = 'trash';
@@ -107,6 +106,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	
   public function getCriteria() {
 		$oCriteria = new Criteria();
+		$oCriteria->setDistinct();
     $oCriteria->addJoin(NewsletterPeer::ID, NewsletterMailingPeer::NEWSLETTER_ID, Criteria::LEFT_JOIN);
 		return $oCriteria;
 	}

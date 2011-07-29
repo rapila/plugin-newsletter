@@ -42,9 +42,9 @@ class NewsletterMailingTableMap extends TableMap {
 		$this->addForeignKey('SUBSCRIBER_GROUP_ID', 'SubscriberGroupId', 'INTEGER', 'subscriber_groups', 'ID', false, null, null);
 		$this->addColumn('EXTERNAL_MAIL_GROUP_ID', 'ExternalMailGroupId', 'VARCHAR', false, 255, null);
 		$this->addForeignKey('NEWSLETTER_ID', 'NewsletterId', 'INTEGER', 'newsletters', 'ID', true, null, null);
-		$this->addColumn('CREATED_BY', 'CreatedBy', 'INTEGER', true, null, null);
 		$this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
 		$this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
+		$this->addForeignKey('CREATED_BY', 'CreatedBy', 'INTEGER', 'users', 'ID', false, null, null);
 		$this->addForeignKey('UPDATED_BY', 'UpdatedBy', 'INTEGER', 'users', 'ID', false, null, null);
 		// validators
 	} // initialize()
@@ -56,7 +56,8 @@ class NewsletterMailingTableMap extends TableMap {
 	{
     $this->addRelation('SubscriberGroup', 'SubscriberGroup', RelationMap::MANY_TO_ONE, array('subscriber_group_id' => 'id', ), null, null);
     $this->addRelation('Newsletter', 'Newsletter', RelationMap::MANY_TO_ONE, array('newsletter_id' => 'id', ), 'CASCADE', null);
-    $this->addRelation('User', 'User', RelationMap::MANY_TO_ONE, array('updated_by' => 'id', ), 'SET NULL', null);
+    $this->addRelation('UserRelatedByCreatedBy', 'User', RelationMap::MANY_TO_ONE, array('created_by' => 'id', ), 'SET NULL', null);
+    $this->addRelation('UserRelatedByUpdatedBy', 'User', RelationMap::MANY_TO_ONE, array('updated_by' => 'id', ), 'SET NULL', null);
 	} // buildRelations()
 
 	/**

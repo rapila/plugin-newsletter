@@ -34,6 +34,14 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 		return self::doSelect($oCriteria);
 	}
 	
+	public static function getSubscriberGroupArray() {
+		$aResult = array();
+		foreach(self::getSubscriberGroups(true) as $oSubscriberGroup) {
+			$aResult[$oSubscriberGroup->getId()] = StringPeer::getString('subscriber_group_display_name.'.$oSubscriberGroup->getName(), null, $oSubscriberGroup->getName());
+		}
+		return $aResult;
+	}
+	
 	public static function getPublicSubscriberGroups() {
 		$oCriteria = new Criteria();
 		// $oCriteria->add(self::ID, 3, Criteria::LESS_THAN);
