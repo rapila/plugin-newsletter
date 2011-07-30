@@ -23,7 +23,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'group_sent_to', 'last_sent_localized', 'send_test', 'send', 'delete');
+		return array('id', 'subject', 'language_id', 'template_name', 'group_sent_to', 'is_approved', 'send_test', 'last_sent_localized', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -54,19 +54,11 @@ class NewsletterListWidgetModule extends WidgetModule {
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.last_sent');
 				break;
 			case 'send_test':
-				$aResult['field_name'] = 'circle-triangle-e';
+				$aResult['field_name'] = 'play';
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.send_test');
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_ICON;
 				$aResult['is_sortable'] = false;
 				break;			
-			case 'send':
-				$aResult['field_name'] = 'is_approved';
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.send');
-				$aResult['icon_true'] = 'play';
-				$aResult['icon_false'] = 'play';
-				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_BOOLEAN;
-				$aResult['is_sortable'] = false;
-				break;
 			case 'delete':
 				$aResult['field_name'] = 'trash';
 				$aResult['heading'] = ' ';
