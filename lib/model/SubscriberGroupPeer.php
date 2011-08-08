@@ -61,7 +61,7 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 		$aResult = array();
 		foreach(self::getSubscriberGroups(true, $bDoJoinSubscriberMemberships) as $oSubscriberGroup) {
 		  $sAddon = $bAddMemberShipCount? ' ('.$oSubscriberGroup->countSubscriberGroupMemberships().')' : '';
-			$aResult[(string) $oSubscriberGroup->getId()] = $oSubscriberGroup->getName().$sAddon;
+			$aResult[(string) $oSubscriberGroup->getId()] = StringPeer::getString('subscriber_group_name.'.$oSubscriberGroup->getName(), null, $oSubscriberGroup->getName()).$sAddon;
 		}
 		return $aResult;
 	}
