@@ -23,7 +23,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'subject', 'language_id', 'template_name', 'group_sent_to', 'is_approved', 'send_test', 'last_sent_localized', 'delete');
+		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'group_sent_to', 'last_sent_localized', 'send', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -37,8 +37,12 @@ class NewsletterListWidgetModule extends WidgetModule {
 				break;
 			case 'language_id':
 				$aResult['has_data'] = true;
-				$aResult['heading'] = '';
-				$aResult['heading_filter'] = array('language_input', $this->oLanguageFilter->getSessionKey());
+				if(LanguagePeer::isMonolingual()) {
+					$aResult['heading'] = StringPeer::getString('wns.language');
+				} else {
+					$aResult['heading'] = '';
+					$aResult['heading_filter'] = array('language_input', $this->oLanguageFilter->getSessionKey());
+				}
 				$aResult['is_sortable'] = false;
 				break;
 			case 'template_name':
@@ -48,17 +52,19 @@ class NewsletterListWidgetModule extends WidgetModule {
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.is_approved');
 				break;
 			case 'group_sent_to':
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.subscriber_group');
+				$aResult['heading'] = StringPeer::getString('wns.newsletter.subscriber_groups_sent_to');
 				break;
 			case 'last_sent_localized':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.last_sent');
 				break;
-			case 'send_test':
-				$aResult['field_name'] = 'play';
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.send_test');
-				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_ICON;
+			case 'send':
+				$aResult['field_name'] = 'is_approved';
+				$aResult['heading'] = StringPeer::getString('wns.newsletter.send');
+				$aResult['icon_true'] = 'play';
+				$aResult['icon_false'] = 'circle-triangle-e';
+				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_BOOLEAN;
 				$aResult['is_sortable'] = false;
-				break;			
+				break;
 			case 'delete':
 				$aResult['field_name'] = 'trash';
 				$aResult['heading'] = ' ';
