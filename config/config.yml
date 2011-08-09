@@ -21,4 +21,12 @@ newsletter_plugin:
   subscriber_groups_require_authentication: 
     1: manager
 
+  use_subscriber_groups: true
+  unsubscribe_page_identifier: "newsletter-subscribe"
+  newsletter_sender_address: info@example.com 
+  subscriber_group_default_id: 1 #anybody
+  insertable_parts: [{name: cgc_infoblock, tooltip: 'Member-Mailing Infoblock', type: end_of_body}]
+
+
+
 

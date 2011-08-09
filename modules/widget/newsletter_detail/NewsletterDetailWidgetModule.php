@@ -45,6 +45,20 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		return $aResult;
 	}
 	
+	public function duplicateNewsletter($iOriginalId) {
+		$oNewsletter = NewsletterPeer::retrieveByPK($iOriginalId);
+		if($oNewsletter) {
+			$oNewNewsletter = new Newsletter();
+			$oNewNewsletter->setSubject('[Copy] '. $oNewsletter->getSubject());
+			$oNewNewsletter->setNewsletterBody($oNewsletter->getNewsletterBody());
+			$oNewNewsletter->setLanguageId($oNewsletter->getLanguageId());
+			$oNewNewsletter->setIsHtml($oNewsletter->getIsHtml());
+			$oNewNewsletter->setTemplateName($oNewsletter->getTemplateName());
+			$oNewNewsletter->save();
+			return $oNewNewsletter->getId();
+		}
+	}
+	
 	public function getNewsletterBody($sTemplateName = null) {
 		if($sTemplateName) {
 			return self::getNewsletterBodyTemplateByName($sTemplateName)->__toString();

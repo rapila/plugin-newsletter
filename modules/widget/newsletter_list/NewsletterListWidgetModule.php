@@ -23,7 +23,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'group_sent_to', 'last_sent_localized', 'send', 'delete');
+		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'group_sent_to', 'updated_at_formatted', 'send', 'duplicate', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -54,15 +54,19 @@ class NewsletterListWidgetModule extends WidgetModule {
 			case 'group_sent_to':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.subscriber_groups_sent_to');
 				break;
-			case 'last_sent_localized':
+			case 'updated_at_formatted':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.last_sent');
 				break;
 			case 'send':
-				$aResult['field_name'] = 'is_approved';
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.send');
-				$aResult['icon_true'] = 'play';
-				$aResult['icon_false'] = 'circle-triangle-e';
-				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_BOOLEAN;
+				$aResult['field_name'] = 'play';
+				$aResult['heading'] = StringPeer::getString('wns.newsletter.send_test');
+				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_ICON;
+				$aResult['is_sortable'] = false;
+				break;
+			case 'duplicate':
+				$aResult['field_name'] = 'newwin';
+				$aResult['heading'] = StringPeer::getString('wns.newsletter.duplicate');
+				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_ICON;
 				$aResult['is_sortable'] = false;
 				break;
 			case 'delete':
@@ -80,6 +84,9 @@ class NewsletterListWidgetModule extends WidgetModule {
 			return NewsletterMailingPeer::SUBSCRIBER_GROUP_ID;
 		}
 		if($sColumnIdentifier === 'last_sent_localized') {
+			return NewsletterPeer::UPDATED_AT;
+		}
+		if($sColumnIdentifier === 'updated_at_formatted') {
 			return NewsletterPeer::UPDATED_AT;
 		}
 		if($sColumnIdentifier === 'subscriber_group_id') {

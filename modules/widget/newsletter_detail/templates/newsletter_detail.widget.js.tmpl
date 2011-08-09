@@ -3,6 +3,7 @@ Widget.types.newsletter_detail = {
 		this.init_content();
 		var _this = this;
 		this.newsletter_mailing_prototype = jQuery.parseHTML("{{includeTemplate=newsletter_mailing}}", true, 'table');
+		this.content.find('.hide_if_not_saved').hide();
 
 		Widget.create('detail', function(widget) {
 			_this.detail_widget = widget.set_instance(_this);
@@ -103,7 +104,7 @@ Widget.types.newsletter_detail = {
 		}).prop('checked', newsletter_data.IsApproved).change();
 		
 		// newsletter mailings
-		var mailing_list = this.content.find(".mailing_list");
+		var mailing_list = this.content.find(".mailing_list").empty();
 		var has_mailings = false;
 		jQuery.each(newsletter_data.newsletter_mailings, function(i, params) {
 			var newsletter_mailing = _this.newsletter_mailing_prototype.clone();
@@ -123,6 +124,7 @@ Widget.types.newsletter_detail = {
 		this.send_info_text(newsletter_data.IsApproved);
 		this.update_newsletter_body();
 		this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.newsletter}} "+newsletter_data.Subject);
+		this.content.find('.hide_if_not_saved').show();
 	},
 	
 	send_newsletter: function(action, newsletter_id) {
