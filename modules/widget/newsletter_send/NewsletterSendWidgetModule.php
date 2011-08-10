@@ -72,7 +72,6 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		$aRecipients = array_slice($this->aRecipients, $iBatchNumber*($this->iBatchSize), $this->iBatchSize);
 		
 		$oNewsletterMailer = new NewsletterMailer($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $this->sSenderEmail);
-		ErrorHandler::log('Sending', count($aRecipients), 'E-Mails in this Batch', $iBatchNumber, 'To', $aRecipients);
 		
 		if(!$oNewsletterMailer->send()) {
 			$this->aUnsuccessfulAttempts = array_merge($this->aUnsuccessfulAttempts, $oNewsletterMailer->getInvalidEmails());
