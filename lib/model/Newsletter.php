@@ -27,7 +27,10 @@ class Newsletter extends BaseNewsletter {
 
 	public function getGroupSentTo() {
 		$aResult = array();
-		foreach($this->getNewsletterMailings() as $oMailing) {
+		$oCriteria = new Criteria();
+		$oCriteria->addJoin(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, SubscriberGroupPeer::ID, Criteria::INNER_JOIN);
+		$oCriteria->addAscendingOrderByColumn(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID);
+		foreach($this->getNewsletterMailings($oCriteria) as $oMailing) {
 			if($oMailing->getSubscriberGroupName()) {
 				$aResult[] = $oMailing->getSubscriberGroupName();
 			}
@@ -54,6 +57,10 @@ class Newsletter extends BaseNewsletter {
 	
 	public function getFirstMailing() {
 		return NewsletterMailingQuery::create()->filterByNewsletter($this)->orderByCreatedAt()->findOne();
+	}
+	
+	public function getSendTest() {
+		return true;
 	}
 	
 }

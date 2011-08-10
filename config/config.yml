@@ -14,11 +14,19 @@ newsletter_plugin:
   
   #requires_authentication options true, user_role rolekey, default: false
   unsubscribe_page: subscribe #a page identifier
+  # unsubscribe_page_name: "newsletter-subscribe" #deprecated
   
   #how to convert to plain-text alternative set to null or false to send only html emails
   plain_text_alternative_method: markdown
   
   subscriber_groups_require_authentication: 
     1: manager
+
+  use_subscriber_groups: true
+  newsletter_sender_address: info@example.com 
+  subscriber_group_default_id: 1 #anybody
+  insertable_parts: [{name: cgc_infoblock, tooltip: 'Member-Mailing Infoblock', type: end_of_body}]
+
+
 
 

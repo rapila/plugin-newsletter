@@ -24,19 +24,18 @@ class NewslettersAdminModule extends AdminModule {
 	}
 		
 	public function sidebarContent() {
-		// return $this->oSidebarWidget->doWidget();
+		return $this->oSidebarWidget->doWidget();
 	}	
 	
 	public function getColumnIdentifiers() {
-		return array('id', 'name', 'magic_column');
+		return array('id', 'readable_name', 'magic_column');
 	}
 	
 	public function getMetadataForColumn($sColumnIdentifier) {
 		$aResult = array();
 		switch($sColumnIdentifier) {
-			case 'name':
+			case 'readable_name':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.subscriber_group');
-				$aResult['field_name'] = 'name';
 				break;
 			case 'magic_column':
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_CLASSNAME;
@@ -50,10 +49,10 @@ class NewslettersAdminModule extends AdminModule {
 		if(SubscriberGroupPeer::doCount(new Criteria()) > 0) {
 		 	return array(
 				array('id' => CriteriaListWidgetDelegate::SELECT_ALL,
-							'name' => StringPeer::getString('wns.subscriber_group.select_all_title'),
+							'readable_name' => StringPeer::getString('wns.subscriber_group.select_all_title'),
 							'magic_column' => 'all'),
 				array('id' => CriteriaListWidgetDelegate::SELECT_WITHOUT,
-							'name' => StringPeer::getString('wns.subscriber_group.select_without_title'),
+							'readable_name' => StringPeer::getString('wns.subscriber_group.select_without_title'),
 							'magic_column' => 'without')
 			);
 		}
@@ -61,7 +60,21 @@ class NewslettersAdminModule extends AdminModule {
 	}
 	
 	public function usedWidgets() {
-		return array($this->oListWidget);
-		// return array($this->oListWidget, $this->oSidebarWidget);
+		return array($this->oListWidget, $this->oSidebarWidget);
+	}
+	
+	public function getCriteria() {
+		$oCriteria = new Criteria();
+		if($this->oListWidget->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_ALL) {
+			return $oCriteria;
+		}
+		if($this->oListWidget->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
+			$oCriteria->addJoin(NewsletterPeer::ID, NewsletterMailingPeer::NEWSLETTER_ID, Criteria::INNER_JOIN);
+			$oCriteria->add(NewsletterMailingPeer::NEWSLETTER_ID, null, Criteria::ISNULL);
+		} else {
+			$oCriteria->addJoin(NewsletterPeer::ID, NewsletterMailingPeer::NEWSLETTER_ID, Criteria::INNER_JOIN);
+			$oCriteria->add(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, $this->oListWidget->oDelegateProxy->getSubscriberGroupId());
+		}
+		return $oCriteria;
 	}
 }
