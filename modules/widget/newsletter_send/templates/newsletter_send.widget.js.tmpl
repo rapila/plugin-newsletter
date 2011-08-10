@@ -133,7 +133,7 @@ Widget.types.newsletter_send = {
 				jQuery.each(attempts, function(counter, item) {
 					error_list.append(jQuery('<li/>').text(item.message+" ["+item.recipient+"]"));
 				});
-				Widget.notifyUser('alert', message, {
+				Widget.notifyUser(Widget.logSeverity.ALERT, message, {
 					closeDelay: false,
 					isHTML: true,
 					closable: true
