@@ -120,6 +120,7 @@ class Subscriber extends BaseSubscriber {
 	}
 	
 	public function getUnsubscribeQueryParams($iSubscriberGroupId = null) {
+		$aParameters = array();
 		$aParameters['unsubscribe'] = $this->getEmail();
 		if($iSubscriberGroupId !== null) {
 			$aParameters['subscriber_group_id'] = $iSubscriberGroupId;

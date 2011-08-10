@@ -70,7 +70,9 @@ class NewsletterMailer {
 			$oEmailTemplateInstance->replaceIdentifier('recipient', $mRecipient->getName());
 			if($mRecipient instanceof Subscriber && $this->oUnsubscribePage) {
 				$sLanguageId = FrontendManager::shouldIncludeLanguageInLink() ? $this->oNewsletter->getLanguageId() : false;
-				$oEmailTemplateInstance->replaceIdentifier('unsubscribe_link', LinkUtil::absoluteLink(LinkUtil::link($this->oUnsubscribePage->getLink(), 'FrontendManager', $mRecipient->getUnsubscribeQueryParams(), $sLanguageId)));
+				if(method_exists($mRecipient, 'getUnsubscribeQueryParams')) {
+					$oEmailTemplateInstance->replaceIdentifier('unsubscribe_link', LinkUtil::absoluteLink(LinkUtil::link($this->oUnsubscribePage->getLink(), 'FrontendManager', $mRecipient->getUnsubscribeQueryParams(), $sLanguageId)));
+				}
 			}
 		}
 		else {

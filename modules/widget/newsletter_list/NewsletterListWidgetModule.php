@@ -23,7 +23,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'group_sent_to', 'updated_at_formatted', 'send', 'duplicate', 'delete');
+		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'group_sent_to', 'updated_at_formatted', 'send_test', 'duplicate', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -57,7 +57,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 			case 'updated_at_formatted':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.last_sent');
 				break;
-			case 'send':
+			case 'send_test':
 				$aResult['field_name'] = 'play';
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.send_test');
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_ICON;
