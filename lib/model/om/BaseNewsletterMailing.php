@@ -55,12 +55,6 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	protected $newsletter_id;
 
 	/**
-	 * The value for the created_by field.
-	 * @var        int
-	 */
-	protected $created_by;
-
-	/**
 	 * The value for the created_at field.
 	 * @var        string
 	 */
@@ -71,6 +65,12 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	 * @var        string
 	 */
 	protected $updated_at;
+
+	/**
+	 * The value for the created_by field.
+	 * @var        int
+	 */
+	protected $created_by;
 
 	/**
 	 * The value for the updated_by field.
@@ -91,7 +91,12 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	/**
 	 * @var        User
 	 */
-	protected $aUser;
+	protected $aUserRelatedByCreatedBy;
+
+	/**
+	 * @var        User
+	 */
+	protected $aUserRelatedByUpdatedBy;
 
 	/**
 	 * Flag to prevent endless save loop, if this object is referenced
@@ -186,16 +191,6 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	}
 
 	/**
-	 * Get the [created_by] column value.
-	 * 
-	 * @return     int
-	 */
-	public function getCreatedBy()
-	{
-		return $this->created_by;
-	}
-
-	/**
 	 * Get the [optionally formatted] temporal [created_at] column value.
 	 * 
 	 *
@@ -269,6 +264,16 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		} else {
 			return $dt->format($format);
 		}
+	}
+
+	/**
+	 * Get the [created_by] column value.
+	 * 
+	 * @return     int
+	 */
+	public function getCreatedBy()
+	{
+		return $this->created_by;
 	}
 
 	/**
@@ -419,26 +424,6 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	} // setNewsletterId()
 
 	/**
-	 * Set the value of [created_by] column.
-	 * 
-	 * @param      int $v new value
-	 * @return     NewsletterMailing The current object (for fluent API support)
-	 */
-	public function setCreatedBy($v)
-	{
-		if ($v !== null) {
-			$v = (int) $v;
-		}
-
-		if ($this->created_by !== $v) {
-			$this->created_by = $v;
-			$this->modifiedColumns[] = NewsletterMailingPeer::CREATED_BY;
-		}
-
-		return $this;
-	} // setCreatedBy()
-
-	/**
 	 * Sets the value of [created_at] column to a normalized version of the date/time value specified.
 	 * 
 	 * @param      mixed $v string, integer (timestamp), or DateTime value.  Empty string will
@@ -537,6 +522,30 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	} // setUpdatedAt()
 
 	/**
+	 * Set the value of [created_by] column.
+	 * 
+	 * @param      int $v new value
+	 * @return     NewsletterMailing The current object (for fluent API support)
+	 */
+	public function setCreatedBy($v)
+	{
+		if ($v !== null) {
+			$v = (int) $v;
+		}
+
+		if ($this->created_by !== $v) {
+			$this->created_by = $v;
+			$this->modifiedColumns[] = NewsletterMailingPeer::CREATED_BY;
+		}
+
+		if ($this->aUserRelatedByCreatedBy !== null && $this->aUserRelatedByCreatedBy->getId() !== $v) {
+			$this->aUserRelatedByCreatedBy = null;
+		}
+
+		return $this;
+	} // setCreatedBy()
+
+	/**
 	 * Set the value of [updated_by] column.
 	 * 
 	 * @param      int $v new value
@@ -553,8 +562,8 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 			$this->modifiedColumns[] = NewsletterMailingPeer::UPDATED_BY;
 		}
 
-		if ($this->aUser !== null && $this->aUser->getId() !== $v) {
-			$this->aUser = null;
+		if ($this->aUserRelatedByUpdatedBy !== null && $this->aUserRelatedByUpdatedBy->getId() !== $v) {
+			$this->aUserRelatedByUpdatedBy = null;
 		}
 
 		return $this;
@@ -597,9 +606,9 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 			$this->subscriber_group_id = ($row[$startcol + 2] !== null) ? (int) $row[$startcol + 2] : null;
 			$this->external_mail_group_id = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
 			$this->newsletter_id = ($row[$startcol + 4] !== null) ? (int) $row[$startcol + 4] : null;
-			$this->created_by = ($row[$startcol + 5] !== null) ? (int) $row[$startcol + 5] : null;
-			$this->created_at = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
-			$this->updated_at = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
+			$this->created_at = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+			$this->updated_at = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
+			$this->created_by = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
 			$this->updated_by = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
 			$this->resetModified();
 
@@ -638,8 +647,11 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		if ($this->aNewsletter !== null && $this->newsletter_id !== $this->aNewsletter->getId()) {
 			$this->aNewsletter = null;
 		}
-		if ($this->aUser !== null && $this->updated_by !== $this->aUser->getId()) {
-			$this->aUser = null;
+		if ($this->aUserRelatedByCreatedBy !== null && $this->created_by !== $this->aUserRelatedByCreatedBy->getId()) {
+			$this->aUserRelatedByCreatedBy = null;
+		}
+		if ($this->aUserRelatedByUpdatedBy !== null && $this->updated_by !== $this->aUserRelatedByUpdatedBy->getId()) {
+			$this->aUserRelatedByUpdatedBy = null;
 		}
 	} // ensureConsistency
 
@@ -682,7 +694,8 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 
 			$this->aSubscriberGroup = null;
 			$this->aNewsletter = null;
-			$this->aUser = null;
+			$this->aUserRelatedByCreatedBy = null;
+			$this->aUserRelatedByUpdatedBy = null;
 		} // if (deep)
 	}
 
@@ -841,11 +854,18 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 				$this->setNewsletter($this->aNewsletter);
 			}
 
-			if ($this->aUser !== null) {
-				if ($this->aUser->isModified() || $this->aUser->isNew()) {
-					$affectedRows += $this->aUser->save($con);
+			if ($this->aUserRelatedByCreatedBy !== null) {
+				if ($this->aUserRelatedByCreatedBy->isModified() || $this->aUserRelatedByCreatedBy->isNew()) {
+					$affectedRows += $this->aUserRelatedByCreatedBy->save($con);
 				}
-				$this->setUser($this->aUser);
+				$this->setUserRelatedByCreatedBy($this->aUserRelatedByCreatedBy);
+			}
+
+			if ($this->aUserRelatedByUpdatedBy !== null) {
+				if ($this->aUserRelatedByUpdatedBy->isModified() || $this->aUserRelatedByUpdatedBy->isNew()) {
+					$affectedRows += $this->aUserRelatedByUpdatedBy->save($con);
+				}
+				$this->setUserRelatedByUpdatedBy($this->aUserRelatedByUpdatedBy);
 			}
 
 			if ($this->isNew() ) {
@@ -954,9 +974,15 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 				}
 			}
 
-			if ($this->aUser !== null) {
-				if (!$this->aUser->validate($columns)) {
-					$failureMap = array_merge($failureMap, $this->aUser->getValidationFailures());
+			if ($this->aUserRelatedByCreatedBy !== null) {
+				if (!$this->aUserRelatedByCreatedBy->validate($columns)) {
+					$failureMap = array_merge($failureMap, $this->aUserRelatedByCreatedBy->getValidationFailures());
+				}
+			}
+
+			if ($this->aUserRelatedByUpdatedBy !== null) {
+				if (!$this->aUserRelatedByUpdatedBy->validate($columns)) {
+					$failureMap = array_merge($failureMap, $this->aUserRelatedByUpdatedBy->getValidationFailures());
 				}
 			}
 
@@ -1015,13 +1041,13 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 				return $this->getNewsletterId();
 				break;
 			case 5:
-				return $this->getCreatedBy();
-				break;
-			case 6:
 				return $this->getCreatedAt();
 				break;
-			case 7:
+			case 6:
 				return $this->getUpdatedAt();
+				break;
+			case 7:
+				return $this->getCreatedBy();
 				break;
 			case 8:
 				return $this->getUpdatedBy();
@@ -1055,9 +1081,9 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 			$keys[2] => $this->getSubscriberGroupId(),
 			$keys[3] => $this->getExternalMailGroupId(),
 			$keys[4] => $this->getNewsletterId(),
-			$keys[5] => $this->getCreatedBy(),
-			$keys[6] => $this->getCreatedAt(),
-			$keys[7] => $this->getUpdatedAt(),
+			$keys[5] => $this->getCreatedAt(),
+			$keys[6] => $this->getUpdatedAt(),
+			$keys[7] => $this->getCreatedBy(),
 			$keys[8] => $this->getUpdatedBy(),
 		);
 		if ($includeForeignObjects) {
@@ -1067,8 +1093,11 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 			if (null !== $this->aNewsletter) {
 				$result['Newsletter'] = $this->aNewsletter->toArray($keyType, $includeLazyLoadColumns, true);
 			}
-			if (null !== $this->aUser) {
-				$result['User'] = $this->aUser->toArray($keyType, $includeLazyLoadColumns, true);
+			if (null !== $this->aUserRelatedByCreatedBy) {
+				$result['UserRelatedByCreatedBy'] = $this->aUserRelatedByCreatedBy->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+			if (null !== $this->aUserRelatedByUpdatedBy) {
+				$result['UserRelatedByUpdatedBy'] = $this->aUserRelatedByUpdatedBy->toArray($keyType, $includeLazyLoadColumns, true);
 			}
 		}
 		return $result;
@@ -1117,13 +1146,13 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 				$this->setNewsletterId($value);
 				break;
 			case 5:
-				$this->setCreatedBy($value);
-				break;
-			case 6:
 				$this->setCreatedAt($value);
 				break;
-			case 7:
+			case 6:
 				$this->setUpdatedAt($value);
+				break;
+			case 7:
+				$this->setCreatedBy($value);
 				break;
 			case 8:
 				$this->setUpdatedBy($value);
@@ -1157,9 +1186,9 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		if (array_key_exists($keys[2], $arr)) $this->setSubscriberGroupId($arr[$keys[2]]);
 		if (array_key_exists($keys[3], $arr)) $this->setExternalMailGroupId($arr[$keys[3]]);
 		if (array_key_exists($keys[4], $arr)) $this->setNewsletterId($arr[$keys[4]]);
-		if (array_key_exists($keys[5], $arr)) $this->setCreatedBy($arr[$keys[5]]);
-		if (array_key_exists($keys[6], $arr)) $this->setCreatedAt($arr[$keys[6]]);
-		if (array_key_exists($keys[7], $arr)) $this->setUpdatedAt($arr[$keys[7]]);
+		if (array_key_exists($keys[5], $arr)) $this->setCreatedAt($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setUpdatedAt($arr[$keys[6]]);
+		if (array_key_exists($keys[7], $arr)) $this->setCreatedBy($arr[$keys[7]]);
 		if (array_key_exists($keys[8], $arr)) $this->setUpdatedBy($arr[$keys[8]]);
 	}
 
@@ -1177,9 +1206,9 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		if ($this->isColumnModified(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID)) $criteria->add(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, $this->subscriber_group_id);
 		if ($this->isColumnModified(NewsletterMailingPeer::EXTERNAL_MAIL_GROUP_ID)) $criteria->add(NewsletterMailingPeer::EXTERNAL_MAIL_GROUP_ID, $this->external_mail_group_id);
 		if ($this->isColumnModified(NewsletterMailingPeer::NEWSLETTER_ID)) $criteria->add(NewsletterMailingPeer::NEWSLETTER_ID, $this->newsletter_id);
-		if ($this->isColumnModified(NewsletterMailingPeer::CREATED_BY)) $criteria->add(NewsletterMailingPeer::CREATED_BY, $this->created_by);
 		if ($this->isColumnModified(NewsletterMailingPeer::CREATED_AT)) $criteria->add(NewsletterMailingPeer::CREATED_AT, $this->created_at);
 		if ($this->isColumnModified(NewsletterMailingPeer::UPDATED_AT)) $criteria->add(NewsletterMailingPeer::UPDATED_AT, $this->updated_at);
+		if ($this->isColumnModified(NewsletterMailingPeer::CREATED_BY)) $criteria->add(NewsletterMailingPeer::CREATED_BY, $this->created_by);
 		if ($this->isColumnModified(NewsletterMailingPeer::UPDATED_BY)) $criteria->add(NewsletterMailingPeer::UPDATED_BY, $this->updated_by);
 
 		return $criteria;
@@ -1246,9 +1275,9 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		$copyObj->setSubscriberGroupId($this->subscriber_group_id);
 		$copyObj->setExternalMailGroupId($this->external_mail_group_id);
 		$copyObj->setNewsletterId($this->newsletter_id);
-		$copyObj->setCreatedBy($this->created_by);
 		$copyObj->setCreatedAt($this->created_at);
 		$copyObj->setUpdatedAt($this->updated_at);
+		$copyObj->setCreatedBy($this->created_by);
 		$copyObj->setUpdatedBy($this->updated_by);
 
 		$copyObj->setNew(true);
@@ -1398,20 +1427,20 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	 * @return     NewsletterMailing The current object (for fluent API support)
 	 * @throws     PropelException
 	 */
-	public function setUser(User $v = null)
+	public function setUserRelatedByCreatedBy(User $v = null)
 	{
 		if ($v === null) {
-			$this->setUpdatedBy(NULL);
+			$this->setCreatedBy(NULL);
 		} else {
-			$this->setUpdatedBy($v->getId());
+			$this->setCreatedBy($v->getId());
 		}
 
-		$this->aUser = $v;
+		$this->aUserRelatedByCreatedBy = $v;
 
 		// Add binding for other direction of this n:n relationship.
 		// If this object has already been added to the User object, it will not be re-added.
 		if ($v !== null) {
-			$v->addNewsletterMailing($this);
+			$v->addNewsletterMailingRelatedByCreatedBy($this);
 		}
 
 		return $this;
@@ -1425,19 +1454,68 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	 * @return     User The associated User object.
 	 * @throws     PropelException
 	 */
-	public function getUser(PropelPDO $con = null)
+	public function getUserRelatedByCreatedBy(PropelPDO $con = null)
 	{
-		if ($this->aUser === null && ($this->updated_by !== null)) {
-			$this->aUser = UserQuery::create()->findPk($this->updated_by, $con);
+		if ($this->aUserRelatedByCreatedBy === null && ($this->created_by !== null)) {
+			$this->aUserRelatedByCreatedBy = UserQuery::create()->findPk($this->created_by, $con);
 			/* The following can be used additionally to
 				 guarantee the related object contains a reference
 				 to this object.  This level of coupling may, however, be
 				 undesirable since it could result in an only partially populated collection
 				 in the referenced object.
-				 $this->aUser->addNewsletterMailings($this);
+				 $this->aUserRelatedByCreatedBy->addNewsletterMailingsRelatedByCreatedBy($this);
 			 */
 		}
-		return $this->aUser;
+		return $this->aUserRelatedByCreatedBy;
+	}
+
+	/**
+	 * Declares an association between this object and a User object.
+	 *
+	 * @param      User $v
+	 * @return     NewsletterMailing The current object (for fluent API support)
+	 * @throws     PropelException
+	 */
+	public function setUserRelatedByUpdatedBy(User $v = null)
+	{
+		if ($v === null) {
+			$this->setUpdatedBy(NULL);
+		} else {
+			$this->setUpdatedBy($v->getId());
+		}
+
+		$this->aUserRelatedByUpdatedBy = $v;
+
+		// Add binding for other direction of this n:n relationship.
+		// If this object has already been added to the User object, it will not be re-added.
+		if ($v !== null) {
+			$v->addNewsletterMailingRelatedByUpdatedBy($this);
+		}
+
+		return $this;
+	}
+
+
+	/**
+	 * Get the associated User object
+	 *
+	 * @param      PropelPDO Optional Connection object.
+	 * @return     User The associated User object.
+	 * @throws     PropelException
+	 */
+	public function getUserRelatedByUpdatedBy(PropelPDO $con = null)
+	{
+		if ($this->aUserRelatedByUpdatedBy === null && ($this->updated_by !== null)) {
+			$this->aUserRelatedByUpdatedBy = UserQuery::create()->findPk($this->updated_by, $con);
+			/* The following can be used additionally to
+				 guarantee the related object contains a reference
+				 to this object.  This level of coupling may, however, be
+				 undesirable since it could result in an only partially populated collection
+				 in the referenced object.
+				 $this->aUserRelatedByUpdatedBy->addNewsletterMailingsRelatedByUpdatedBy($this);
+			 */
+		}
+		return $this->aUserRelatedByUpdatedBy;
 	}
 
 	/**
@@ -1450,9 +1528,9 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		$this->subscriber_group_id = null;
 		$this->external_mail_group_id = null;
 		$this->newsletter_id = null;
-		$this->created_by = null;
 		$this->created_at = null;
 		$this->updated_at = null;
+		$this->created_by = null;
 		$this->updated_by = null;
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
@@ -1478,7 +1556,8 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 
 		$this->aSubscriberGroup = null;
 		$this->aNewsletter = null;
-		$this->aUser = null;
+		$this->aUserRelatedByCreatedBy = null;
+		$this->aUserRelatedByUpdatedBy = null;
 	}
 
 	// extended_timestampable behavior

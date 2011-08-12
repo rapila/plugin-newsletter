@@ -3,6 +3,9 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 	private $sLanguageId = null;
 	private $iNewsletterId;
 	private $iBatchSize = 50;
+	private $aRecipients = null;
+	private $sSenderEmail = null;
+	private $aMailGroups = null;
 
 	private $aUnsuccessfulAttempts;
 	
@@ -35,28 +38,26 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		return $aResult;
 	}
 	
-	public function getExpectedBatchCount($aMailGroups = null) {
-		return floor(SubscriberPeer::countSubscribersBySubscriberGroupMembership($aMailGroups)/$this->iBatchSize);
-	}
-
-	public function sendNewsletter($aMailGroups = null, $sSenderEmail = null, $iBatchNumber = 0) {
+	public function prepareForSending($aMailGroups = null, $sSenderEmail = null) {
 		if(!$sSenderEmail) {
 			$sSenderEmail = LinkUtil::getDomainHolderEmail('newsletter');
 		}
+		$this->sSenderEmail = $sSenderEmail;
 		if($aMailGroups === null && SubscriberGroupPeer::hasSubscriberGroups()) {
 			throw new LocalizedException("newsletter.mailing.subscriber_groups_required");
 		}
-		
-		$aRecipients = SubscriberPeer::getSubscribersBySubscriberGroupMembership($aMailGroups, $iBatchNumber*$this->iBatchSize, $this->iBatchSize);
+		$this->aRecipients = SubscriberPeer::getSubscribersBySubscriberGroupMembership($aMailGroups);
+		FilterModule::getFilters()->handleMailGroupsRecipients($aMailGroups, array(&$this->aRecipients));
+		$this->aMailGroups = $aMailGroups;
+		return ceil(count($this->aRecipients)/$this->iBatchSize);
+	}
+
+	public function sendNewsletter($iBatchNumber = 0) {
+		if($this->aRecipients === null || $this->sSenderEmail === null || $this->aMailGroups === null) {
+			throw new Exception("Error in sendNewsletter: prepare not called");
+		}
 		
 		$bRequiresUnsubsribeLink = true;
-		// FIXME: what if SOME of the mail groups are external?
-		if(count($aRecipients) === 0) {
-			$bRequiresUnsubsribeLink = false;
-			// no normal newsletter to internal subscriber_group, no unsubscribe required
-			// add or use external mail group recipients if implemented and exist
-			FilterModule::getFilters()->handleExternalMailGroupsRecipients($aMailGroups, array(&$aRecipients));
-		}
 		
 		// send newsletter if newsletter is chosen and there are recipients
 		$oNewsletter = NewsletterPeer::retrieveByPK($this->iNewsletterId);
@@ -68,7 +69,9 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 			$this->aUnsuccessfulAttempts = array();
 		}
 		
-		$oNewsletterMailer = new NewsletterMailer($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $sSenderEmail);
+		$aRecipients = array_slice($this->aRecipients, $iBatchNumber*($this->iBatchSize), $this->iBatchSize);
+		
+		$oNewsletterMailer = new NewsletterMailer($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $this->sSenderEmail);
 		
 		if(!$oNewsletterMailer->send()) {
 			$this->aUnsuccessfulAttempts = array_merge($this->aUnsuccessfulAttempts, $oNewsletterMailer->getInvalidEmails());
@@ -77,7 +80,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 			return $iBatchNumber+1;
 		} else {
 			// return batch count/boolean and register Mailings per group
-			foreach($aMailGroups as $mMailGroupId) {
+			foreach($this->aMailGroups as $mMailGroupId) {
 				$oNewsletterMailing = new NewsletterMailing();
 				$oNewsletterMailing->setDateSent(date('c'));
 				if(is_numeric($mMailGroupId)) {
@@ -88,6 +91,9 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 				$oNewsletterMailing->setNewsletterId($oNewsletter->getId());
 				$oNewsletterMailing->save();
 			}
+			$this->aRecipients = null;
+			$this->sSenderEmail = null;
+			$this->aMailGroups = null;
 			return count($this->aUnsuccessfulAttempts) === 0;
 		}
 	}

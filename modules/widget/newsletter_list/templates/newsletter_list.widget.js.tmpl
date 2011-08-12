@@ -12,15 +12,23 @@ jQuery(document).ready(function() {
 						}
 					}.bind(this));
 					event.stopPropagation();
-				} else if(col.identifier === 'send') {
+				} else if(col.identifier === 'send_test') {
 					Widget.create('newsletter_send', function(send_widget) {
 						var rowData = widget.collect_row_data(row);
 						send_widget.setNewsletterId(rowData.id);
-						if(send_widget.getNewsletterIsApproved()) {
-							send_widget.show_send_dialog();
-						} else {
-							send_widget.show_test_dialog();
-						}
+						send_widget.show_test_dialog();
+					});
+				}
+				if(col.identifier === 'duplicate') {
+					var rowData = widget.collect_row_data(row);
+					Widget.create('newsletter_detail', function(newsletter_detail) {
+						newsletter_detail.duplicateNewsletter(rowData.id, function(new_id) {
+							if(new_id) {
+								newsletter_detail.setNewsletterId(new_id);
+								newsletter_detail.open();
+								newsletter_detail.fill_data();
+							}
+						});
 					});
 				}
 			});

@@ -42,5 +42,11 @@ class NewsletterMailingPeer extends BaseNewsletterMailingPeer {
 		return self::doSelect($oCriteria);
 	}
 	
+	public static function hasMailingsForExternalMailGroup() {
+		$oCriteria = new Criteria();
+		$oCriteria->add(self::EXTERNAL_MAIL_GROUP_ID, null, Criteria::ISNOTNULL);
+		return self::doCount($oCriteria) > 0;
+	}
+	
 }
 
