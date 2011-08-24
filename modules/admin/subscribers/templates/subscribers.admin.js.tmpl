@@ -12,12 +12,8 @@ jQuery(document).ready(function() {
 					sidebar.activate_row(sidebar.row_from_row_data({id: parseInt(initial_selection, 10)}));
 				}, true, true);
 			}
-			sidebar.handle('list.row-click', function(event, rowIndex, row) {
-				var subscriber_group_id = row.data('subscriber_group_id');
-				if(!row.is('.ui-state-active')) {
-				 	subscriber_group_id = null;
-				}
-				subscriber_list.setOption('subscriber_group_id', subscriber_group_id);
+			sidebar.handle('list-selection_changed', function(event, selection) {
+				subscriber_list.setOption('subscriber_group_id', selection[0] && selection[0].subscriber_group_id);
 				subscriber_list.reload();
 			});	
 		});

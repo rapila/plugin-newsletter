@@ -15,16 +15,12 @@ jQuery(document).ready(function() {
 					sidebar.activate_row(sidebar.row_from_row_data({id: initial_selection}));
 				}, true, true);
 			}
-			// click handlers
-			sidebar.handle('list.row-click', function(event, row, element) {
-				var subscriber_group_id = element.data('id');
-				if(!element.is('.ui-state-active')) {
-				 	subscriber_group_id = null;
-				}
-				newsletter_list.setOption('subscriber_group_id', subscriber_group_id);
+			sidebar.handle('list-selection_changed', function(event, selection) {
+				newsletter_list.setOption('subscriber_group_id', selection[0] && selection[0].subscriber_group_id);
 				newsletter_list.reload();
 			});
 		});
+		
 		// init infobar
 		AdminInterface.info_bar.prepareWidget(function(info_bar) {
 			info_bar.add_button('add-new-item', function() {
