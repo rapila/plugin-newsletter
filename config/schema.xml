@@ -20,7 +20,6 @@
 		<foreign-key foreignTable="newsletters" onDelete="cascade">
 			<reference local="newsletter_id" foreign="id" />
 		</foreign-key>
-		<column name="created_by" type="integer" required="true" />
 	</table>
 	
 	<table name="subscribers" phpName="Subscriber">

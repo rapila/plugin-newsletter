@@ -34,6 +34,14 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 		return self::doSelect($oCriteria);
 	}
 	
+	public static function getSubscriberGroupArray() {
+		$aResult = array();
+		foreach(self::getSubscriberGroups(true) as $oSubscriberGroup) {
+			$aResult[$oSubscriberGroup->getId()] = StringPeer::getString('subscriber_group_display_name.'.$oSubscriberGroup->getName(), null, $oSubscriberGroup->getName());
+		}
+		return $aResult;
+	}
+	
 	public static function getPublicSubscriberGroups() {
 		$oCriteria = new Criteria();
 		// $oCriteria->add(self::ID, 3, Criteria::LESS_THAN);
@@ -53,7 +61,7 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 		$aResult = array();
 		foreach(self::getSubscriberGroups(true, $bDoJoinSubscriberMemberships) as $oSubscriberGroup) {
 		  $sAddon = $bAddMemberShipCount? ' ('.$oSubscriberGroup->countSubscriberGroupMemberships().')' : '';
-			$aResult[(string) $oSubscriberGroup->getId()] = $oSubscriberGroup->getName().$sAddon;
+			$aResult[(string) $oSubscriberGroup->getId()] = StringPeer::getString('subscriber_group_name.'.$oSubscriberGroup->getName(), null, $oSubscriberGroup->getName()).$sAddon;
 		}
 		return $aResult;
 	}

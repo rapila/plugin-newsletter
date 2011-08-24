@@ -9,7 +9,7 @@ class SubscriberGroupInputWidgetModule extends WidgetModule {
 		$aSubscriberGroups = SubscriberGroupPeer::getSubscriberGroups(true, $bGetGroupsWithSubscribersOnly);
 		$aSubscriberGroups = WidgetJsonFileModule::jsonBaseObjects($aSubscriberGroups, array('id', 'name'));
 		// TODO: handle external mail groups
-		// FilterModule::getFilters()->handleExternalMailGroups(array('mail_groups' => &$aSubscriberGroups));
+		// FilterModule::getFilters()->handleMailGroups(&$aSubscriberGroups));
 		return $aSubscriberGroups;
 	}
 }

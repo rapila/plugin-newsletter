@@ -25,7 +25,38 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$aResult['UpdatedInfo'] = Util::formatUpdatedInfo($oNewsletter);
 		$aResult['SessionUserEmail'] = Session::getSession()->getUser()->getEmail();
 		$aResult['HasBeedSent'] = $oNewsletter->countNewsletterMailings() > 0;
+		$aNewsletterMailings = array();
+		$oCriteria = new Criteria();
+		$oCriteria->addDescendingOrderByColumn(NewsletterMailingPeer::DATE_SENT);
+		foreach($oNewsletter->getNewsletterMailings($oCriteria) as $oNewletterMailing) {
+			$aNewsletterMailingInfo = array();
+			$aNewsletterMailingInfo['UserInitials'] = $oNewletterMailing->getUserRelatedByCreatedBy() ? $oNewletterMailing->getUserRelatedByCreatedBy()->getInitials() : '';
+			$aNewsletterMailingInfo['DateSent'] = $oNewletterMailing->getDateSentFormatted('h:m');
+			if($oNewletterMailing->getSubscriberGroupName()) {
+				$aNewsletterMailingInfo['MailGroupName'] = $oNewletterMailing->getSubscriberGroupName();
+				$aNewsletterMailingInfo['MailGroupType'] = StringPeer::getString('wns.mail_group.subscribers');
+			} else {
+				$aNewsletterMailingInfo['MailGroupName'] = $oNewletterMailing->getMailGroupId();
+				$aNewsletterMailingInfo['MailGroupType'] = StringPeer::getString('wns.mail_group.external');
+			}
+			$aNewsletterMailings[] = $aNewsletterMailingInfo;
+		}
+		$aResult['newsletter_mailings'] = $aNewsletterMailings;
 		return $aResult;
+	}
+	
+	public function duplicateNewsletter($iOriginalId) {
+		$oNewsletter = NewsletterPeer::retrieveByPK($iOriginalId);
+		if($oNewsletter) {
+			$oNewNewsletter = new Newsletter();
+			$oNewNewsletter->setSubject('[Copy] '. $oNewsletter->getSubject());
+			$oNewNewsletter->setNewsletterBody($oNewsletter->getNewsletterBody());
+			$oNewNewsletter->setLanguageId($oNewsletter->getLanguageId());
+			$oNewNewsletter->setIsHtml($oNewsletter->getIsHtml());
+			$oNewNewsletter->setTemplateName($oNewsletter->getTemplateName());
+			$oNewNewsletter->save();
+			return $oNewNewsletter->getId();
+		}
 	}
 	
 	public function getNewsletterBody($sTemplateName = null) {
@@ -97,7 +128,9 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 			$oNewsletter->setCreatedBy(Session::getSession()->getUserId());
 			$oNewsletter->setCreatedAt(date('c'));
 		}
-		$oNewsletter->setLanguageId($aNewsletterData['language_id']);
+		// if language is not set (not multilingual), write session language, since it is default language, i guess
+		$sLanguageId = isset($aNewsletterData['language_id']) ? $aNewsletterData['language_id'] : Session::language();
+		$oNewsletter->setLanguageId($sLanguageId);
 		$oNewsletter->setTemplateName($aNewsletterData['template_name']);
 		$oNewsletter->setSubject($aNewsletterData['subject']);
 		$oNewsletter->setNewsletterBody(RichtextUtil::parseInputFromMceForStorage($aNewsletterData['newsletter_body']));

@@ -9,7 +9,7 @@ Widget.types.newsletter_send = {
 		custom_emails.bind('keyup', function() {
 			var emails = _this.valid_emails_in_field(custom_emails);
 			if(emails.length > 1) {
-				email_address_info.text(emails[0]+", {{writeString=wns.newsletter_mailing.custom_email_see}}");
+				email_address_info.text("{{writeString=wns.newsletter_mailing.custom_email_see}}, "+emails[0]+", etc.");
 			} else {
 				email_address_info.text(emails[0]);
 			}
@@ -23,10 +23,11 @@ Widget.types.newsletter_send = {
 		test_markup.dialog({
 			title: this.getNewsletterSubject(),
 			modal: true,
+			width: 400,
 			autoOpen: true,
 			buttons: [{
 				text: "{{writeString=wns.newsletter.send_test}}",
-				'class:' 'primary ui-state-highlight',
+				'class': 'primary ui-state-highlight',
 				click: function() {
 					test_markup.submit();
 				}
@@ -63,6 +64,7 @@ Widget.types.newsletter_send = {
 		send_markup.dialog({
 			title: this.getNewsletterSubject(),
 			modal: true,
+			width: 400,
 			autoOpen: true,
 			buttons: [{
 				text: "{{writeString=wns.newsletter.send_hot}}",
@@ -100,19 +102,24 @@ Widget.types.newsletter_send = {
 	},
 	
 	send_newsletter: function(mail_groups, sender, progress, markup) {
-		var batch_count = this.getExpectedBatchCount(mail_groups);
-		markup.find("select[name='mail_group_ids[]']").hide();
-		progress.show();
-		this.sendNewsletter(mail_groups, sender, 0, function(result) {
-			if(result === true || result === false) {
-				progress.progressbar('option', 'value', 1);
-				this.handle_send_response(result, markup);
-			} else {
-				progress.progressbar('option', 'value', (100/batch_count)*result);
-				this.sendNewsletter(mail_groups, sender, result, arguments.callee);
-			}
-			return true;
-		})
+		markup.find("select[name='mail_group_ids[]']").prop('disabled', true);
+		markup.find("select[name='sender_email']").prop('disabled', true);
+		progress.progressbar('value', 0).show();
+		this.prepareForSending(mail_groups, sender, function(batch_count) {
+			this.sendNewsletter(0, function(result) {
+				if(arguments[1]) {
+					return false;
+				}
+				if(result === true || result === false) {
+					progress.progressbar('value', 100);
+					this.handle_send_response(result, markup);
+				} else {
+					progress.progressbar('value', (100/batch_count)*result);
+					this.sendNewsletter(result, arguments.callee);
+				}
+				return true;
+			});
+		});
 	},
 	
 	handle_send_response: function(result, markup) {
@@ -126,7 +133,7 @@ Widget.types.newsletter_send = {
 				jQuery.each(attempts, function(counter, item) {
 					error_list.append(jQuery('<li/>').text(item.message+" ["+item.recipient+"]"));
 				});
-				Widget.notifyUser('alert', message, {
+				Widget.notifyUser(Widget.logSeverity.ALERT, message, {
 					closeDelay: false,
 					isHTML: true,
 					closable: true

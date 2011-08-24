@@ -46,14 +46,14 @@ abstract class BaseNewsletterMailingPeer {
 	/** the column name for the NEWSLETTER_ID field */
 	const NEWSLETTER_ID = 'newsletter_mailings.NEWSLETTER_ID';
 
-	/** the column name for the CREATED_BY field */
-	const CREATED_BY = 'newsletter_mailings.CREATED_BY';
-
 	/** the column name for the CREATED_AT field */
 	const CREATED_AT = 'newsletter_mailings.CREATED_AT';
 
 	/** the column name for the UPDATED_AT field */
 	const UPDATED_AT = 'newsletter_mailings.UPDATED_AT';
+
+	/** the column name for the CREATED_BY field */
+	const CREATED_BY = 'newsletter_mailings.CREATED_BY';
 
 	/** the column name for the UPDATED_BY field */
 	const UPDATED_BY = 'newsletter_mailings.UPDATED_BY';
@@ -74,11 +74,11 @@ abstract class BaseNewsletterMailingPeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'DateSent', 'SubscriberGroupId', 'ExternalMailGroupId', 'NewsletterId', 'CreatedBy', 'CreatedAt', 'UpdatedAt', 'UpdatedBy', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'dateSent', 'subscriberGroupId', 'externalMailGroupId', 'newsletterId', 'createdBy', 'createdAt', 'updatedAt', 'updatedBy', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::DATE_SENT, self::SUBSCRIBER_GROUP_ID, self::EXTERNAL_MAIL_GROUP_ID, self::NEWSLETTER_ID, self::CREATED_BY, self::CREATED_AT, self::UPDATED_AT, self::UPDATED_BY, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'DATE_SENT', 'SUBSCRIBER_GROUP_ID', 'EXTERNAL_MAIL_GROUP_ID', 'NEWSLETTER_ID', 'CREATED_BY', 'CREATED_AT', 'UPDATED_AT', 'UPDATED_BY', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'date_sent', 'subscriber_group_id', 'external_mail_group_id', 'newsletter_id', 'created_by', 'created_at', 'updated_at', 'updated_by', ),
+		BasePeer::TYPE_PHPNAME => array ('Id', 'DateSent', 'SubscriberGroupId', 'ExternalMailGroupId', 'NewsletterId', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'UpdatedBy', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'dateSent', 'subscriberGroupId', 'externalMailGroupId', 'newsletterId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::DATE_SENT, self::SUBSCRIBER_GROUP_ID, self::EXTERNAL_MAIL_GROUP_ID, self::NEWSLETTER_ID, self::CREATED_AT, self::UPDATED_AT, self::CREATED_BY, self::UPDATED_BY, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'DATE_SENT', 'SUBSCRIBER_GROUP_ID', 'EXTERNAL_MAIL_GROUP_ID', 'NEWSLETTER_ID', 'CREATED_AT', 'UPDATED_AT', 'CREATED_BY', 'UPDATED_BY', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'date_sent', 'subscriber_group_id', 'external_mail_group_id', 'newsletter_id', 'created_at', 'updated_at', 'created_by', 'updated_by', ),
 		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
 	);
 
@@ -89,11 +89,11 @@ abstract class BaseNewsletterMailingPeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'DateSent' => 1, 'SubscriberGroupId' => 2, 'ExternalMailGroupId' => 3, 'NewsletterId' => 4, 'CreatedBy' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, 'UpdatedBy' => 8, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'dateSent' => 1, 'subscriberGroupId' => 2, 'externalMailGroupId' => 3, 'newsletterId' => 4, 'createdBy' => 5, 'createdAt' => 6, 'updatedAt' => 7, 'updatedBy' => 8, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::DATE_SENT => 1, self::SUBSCRIBER_GROUP_ID => 2, self::EXTERNAL_MAIL_GROUP_ID => 3, self::NEWSLETTER_ID => 4, self::CREATED_BY => 5, self::CREATED_AT => 6, self::UPDATED_AT => 7, self::UPDATED_BY => 8, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'DATE_SENT' => 1, 'SUBSCRIBER_GROUP_ID' => 2, 'EXTERNAL_MAIL_GROUP_ID' => 3, 'NEWSLETTER_ID' => 4, 'CREATED_BY' => 5, 'CREATED_AT' => 6, 'UPDATED_AT' => 7, 'UPDATED_BY' => 8, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'date_sent' => 1, 'subscriber_group_id' => 2, 'external_mail_group_id' => 3, 'newsletter_id' => 4, 'created_by' => 5, 'created_at' => 6, 'updated_at' => 7, 'updated_by' => 8, ),
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'DateSent' => 1, 'SubscriberGroupId' => 2, 'ExternalMailGroupId' => 3, 'NewsletterId' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, 'CreatedBy' => 7, 'UpdatedBy' => 8, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'dateSent' => 1, 'subscriberGroupId' => 2, 'externalMailGroupId' => 3, 'newsletterId' => 4, 'createdAt' => 5, 'updatedAt' => 6, 'createdBy' => 7, 'updatedBy' => 8, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::DATE_SENT => 1, self::SUBSCRIBER_GROUP_ID => 2, self::EXTERNAL_MAIL_GROUP_ID => 3, self::NEWSLETTER_ID => 4, self::CREATED_AT => 5, self::UPDATED_AT => 6, self::CREATED_BY => 7, self::UPDATED_BY => 8, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'DATE_SENT' => 1, 'SUBSCRIBER_GROUP_ID' => 2, 'EXTERNAL_MAIL_GROUP_ID' => 3, 'NEWSLETTER_ID' => 4, 'CREATED_AT' => 5, 'UPDATED_AT' => 6, 'CREATED_BY' => 7, 'UPDATED_BY' => 8, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'date_sent' => 1, 'subscriber_group_id' => 2, 'external_mail_group_id' => 3, 'newsletter_id' => 4, 'created_at' => 5, 'updated_at' => 6, 'created_by' => 7, 'updated_by' => 8, ),
 		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
 	);
 
@@ -171,9 +171,9 @@ abstract class BaseNewsletterMailingPeer {
 			$criteria->addSelectColumn(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID);
 			$criteria->addSelectColumn(NewsletterMailingPeer::EXTERNAL_MAIL_GROUP_ID);
 			$criteria->addSelectColumn(NewsletterMailingPeer::NEWSLETTER_ID);
-			$criteria->addSelectColumn(NewsletterMailingPeer::CREATED_BY);
 			$criteria->addSelectColumn(NewsletterMailingPeer::CREATED_AT);
 			$criteria->addSelectColumn(NewsletterMailingPeer::UPDATED_AT);
+			$criteria->addSelectColumn(NewsletterMailingPeer::CREATED_BY);
 			$criteria->addSelectColumn(NewsletterMailingPeer::UPDATED_BY);
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
@@ -181,9 +181,9 @@ abstract class BaseNewsletterMailingPeer {
 			$criteria->addSelectColumn($alias . '.SUBSCRIBER_GROUP_ID');
 			$criteria->addSelectColumn($alias . '.EXTERNAL_MAIL_GROUP_ID');
 			$criteria->addSelectColumn($alias . '.NEWSLETTER_ID');
-			$criteria->addSelectColumn($alias . '.CREATED_BY');
 			$criteria->addSelectColumn($alias . '.CREATED_AT');
 			$criteria->addSelectColumn($alias . '.UPDATED_AT');
+			$criteria->addSelectColumn($alias . '.CREATED_BY');
 			$criteria->addSelectColumn($alias . '.UPDATED_BY');
 		}
 	}
@@ -571,7 +571,7 @@ abstract class BaseNewsletterMailingPeer {
 
 
 	/**
-	 * Returns the number of rows matching criteria, joining the related User table
+	 * Returns the number of rows matching criteria, joining the related UserRelatedByCreatedBy table
 	 *
 	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns; deprecated: use Criteria->setDistinct() instead.
@@ -579,7 +579,57 @@ abstract class BaseNewsletterMailingPeer {
 	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
 	 * @return     int Number of matching rows.
 	 */
-	public static function doCountJoinUser(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	public static function doCountJoinUserRelatedByCreatedBy(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		// we're going to modify criteria, so copy it first
+		$criteria = clone $criteria;
+
+		// We need to set the primary table name, since in the case that there are no WHERE columns
+		// it will be impossible for the BasePeer::createSelectSql() method to determine which
+		// tables go into the FROM clause.
+		$criteria->setPrimaryTableName(NewsletterMailingPeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			NewsletterMailingPeer::addSelectColumns($criteria);
+		}
+		
+		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
+		
+		// Set the correct dbName
+		$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(NewsletterMailingPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+		$criteria->addJoin(NewsletterMailingPeer::CREATED_BY, UserPeer::ID, $join_behavior);
+
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; // no rows returned; we infer that means 0 matches.
+		}
+		$stmt->closeCursor();
+		return $count;
+	}
+
+
+	/**
+	 * Returns the number of rows matching criteria, joining the related UserRelatedByUpdatedBy table
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct Whether to select only distinct columns; deprecated: use Criteria->setDistinct() instead.
+	 * @param      PropelPDO $con
+	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
+	 * @return     int Number of matching rows.
+	 */
+	public static function doCountJoinUserRelatedByUpdatedBy(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		// we're going to modify criteria, so copy it first
 		$criteria = clone $criteria;
@@ -761,7 +811,73 @@ abstract class BaseNewsletterMailingPeer {
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function doSelectJoinUser(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	public static function doSelectJoinUserRelatedByCreatedBy(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$criteria = clone $criteria;
+
+		// Set the correct dbName if it has not been overridden
+		if ($criteria->getDbName() == Propel::getDefaultDB()) {
+			$criteria->setDbName(self::DATABASE_NAME);
+		}
+
+		NewsletterMailingPeer::addSelectColumns($criteria);
+		$startcol = (NewsletterMailingPeer::NUM_COLUMNS - NewsletterMailingPeer::NUM_LAZY_LOAD_COLUMNS);
+		UserPeer::addSelectColumns($criteria);
+
+		$criteria->addJoin(NewsletterMailingPeer::CREATED_BY, UserPeer::ID, $join_behavior);
+
+		$stmt = BasePeer::doSelect($criteria, $con);
+		$results = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = NewsletterMailingPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = NewsletterMailingPeer::getInstanceFromPool($key1))) {
+				// We no longer rehydrate the object, since this can cause data loss.
+				// See http://www.propelorm.org/ticket/509
+				// $obj1->hydrate($row, 0, true); // rehydrate
+			} else {
+
+				$cls = NewsletterMailingPeer::getOMClass(false);
+
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				NewsletterMailingPeer::addInstanceToPool($obj1, $key1);
+			} // if $obj1 already loaded
+
+			$key2 = UserPeer::getPrimaryKeyHashFromRow($row, $startcol);
+			if ($key2 !== null) {
+				$obj2 = UserPeer::getInstanceFromPool($key2);
+				if (!$obj2) {
+
+					$cls = UserPeer::getOMClass(false);
+
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol);
+					UserPeer::addInstanceToPool($obj2, $key2);
+				} // if obj2 already loaded
+
+				// Add the $obj1 (NewsletterMailing) to $obj2 (User)
+				$obj2->addNewsletterMailingRelatedByCreatedBy($obj1);
+
+			} // if joined row was not null
+
+			$results[] = $obj1;
+		}
+		$stmt->closeCursor();
+		return $results;
+	}
+
+
+	/**
+	 * Selects a collection of NewsletterMailing objects pre-filled with their User objects.
+	 * @param      Criteria  $criteria
+	 * @param      PropelPDO $con
+	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
+	 * @return     array Array of NewsletterMailing objects.
+	 * @throws     PropelException Any exceptions caught during processing will be
+	 *		 rethrown wrapped into a PropelException.
+	 */
+	public static function doSelectJoinUserRelatedByUpdatedBy(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		$criteria = clone $criteria;
 
@@ -807,7 +923,7 @@ abstract class BaseNewsletterMailingPeer {
 				} // if obj2 already loaded
 
 				// Add the $obj1 (NewsletterMailing) to $obj2 (User)
-				$obj2->addNewsletterMailing($obj1);
+				$obj2->addNewsletterMailingRelatedByUpdatedBy($obj1);
 
 			} // if joined row was not null
 
@@ -858,6 +974,8 @@ abstract class BaseNewsletterMailingPeer {
 
 		$criteria->addJoin(NewsletterMailingPeer::NEWSLETTER_ID, NewsletterPeer::ID, $join_behavior);
 
+		$criteria->addJoin(NewsletterMailingPeer::CREATED_BY, UserPeer::ID, $join_behavior);
+
 		$criteria->addJoin(NewsletterMailingPeer::UPDATED_BY, UserPeer::ID, $join_behavior);
 
 		$stmt = BasePeer::doCount($criteria, $con);
@@ -902,9 +1020,14 @@ abstract class BaseNewsletterMailingPeer {
 		UserPeer::addSelectColumns($criteria);
 		$startcol5 = $startcol4 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
 
+		UserPeer::addSelectColumns($criteria);
+		$startcol6 = $startcol5 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+
 		$criteria->addJoin(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, SubscriberGroupPeer::ID, $join_behavior);
 
 		$criteria->addJoin(NewsletterMailingPeer::NEWSLETTER_ID, NewsletterPeer::ID, $join_behavior);
+
+		$criteria->addJoin(NewsletterMailingPeer::CREATED_BY, UserPeer::ID, $join_behavior);
 
 		$criteria->addJoin(NewsletterMailingPeer::UPDATED_BY, UserPeer::ID, $join_behavior);
 
@@ -976,7 +1099,25 @@ abstract class BaseNewsletterMailingPeer {
 				} // if obj4 loaded
 
 				// Add the $obj1 (NewsletterMailing) to the collection in $obj4 (User)
-				$obj4->addNewsletterMailing($obj1);
+				$obj4->addNewsletterMailingRelatedByCreatedBy($obj1);
+			} // if joined row not null
+
+			// Add objects for joined User rows
+
+			$key5 = UserPeer::getPrimaryKeyHashFromRow($row, $startcol5);
+			if ($key5 !== null) {
+				$obj5 = UserPeer::getInstanceFromPool($key5);
+				if (!$obj5) {
+
+					$cls = UserPeer::getOMClass(false);
+
+					$obj5 = new $cls();
+					$obj5->hydrate($row, $startcol5);
+					UserPeer::addInstanceToPool($obj5, $key5);
+				} // if obj5 loaded
+
+				// Add the $obj1 (NewsletterMailing) to the collection in $obj5 (User)
+				$obj5->addNewsletterMailingRelatedByUpdatedBy($obj1);
 			} // if joined row not null
 
 			$results[] = $obj1;
@@ -1023,6 +1164,8 @@ abstract class BaseNewsletterMailingPeer {
 		}
 	
 		$criteria->addJoin(NewsletterMailingPeer::NEWSLETTER_ID, NewsletterPeer::ID, $join_behavior);
+
+		$criteria->addJoin(NewsletterMailingPeer::CREATED_BY, UserPeer::ID, $join_behavior);
 
 		$criteria->addJoin(NewsletterMailingPeer::UPDATED_BY, UserPeer::ID, $join_behavior);
 
@@ -1076,6 +1219,8 @@ abstract class BaseNewsletterMailingPeer {
 	
 		$criteria->addJoin(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, SubscriberGroupPeer::ID, $join_behavior);
 
+		$criteria->addJoin(NewsletterMailingPeer::CREATED_BY, UserPeer::ID, $join_behavior);
+
 		$criteria->addJoin(NewsletterMailingPeer::UPDATED_BY, UserPeer::ID, $join_behavior);
 
 		$stmt = BasePeer::doCount($criteria, $con);
@@ -1091,7 +1236,7 @@ abstract class BaseNewsletterMailingPeer {
 
 
 	/**
-	 * Returns the number of rows matching criteria, joining the related User table
+	 * Returns the number of rows matching criteria, joining the related UserRelatedByCreatedBy table
 	 *
 	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns; deprecated: use Criteria->setDistinct() instead.
@@ -1099,7 +1244,59 @@ abstract class BaseNewsletterMailingPeer {
 	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
 	 * @return     int Number of matching rows.
 	 */
-	public static function doCountJoinAllExceptUser(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	public static function doCountJoinAllExceptUserRelatedByCreatedBy(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		// we're going to modify criteria, so copy it first
+		$criteria = clone $criteria;
+
+		// We need to set the primary table name, since in the case that there are no WHERE columns
+		// it will be impossible for the BasePeer::createSelectSql() method to determine which
+		// tables go into the FROM clause.
+		$criteria->setPrimaryTableName(NewsletterMailingPeer::TABLE_NAME);
+		
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			NewsletterMailingPeer::addSelectColumns($criteria);
+		}
+		
+		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
+		
+		// Set the correct dbName
+		$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(NewsletterMailingPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+	
+		$criteria->addJoin(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, SubscriberGroupPeer::ID, $join_behavior);
+
+		$criteria->addJoin(NewsletterMailingPeer::NEWSLETTER_ID, NewsletterPeer::ID, $join_behavior);
+
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; // no rows returned; we infer that means 0 matches.
+		}
+		$stmt->closeCursor();
+		return $count;
+	}
+
+
+	/**
+	 * Returns the number of rows matching criteria, joining the related UserRelatedByUpdatedBy table
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct Whether to select only distinct columns; deprecated: use Criteria->setDistinct() instead.
+	 * @param      PropelPDO $con
+	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
+	 * @return     int Number of matching rows.
+	 */
+	public static function doCountJoinAllExceptUserRelatedByUpdatedBy(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		// we're going to modify criteria, so copy it first
 		$criteria = clone $criteria;
@@ -1172,7 +1369,12 @@ abstract class BaseNewsletterMailingPeer {
 		UserPeer::addSelectColumns($criteria);
 		$startcol4 = $startcol3 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
 
+		UserPeer::addSelectColumns($criteria);
+		$startcol5 = $startcol4 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+
 		$criteria->addJoin(NewsletterMailingPeer::NEWSLETTER_ID, NewsletterPeer::ID, $join_behavior);
+
+		$criteria->addJoin(NewsletterMailingPeer::CREATED_BY, UserPeer::ID, $join_behavior);
 
 		$criteria->addJoin(NewsletterMailingPeer::UPDATED_BY, UserPeer::ID, $join_behavior);
 
@@ -1228,7 +1430,26 @@ abstract class BaseNewsletterMailingPeer {
 				} // if $obj3 already loaded
 
 				// Add the $obj1 (NewsletterMailing) to the collection in $obj3 (User)
-				$obj3->addNewsletterMailing($obj1);
+				$obj3->addNewsletterMailingRelatedByCreatedBy($obj1);
+
+			} // if joined row is not null
+
+				// Add objects for joined User rows
+
+				$key4 = UserPeer::getPrimaryKeyHashFromRow($row, $startcol4);
+				if ($key4 !== null) {
+					$obj4 = UserPeer::getInstanceFromPool($key4);
+					if (!$obj4) {
+	
+						$cls = UserPeer::getOMClass(false);
+
+					$obj4 = new $cls();
+					$obj4->hydrate($row, $startcol4);
+					UserPeer::addInstanceToPool($obj4, $key4);
+				} // if $obj4 already loaded
+
+				// Add the $obj1 (NewsletterMailing) to the collection in $obj4 (User)
+				$obj4->addNewsletterMailingRelatedByUpdatedBy($obj1);
 
 			} // if joined row is not null
 
@@ -1269,7 +1490,12 @@ abstract class BaseNewsletterMailingPeer {
 		UserPeer::addSelectColumns($criteria);
 		$startcol4 = $startcol3 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
 
+		UserPeer::addSelectColumns($criteria);
+		$startcol5 = $startcol4 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+
 		$criteria->addJoin(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, SubscriberGroupPeer::ID, $join_behavior);
+
+		$criteria->addJoin(NewsletterMailingPeer::CREATED_BY, UserPeer::ID, $join_behavior);
 
 		$criteria->addJoin(NewsletterMailingPeer::UPDATED_BY, UserPeer::ID, $join_behavior);
 
@@ -1325,6 +1551,122 @@ abstract class BaseNewsletterMailingPeer {
 				} // if $obj3 already loaded
 
 				// Add the $obj1 (NewsletterMailing) to the collection in $obj3 (User)
+				$obj3->addNewsletterMailingRelatedByCreatedBy($obj1);
+
+			} // if joined row is not null
+
+				// Add objects for joined User rows
+
+				$key4 = UserPeer::getPrimaryKeyHashFromRow($row, $startcol4);
+				if ($key4 !== null) {
+					$obj4 = UserPeer::getInstanceFromPool($key4);
+					if (!$obj4) {
+	
+						$cls = UserPeer::getOMClass(false);
+
+					$obj4 = new $cls();
+					$obj4->hydrate($row, $startcol4);
+					UserPeer::addInstanceToPool($obj4, $key4);
+				} // if $obj4 already loaded
+
+				// Add the $obj1 (NewsletterMailing) to the collection in $obj4 (User)
+				$obj4->addNewsletterMailingRelatedByUpdatedBy($obj1);
+
+			} // if joined row is not null
+
+			$results[] = $obj1;
+		}
+		$stmt->closeCursor();
+		return $results;
+	}
+
+
+	/**
+	 * Selects a collection of NewsletterMailing objects pre-filled with all related objects except UserRelatedByCreatedBy.
+	 *
+	 * @param      Criteria  $criteria
+	 * @param      PropelPDO $con
+	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
+	 * @return     array Array of NewsletterMailing objects.
+	 * @throws     PropelException Any exceptions caught during processing will be
+	 *		 rethrown wrapped into a PropelException.
+	 */
+	public static function doSelectJoinAllExceptUserRelatedByCreatedBy(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$criteria = clone $criteria;
+
+		// Set the correct dbName if it has not been overridden
+		// $criteria->getDbName() will return the same object if not set to another value
+		// so == check is okay and faster
+		if ($criteria->getDbName() == Propel::getDefaultDB()) {
+			$criteria->setDbName(self::DATABASE_NAME);
+		}
+
+		NewsletterMailingPeer::addSelectColumns($criteria);
+		$startcol2 = (NewsletterMailingPeer::NUM_COLUMNS - NewsletterMailingPeer::NUM_LAZY_LOAD_COLUMNS);
+
+		SubscriberGroupPeer::addSelectColumns($criteria);
+		$startcol3 = $startcol2 + (SubscriberGroupPeer::NUM_COLUMNS - SubscriberGroupPeer::NUM_LAZY_LOAD_COLUMNS);
+
+		NewsletterPeer::addSelectColumns($criteria);
+		$startcol4 = $startcol3 + (NewsletterPeer::NUM_COLUMNS - NewsletterPeer::NUM_LAZY_LOAD_COLUMNS);
+
+		$criteria->addJoin(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, SubscriberGroupPeer::ID, $join_behavior);
+
+		$criteria->addJoin(NewsletterMailingPeer::NEWSLETTER_ID, NewsletterPeer::ID, $join_behavior);
+
+
+		$stmt = BasePeer::doSelect($criteria, $con);
+		$results = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = NewsletterMailingPeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = NewsletterMailingPeer::getInstanceFromPool($key1))) {
+				// We no longer rehydrate the object, since this can cause data loss.
+				// See http://www.propelorm.org/ticket/509
+				// $obj1->hydrate($row, 0, true); // rehydrate
+			} else {
+				$cls = NewsletterMailingPeer::getOMClass(false);
+
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				NewsletterMailingPeer::addInstanceToPool($obj1, $key1);
+			} // if obj1 already loaded
+
+				// Add objects for joined SubscriberGroup rows
+
+				$key2 = SubscriberGroupPeer::getPrimaryKeyHashFromRow($row, $startcol2);
+				if ($key2 !== null) {
+					$obj2 = SubscriberGroupPeer::getInstanceFromPool($key2);
+					if (!$obj2) {
+	
+						$cls = SubscriberGroupPeer::getOMClass(false);
+
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol2);
+					SubscriberGroupPeer::addInstanceToPool($obj2, $key2);
+				} // if $obj2 already loaded
+
+				// Add the $obj1 (NewsletterMailing) to the collection in $obj2 (SubscriberGroup)
+				$obj2->addNewsletterMailing($obj1);
+
+			} // if joined row is not null
+
+				// Add objects for joined Newsletter rows
+
+				$key3 = NewsletterPeer::getPrimaryKeyHashFromRow($row, $startcol3);
+				if ($key3 !== null) {
+					$obj3 = NewsletterPeer::getInstanceFromPool($key3);
+					if (!$obj3) {
+	
+						$cls = NewsletterPeer::getOMClass(false);
+
+					$obj3 = new $cls();
+					$obj3->hydrate($row, $startcol3);
+					NewsletterPeer::addInstanceToPool($obj3, $key3);
+				} // if $obj3 already loaded
+
+				// Add the $obj1 (NewsletterMailing) to the collection in $obj3 (Newsletter)
 				$obj3->addNewsletterMailing($obj1);
 
 			} // if joined row is not null
@@ -1337,7 +1679,7 @@ abstract class BaseNewsletterMailingPeer {
 
 
 	/**
-	 * Selects a collection of NewsletterMailing objects pre-filled with all related objects except User.
+	 * Selects a collection of NewsletterMailing objects pre-filled with all related objects except UserRelatedByUpdatedBy.
 	 *
 	 * @param      Criteria  $criteria
 	 * @param      PropelPDO $con
@@ -1346,7 +1688,7 @@ abstract class BaseNewsletterMailingPeer {
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function doSelectJoinAllExceptUser(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	public static function doSelectJoinAllExceptUserRelatedByUpdatedBy(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		$criteria = clone $criteria;
 
