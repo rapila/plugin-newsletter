@@ -9,7 +9,7 @@ Widget.types.newsletter_send = {
 		custom_emails.bind('keyup', function() {
 			var emails = _this.valid_emails_in_field(custom_emails);
 			if(emails.length > 1) {
-				email_address_info.text("{{writeString=wns.newsletter_mailing.custom_email_see}}, "+emails[0]+", etc.");
+				email_address_info.text(emails[0]+" {{writeString=wns.newsletter_mailing.and_more}} ("+emails.length+")");
 			} else {
 				email_address_info.text(emails[0]);
 			}
