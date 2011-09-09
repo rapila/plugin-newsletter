@@ -141,16 +141,9 @@ Widget.types.newsletter_detail = {
 	init_textareas: function() {
 		var newsletter_text = this.get_newsletter_text();
 		if(!newsletter_text.attr('data-widget-type')) {
-			newsletter_text.attr('data-widget-type', 'rich_text').prepareWidget(function(widget) {
+			newsletter_text.attr('data-widget-type', 'rich_text').attr('data-widget-session', this.settings.rich_text_session).prepareWidget(function(widget) {
 				widget.settings.height = 400;
-				widget.settings.contentsCss = [];
-				widget.settings.toolbar_Full = [
-					['Bold','Italic','-'],
-					['Link','Unlink'],
-					['BulletedList'],
-					['Undo','Redo','-','RemoveFormat'],
-					['Image', 'PickImage'],['Source'],['Maximize','Styles','Format']];
-			}, jQuery.noop);
+			}, jQuery.noop, this.settings.rich_text_config);
 		}
 	},
 	

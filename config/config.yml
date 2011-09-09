@@ -2,9 +2,14 @@
 # please overwrite values in site/config/config.yml
 
 newsletter_plugin:
-  richtext_settings:
-    height: 600
-    toolbar_Full: [["Bold","Italic","-"],["Link","Unlink"],["BulletedList"],["Undo","Redo","-","RemoveFormat"],["Maximize","Styles","Format"],["Image", "PickImage"],["Source"]]
+  text_module:
+    toolbar: 
+      - 
+        - ["Bold", "Italic"]
+        - ["Link", "Unlink", "Image"]
+        - ["BulletedList"]
+        - ["Undo", "Redo"]
+        - ["Format", "RemoveFormat", "Source"]
   sender_name: rapila
   
   # Use this in your config.yml file to choose from different email addresses when sending
@@ -22,4 +27,3 @@ newsletter_plugin:
   use_subscriber_groups: true
   newsletter_sender_address: info@example.com 
   subscriber_group_default_id: 1 #anybody
-  insertable_parts: [{name: cgc_infoblock, tooltip: 'Member-Mailing Infoblock', type: end_of_body}]

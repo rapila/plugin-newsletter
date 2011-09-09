@@ -11,6 +11,12 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 	const DEFAULT_TEMPLATE_NAME = 'default';
 	const CSS_TEMPLATE_SUFFIX = '.css';
 	const CONTENT_TEMPLATE_SUFFIX = '.content';
+
+	public function __construct($sSessionKey = null) {
+		parent::__construct($sSessionKey);
+		$oRichtextWidget = WidgetModule::getWidget('rich_text', null, '', 'newsletter_plugin');
+		$this->setSetting('rich_text_session', $oRichtextWidget->getSessionKey());
+	}
 	
 	public function setNewsletterId($iNewsletterId) {
 		$this->iNewsletterId = $iNewsletterId;
