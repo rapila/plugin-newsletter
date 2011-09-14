@@ -10,7 +10,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	
 	public function __construct() {
 		$this->oListWidget = new ListWidgetModule();
-		$this->oDelegateProxy = new CriteriaListWidgetDelegate($this, "Newsletter", 'subject');
+		$this->oDelegateProxy = new CriteriaListWidgetDelegate($this, "Newsletter", 'updated_at', 'desc');
 		$this->oListWidget->setDelegate($this->oDelegateProxy);
 		$this->oLanguageFilter = WidgetModule::getWidget('language_input', null, true);
 	}
