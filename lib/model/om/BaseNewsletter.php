@@ -1715,6 +1715,15 @@ abstract class BaseNewsletter extends BaseObject  implements Persistent
 		$this->aUserRelatedByUpdatedBy = null;
 	}
 
+	// referencing behavior
+	
+	/**
+	 * @return A list of References (not Objects) which this Newsletter references
+	 */
+	public function getReferenced()
+	{
+		return ReferencePeer::getReferencesFromObject($this);
+	}
 	// extended_timestampable behavior
 	
 	/**
