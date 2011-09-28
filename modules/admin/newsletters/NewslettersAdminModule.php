@@ -1,7 +1,7 @@
 <?php
 /**
  * @package modules.admin 
- * @subpackage cmos-plugin-newsletter
+ * @subpackage rapila-plugin-newsletter
  */
 class NewslettersAdminModule extends AdminModule {
 

@@ -1,7 +1,7 @@
 Widget.types.subscriber_group_input = {
 	prepare: function() {
 		this.reload();
-		Widget.handle('cmos-subscriber_groups_changed', this.reload.bind(this));
+		Widget.handle('rapila-subscriber_groups_changed', this.reload.bind(this));
 	},
 	
 	reload: function() {
