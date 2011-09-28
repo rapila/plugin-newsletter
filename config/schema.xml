@@ -6,6 +6,7 @@
 		<column name="is_approved" type="boolean" required="true" default="0" />
 		<column name="is_html" type="boolean" required="true" default="1" />
 		<column name="template_name" type="varchar" size="60" />
+		<behavior name="referencing" />
 	</table>	
 	
 	<table name="newsletter_mailings" phpName="NewsletterMailing">

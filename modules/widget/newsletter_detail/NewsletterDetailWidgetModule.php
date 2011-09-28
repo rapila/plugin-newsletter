@@ -139,7 +139,9 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$oNewsletter->setLanguageId($sLanguageId);
 		$oNewsletter->setTemplateName($aNewsletterData['template_name']);
 		$oNewsletter->setSubject($aNewsletterData['subject']);
-		$oNewsletter->setNewsletterBody(RichtextUtil::parseInputFromMceForStorage($aNewsletterData['newsletter_body']));
+		$oRichtextUtil = new RichtextUtil();
+		$oRichtextUtil->setTrackReferences($oNewsletter);
+		$oNewsletter->setNewsletterBody($oRichtextUtil->parseInputFromMce($aNewsletterData['newsletter_body']));
 
 		$this->validate($aNewsletterData, $oNewsletter);
 		if(!Flash::noErrors()) {
