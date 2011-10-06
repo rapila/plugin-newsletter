@@ -14,7 +14,8 @@
  *
  * @package    propel.generator.model.map
  */
-class SubscriberGroupMembershipTableMap extends TableMap {
+class SubscriberGroupMembershipTableMap extends TableMap
+{
 
 	/**
 	 * The (dot-path) name of this class
@@ -30,7 +31,7 @@ class SubscriberGroupMembershipTableMap extends TableMap {
 	 */
 	public function initialize()
 	{
-	  // attributes
+		// attributes
 		$this->setName('subscriber_group_memberships');
 		$this->setPhpName('SubscriberGroupMembership');
 		$this->setClassname('SubscriberGroupMembership');
@@ -51,16 +52,16 @@ class SubscriberGroupMembershipTableMap extends TableMap {
 	 */
 	public function buildRelations()
 	{
-    $this->addRelation('Subscriber', 'Subscriber', RelationMap::MANY_TO_ONE, array('subscriber_id' => 'id', ), 'CASCADE', null);
-    $this->addRelation('SubscriberGroup', 'SubscriberGroup', RelationMap::MANY_TO_ONE, array('subscriber_group_id' => 'id', ), 'CASCADE', null);
-    $this->addRelation('UserRelatedByCreatedBy', 'User', RelationMap::MANY_TO_ONE, array('created_by' => 'id', ), 'SET NULL', null);
-    $this->addRelation('UserRelatedByUpdatedBy', 'User', RelationMap::MANY_TO_ONE, array('updated_by' => 'id', ), 'SET NULL', null);
+		$this->addRelation('Subscriber', 'Subscriber', RelationMap::MANY_TO_ONE, array('subscriber_id' => 'id', ), 'CASCADE', null);
+		$this->addRelation('SubscriberGroup', 'SubscriberGroup', RelationMap::MANY_TO_ONE, array('subscriber_group_id' => 'id', ), 'CASCADE', null);
+		$this->addRelation('UserRelatedByCreatedBy', 'User', RelationMap::MANY_TO_ONE, array('created_by' => 'id', ), 'SET NULL', null);
+		$this->addRelation('UserRelatedByUpdatedBy', 'User', RelationMap::MANY_TO_ONE, array('updated_by' => 'id', ), 'SET NULL', null);
 	} // buildRelations()
 
 	/**
-	 * 
+	 *
 	 * Gets the list of behaviors registered for this table
-	 * 
+	 *
 	 * @return array Associative array (name => parameters) of behaviors
 	 */
 	public function getBehaviors()

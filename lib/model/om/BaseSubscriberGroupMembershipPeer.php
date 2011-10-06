@@ -24,12 +24,15 @@ abstract class BaseSubscriberGroupMembershipPeer {
 
 	/** the related TableMap class for this table */
 	const TM_CLASS = 'SubscriberGroupMembershipTableMap';
-	
+
 	/** The total number of columns. */
 	const NUM_COLUMNS = 6;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
+
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 6;
 
 	/** the column name for the SUBSCRIBER_ID field */
 	const SUBSCRIBER_ID = 'subscriber_group_memberships.SUBSCRIBER_ID';
@@ -49,6 +52,9 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	/** the column name for the UPDATED_BY field */
 	const UPDATED_BY = 'subscriber_group_memberships.UPDATED_BY';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+
 	/**
 	 * An identiy map to hold any loaded instances of SubscriberGroupMembership objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -64,7 +70,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('SubscriberId', 'SubscriberGroupId', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'UpdatedBy', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('subscriberId', 'subscriberGroupId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', ),
 		BasePeer::TYPE_COLNAME => array (self::SUBSCRIBER_ID, self::SUBSCRIBER_GROUP_ID, self::CREATED_AT, self::UPDATED_AT, self::CREATED_BY, self::UPDATED_BY, ),
@@ -79,7 +85,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('SubscriberId' => 0, 'SubscriberGroupId' => 1, 'CreatedAt' => 2, 'UpdatedAt' => 3, 'CreatedBy' => 4, 'UpdatedBy' => 5, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('subscriberId' => 0, 'subscriberGroupId' => 1, 'createdAt' => 2, 'updatedAt' => 3, 'createdBy' => 4, 'updatedBy' => 5, ),
 		BasePeer::TYPE_COLNAME => array (self::SUBSCRIBER_ID => 0, self::SUBSCRIBER_GROUP_ID => 1, self::CREATED_AT => 2, self::UPDATED_AT => 3, self::CREATED_BY => 4, self::UPDATED_BY => 5, ),
@@ -217,7 +223,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -236,7 +242,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -290,7 +296,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	 * @param      SubscriberGroupMembership $value A SubscriberGroupMembership object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(SubscriberGroupMembership $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -385,7 +391,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	}
 
 	/**
-	 * Retrieves the primary key from the DB resultset row 
+	 * Retrieves the primary key from the DB resultset row
 	 * For tables with a single-column primary key, that simple pkey value will be returned.  For tables with
 	 * a multi-column primary key, an array of the primary key columns will be returned.
 	 *
@@ -445,7 +451,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + SubscriberGroupMembershipPeer::NUM_COLUMNS;
+			$col = $startcol + SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = SubscriberGroupMembershipPeer::OM_CLASS;
 			$obj = new $cls();
@@ -454,6 +460,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related Subscriber table
@@ -481,9 +488,9 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		if (!$criteria->hasSelectClause()) {
 			SubscriberGroupMembershipPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -531,9 +538,9 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		if (!$criteria->hasSelectClause()) {
 			SubscriberGroupMembershipPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -581,9 +588,9 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		if (!$criteria->hasSelectClause()) {
 			SubscriberGroupMembershipPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -631,9 +638,9 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		if (!$criteria->hasSelectClause()) {
 			SubscriberGroupMembershipPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -674,7 +681,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		}
 
 		SubscriberGroupMembershipPeer::addSelectColumns($criteria);
-		$startcol = (SubscriberGroupMembershipPeer::NUM_COLUMNS - SubscriberGroupMembershipPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS;
 		SubscriberPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(SubscriberGroupMembershipPeer::SUBSCRIBER_ID, SubscriberPeer::ID, $join_behavior);
@@ -740,7 +747,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		}
 
 		SubscriberGroupMembershipPeer::addSelectColumns($criteria);
-		$startcol = (SubscriberGroupMembershipPeer::NUM_COLUMNS - SubscriberGroupMembershipPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS;
 		SubscriberGroupPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, SubscriberGroupPeer::ID, $join_behavior);
@@ -806,7 +813,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		}
 
 		SubscriberGroupMembershipPeer::addSelectColumns($criteria);
-		$startcol = (SubscriberGroupMembershipPeer::NUM_COLUMNS - SubscriberGroupMembershipPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS;
 		UserPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(SubscriberGroupMembershipPeer::CREATED_BY, UserPeer::ID, $join_behavior);
@@ -872,7 +879,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		}
 
 		SubscriberGroupMembershipPeer::addSelectColumns($criteria);
-		$startcol = (SubscriberGroupMembershipPeer::NUM_COLUMNS - SubscriberGroupMembershipPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS;
 		UserPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(SubscriberGroupMembershipPeer::UPDATED_BY, UserPeer::ID, $join_behavior);
@@ -945,9 +952,9 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		if (!$criteria->hasSelectClause()) {
 			SubscriberGroupMembershipPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -994,19 +1001,19 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		}
 
 		SubscriberGroupMembershipPeer::addSelectColumns($criteria);
-		$startcol2 = (SubscriberGroupMembershipPeer::NUM_COLUMNS - SubscriberGroupMembershipPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS;
 
 		SubscriberPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (SubscriberPeer::NUM_COLUMNS - SubscriberPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + SubscriberPeer::NUM_HYDRATE_COLUMNS;
 
 		SubscriberGroupPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (SubscriberGroupPeer::NUM_COLUMNS - SubscriberGroupPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + SubscriberGroupPeer::NUM_HYDRATE_COLUMNS;
 
 		UserPeer::addSelectColumns($criteria);
-		$startcol5 = $startcol4 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol5 = $startcol4 + UserPeer::NUM_HYDRATE_COLUMNS;
 
 		UserPeer::addSelectColumns($criteria);
-		$startcol6 = $startcol5 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol6 = $startcol5 + UserPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(SubscriberGroupMembershipPeer::SUBSCRIBER_ID, SubscriberPeer::ID, $join_behavior);
 
@@ -1130,7 +1137,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(SubscriberGroupMembershipPeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -1138,9 +1145,9 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		if (!$criteria->hasSelectClause()) {
 			SubscriberGroupMembershipPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -1184,7 +1191,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(SubscriberGroupMembershipPeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -1192,9 +1199,9 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		if (!$criteria->hasSelectClause()) {
 			SubscriberGroupMembershipPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -1238,7 +1245,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(SubscriberGroupMembershipPeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -1246,9 +1253,9 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		if (!$criteria->hasSelectClause()) {
 			SubscriberGroupMembershipPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -1290,7 +1297,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(SubscriberGroupMembershipPeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -1298,9 +1305,9 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		if (!$criteria->hasSelectClause()) {
 			SubscriberGroupMembershipPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -1346,16 +1353,16 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		}
 
 		SubscriberGroupMembershipPeer::addSelectColumns($criteria);
-		$startcol2 = (SubscriberGroupMembershipPeer::NUM_COLUMNS - SubscriberGroupMembershipPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS;
 
 		SubscriberGroupPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (SubscriberGroupPeer::NUM_COLUMNS - SubscriberGroupPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + SubscriberGroupPeer::NUM_HYDRATE_COLUMNS;
 
 		UserPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + UserPeer::NUM_HYDRATE_COLUMNS;
 
 		UserPeer::addSelectColumns($criteria);
-		$startcol5 = $startcol4 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol5 = $startcol4 + UserPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, SubscriberGroupPeer::ID, $join_behavior);
 
@@ -1467,16 +1474,16 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		}
 
 		SubscriberGroupMembershipPeer::addSelectColumns($criteria);
-		$startcol2 = (SubscriberGroupMembershipPeer::NUM_COLUMNS - SubscriberGroupMembershipPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS;
 
 		SubscriberPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (SubscriberPeer::NUM_COLUMNS - SubscriberPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + SubscriberPeer::NUM_HYDRATE_COLUMNS;
 
 		UserPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + UserPeer::NUM_HYDRATE_COLUMNS;
 
 		UserPeer::addSelectColumns($criteria);
-		$startcol5 = $startcol4 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol5 = $startcol4 + UserPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(SubscriberGroupMembershipPeer::SUBSCRIBER_ID, SubscriberPeer::ID, $join_behavior);
 
@@ -1588,13 +1595,13 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		}
 
 		SubscriberGroupMembershipPeer::addSelectColumns($criteria);
-		$startcol2 = (SubscriberGroupMembershipPeer::NUM_COLUMNS - SubscriberGroupMembershipPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS;
 
 		SubscriberPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (SubscriberPeer::NUM_COLUMNS - SubscriberPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + SubscriberPeer::NUM_HYDRATE_COLUMNS;
 
 		SubscriberGroupPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (SubscriberGroupPeer::NUM_COLUMNS - SubscriberGroupPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + SubscriberGroupPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(SubscriberGroupMembershipPeer::SUBSCRIBER_ID, SubscriberPeer::ID, $join_behavior);
 
@@ -1685,13 +1692,13 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		}
 
 		SubscriberGroupMembershipPeer::addSelectColumns($criteria);
-		$startcol2 = (SubscriberGroupMembershipPeer::NUM_COLUMNS - SubscriberGroupMembershipPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS;
 
 		SubscriberPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (SubscriberPeer::NUM_COLUMNS - SubscriberPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + SubscriberPeer::NUM_HYDRATE_COLUMNS;
 
 		SubscriberGroupPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (SubscriberGroupPeer::NUM_COLUMNS - SubscriberGroupPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + SubscriberGroupPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(SubscriberGroupMembershipPeer::SUBSCRIBER_ID, SubscriberPeer::ID, $join_behavior);
 
@@ -1800,7 +1807,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a SubscriberGroupMembership or Criteria object.
+	 * Performs an INSERT on the database, given a SubscriberGroupMembership or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or SubscriberGroupMembership object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -1839,7 +1846,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a SubscriberGroupMembership or Criteria object.
+	 * Performs an UPDATE on the database, given a SubscriberGroupMembership or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or SubscriberGroupMembership object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -1886,11 +1893,12 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the subscriber_group_memberships table.
+	 * Deletes all rows from the subscriber_group_memberships table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(SubscriberGroupMembershipPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -1915,7 +1923,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a SubscriberGroupMembership or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a SubscriberGroupMembership or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or SubscriberGroupMembership object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -1992,7 +2000,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(SubscriberGroupMembership $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

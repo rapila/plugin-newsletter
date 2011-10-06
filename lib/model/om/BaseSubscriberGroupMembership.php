@@ -261,45 +261,18 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	/**
 	 * Sets the value of [created_at] column to a normalized version of the date/time value specified.
 	 * 
-	 * @param      mixed $v string, integer (timestamp), or DateTime value.  Empty string will
-	 *						be treated as NULL for temporal objects.
+	 * @param      mixed $v string, integer (timestamp), or DateTime value.
+	 *               Empty strings are treated as NULL.
 	 * @return     SubscriberGroupMembership The current object (for fluent API support)
 	 */
 	public function setCreatedAt($v)
 	{
-		// we treat '' as NULL for temporal objects because DateTime('') == DateTime('now')
-		// -- which is unexpected, to say the least.
-		if ($v === null || $v === '') {
-			$dt = null;
-		} elseif ($v instanceof DateTime) {
-			$dt = $v;
-		} else {
-			// some string/numeric value passed; we normalize that so that we can
-			// validate it.
-			try {
-				if (is_numeric($v)) { // if it's a unix timestamp
-					$dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
-					// We have to explicitly specify and then change the time zone because of a
-					// DateTime bug: http://bugs.php.net/bug.php?id=43003
-					$dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
-				} else {
-					$dt = new DateTime($v);
-				}
-			} catch (Exception $x) {
-				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
-			}
-		}
-
-		if ( $this->created_at !== null || $dt !== null ) {
-			// (nested ifs are a little easier to read in this case)
-
-			$currNorm = ($this->created_at !== null && $tmpDt = new DateTime($this->created_at)) ? $tmpDt->format('Y-m-d H:i:s') : null;
-			$newNorm = ($dt !== null) ? $dt->format('Y-m-d H:i:s') : null;
-
-			if ( ($currNorm !== $newNorm) // normalized values don't match 
-					)
-			{
-				$this->created_at = ($dt ? $dt->format('Y-m-d H:i:s') : null);
+		$dt = PropelDateTime::newInstance($v, null, 'DateTime');
+		if ($this->created_at !== null || $dt !== null) {
+			$currentDateAsString = ($this->created_at !== null && $tmpDt = new DateTime($this->created_at)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+			$newDateAsString = $dt ? $dt->format('Y-m-d H:i:s') : null;
+			if ($currentDateAsString !== $newDateAsString) {
+				$this->created_at = $newDateAsString;
 				$this->modifiedColumns[] = SubscriberGroupMembershipPeer::CREATED_AT;
 			}
 		} // if either are not null
@@ -310,45 +283,18 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	/**
 	 * Sets the value of [updated_at] column to a normalized version of the date/time value specified.
 	 * 
-	 * @param      mixed $v string, integer (timestamp), or DateTime value.  Empty string will
-	 *						be treated as NULL for temporal objects.
+	 * @param      mixed $v string, integer (timestamp), or DateTime value.
+	 *               Empty strings are treated as NULL.
 	 * @return     SubscriberGroupMembership The current object (for fluent API support)
 	 */
 	public function setUpdatedAt($v)
 	{
-		// we treat '' as NULL for temporal objects because DateTime('') == DateTime('now')
-		// -- which is unexpected, to say the least.
-		if ($v === null || $v === '') {
-			$dt = null;
-		} elseif ($v instanceof DateTime) {
-			$dt = $v;
-		} else {
-			// some string/numeric value passed; we normalize that so that we can
-			// validate it.
-			try {
-				if (is_numeric($v)) { // if it's a unix timestamp
-					$dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
-					// We have to explicitly specify and then change the time zone because of a
-					// DateTime bug: http://bugs.php.net/bug.php?id=43003
-					$dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
-				} else {
-					$dt = new DateTime($v);
-				}
-			} catch (Exception $x) {
-				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
-			}
-		}
-
-		if ( $this->updated_at !== null || $dt !== null ) {
-			// (nested ifs are a little easier to read in this case)
-
-			$currNorm = ($this->updated_at !== null && $tmpDt = new DateTime($this->updated_at)) ? $tmpDt->format('Y-m-d H:i:s') : null;
-			$newNorm = ($dt !== null) ? $dt->format('Y-m-d H:i:s') : null;
-
-			if ( ($currNorm !== $newNorm) // normalized values don't match 
-					)
-			{
-				$this->updated_at = ($dt ? $dt->format('Y-m-d H:i:s') : null);
+		$dt = PropelDateTime::newInstance($v, null, 'DateTime');
+		if ($this->updated_at !== null || $dt !== null) {
+			$currentDateAsString = ($this->updated_at !== null && $tmpDt = new DateTime($this->updated_at)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+			$newDateAsString = $dt ? $dt->format('Y-m-d H:i:s') : null;
+			if ($currentDateAsString !== $newDateAsString) {
+				$this->updated_at = $newDateAsString;
 				$this->modifiedColumns[] = SubscriberGroupMembershipPeer::UPDATED_AT;
 			}
 		} // if either are not null
@@ -450,7 +396,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 6; // 6 = SubscriberGroupMembershipPeer::NUM_COLUMNS - SubscriberGroupMembershipPeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 6; // 6 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating SubscriberGroupMembership object", $e);
@@ -552,11 +498,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 
 		$con->beginTransaction();
 		try {
+			$deleteQuery = SubscriberGroupMembershipQuery::create()
+				->filterByPrimaryKey($this->getPrimaryKey());
 			$ret = $this->preDelete($con);
 			if ($ret) {
-				SubscriberGroupMembershipQuery::create()
-					->filterByPrimaryKey($this->getPrimaryKey())
-					->delete($con);
+				$deleteQuery->delete($con);
 				$this->postDelete($con);
 				$con->commit();
 				$this->setDeleted(true);
@@ -883,12 +829,17 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM.
 	 *                    Defaults to BasePeer::TYPE_PHPNAME.
 	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
 	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
 	 *
 	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $includeForeignObjects = false)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
 	{
+		if (isset($alreadyDumpedObjects['SubscriberGroupMembership'][serialize($this->getPrimaryKey())])) {
+			return '*RECURSION*';
+		}
+		$alreadyDumpedObjects['SubscriberGroupMembership'][serialize($this->getPrimaryKey())] = true;
 		$keys = SubscriberGroupMembershipPeer::getFieldNames($keyType);
 		$result = array(
 			$keys[0] => $this->getSubscriberId(),
@@ -900,16 +851,16 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aSubscriber) {
-				$result['Subscriber'] = $this->aSubscriber->toArray($keyType, $includeLazyLoadColumns, true);
+				$result['Subscriber'] = $this->aSubscriber->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
 			}
 			if (null !== $this->aSubscriberGroup) {
-				$result['SubscriberGroup'] = $this->aSubscriberGroup->toArray($keyType, $includeLazyLoadColumns, true);
+				$result['SubscriberGroup'] = $this->aSubscriberGroup->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
 			}
 			if (null !== $this->aUserRelatedByCreatedBy) {
-				$result['UserRelatedByCreatedBy'] = $this->aUserRelatedByCreatedBy->toArray($keyType, $includeLazyLoadColumns, true);
+				$result['UserRelatedByCreatedBy'] = $this->aUserRelatedByCreatedBy->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
 			}
 			if (null !== $this->aUserRelatedByUpdatedBy) {
-				$result['UserRelatedByUpdatedBy'] = $this->aUserRelatedByUpdatedBy->toArray($keyType, $includeLazyLoadColumns, true);
+				$result['UserRelatedByUpdatedBy'] = $this->aUserRelatedByUpdatedBy->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
 			}
 		}
 		return $result;
@@ -1071,18 +1022,20 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 *
 	 * @param      object $copyObj An object of SubscriberGroupMembership (or compatible) type.
 	 * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
+	 * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
 	 * @throws     PropelException
 	 */
-	public function copyInto($copyObj, $deepCopy = false)
+	public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
 	{
-		$copyObj->setSubscriberId($this->subscriber_id);
-		$copyObj->setSubscriberGroupId($this->subscriber_group_id);
-		$copyObj->setCreatedAt($this->created_at);
-		$copyObj->setUpdatedAt($this->updated_at);
-		$copyObj->setCreatedBy($this->created_by);
-		$copyObj->setUpdatedBy($this->updated_by);
-
-		$copyObj->setNew(true);
+		$copyObj->setSubscriberId($this->getSubscriberId());
+		$copyObj->setSubscriberGroupId($this->getSubscriberGroupId());
+		$copyObj->setCreatedAt($this->getCreatedAt());
+		$copyObj->setUpdatedAt($this->getUpdatedAt());
+		$copyObj->setCreatedBy($this->getCreatedBy());
+		$copyObj->setUpdatedBy($this->getUpdatedBy());
+		if ($makeNew) {
+			$copyObj->setNew(true);
+		}
 	}
 
 	/**
@@ -1162,11 +1115,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		if ($this->aSubscriber === null && ($this->subscriber_id !== null)) {
 			$this->aSubscriber = SubscriberQuery::create()->findPk($this->subscriber_id, $con);
 			/* The following can be used additionally to
-				 guarantee the related object contains a reference
-				 to this object.  This level of coupling may, however, be
-				 undesirable since it could result in an only partially populated collection
-				 in the referenced object.
-				 $this->aSubscriber->addSubscriberGroupMemberships($this);
+				guarantee the related object contains a reference
+				to this object.  This level of coupling may, however, be
+				undesirable since it could result in an only partially populated collection
+				in the referenced object.
+				$this->aSubscriber->addSubscriberGroupMemberships($this);
 			 */
 		}
 		return $this->aSubscriber;
@@ -1211,11 +1164,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		if ($this->aSubscriberGroup === null && ($this->subscriber_group_id !== null)) {
 			$this->aSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->subscriber_group_id, $con);
 			/* The following can be used additionally to
-				 guarantee the related object contains a reference
-				 to this object.  This level of coupling may, however, be
-				 undesirable since it could result in an only partially populated collection
-				 in the referenced object.
-				 $this->aSubscriberGroup->addSubscriberGroupMemberships($this);
+				guarantee the related object contains a reference
+				to this object.  This level of coupling may, however, be
+				undesirable since it could result in an only partially populated collection
+				in the referenced object.
+				$this->aSubscriberGroup->addSubscriberGroupMemberships($this);
 			 */
 		}
 		return $this->aSubscriberGroup;
@@ -1260,11 +1213,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		if ($this->aUserRelatedByCreatedBy === null && ($this->created_by !== null)) {
 			$this->aUserRelatedByCreatedBy = UserQuery::create()->findPk($this->created_by, $con);
 			/* The following can be used additionally to
-				 guarantee the related object contains a reference
-				 to this object.  This level of coupling may, however, be
-				 undesirable since it could result in an only partially populated collection
-				 in the referenced object.
-				 $this->aUserRelatedByCreatedBy->addSubscriberGroupMembershipsRelatedByCreatedBy($this);
+				guarantee the related object contains a reference
+				to this object.  This level of coupling may, however, be
+				undesirable since it could result in an only partially populated collection
+				in the referenced object.
+				$this->aUserRelatedByCreatedBy->addSubscriberGroupMembershipsRelatedByCreatedBy($this);
 			 */
 		}
 		return $this->aUserRelatedByCreatedBy;
@@ -1309,11 +1262,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		if ($this->aUserRelatedByUpdatedBy === null && ($this->updated_by !== null)) {
 			$this->aUserRelatedByUpdatedBy = UserQuery::create()->findPk($this->updated_by, $con);
 			/* The following can be used additionally to
-				 guarantee the related object contains a reference
-				 to this object.  This level of coupling may, however, be
-				 undesirable since it could result in an only partially populated collection
-				 in the referenced object.
-				 $this->aUserRelatedByUpdatedBy->addSubscriberGroupMembershipsRelatedByUpdatedBy($this);
+				guarantee the related object contains a reference
+				to this object.  This level of coupling may, however, be
+				undesirable since it could result in an only partially populated collection
+				in the referenced object.
+				$this->aUserRelatedByUpdatedBy->addSubscriberGroupMembershipsRelatedByUpdatedBy($this);
 			 */
 		}
 		return $this->aUserRelatedByUpdatedBy;
@@ -1339,13 +1292,13 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	}
 
 	/**
-	 * Resets all collections of referencing foreign keys.
+	 * Resets all references to other model objects or collections of model objects.
 	 *
-	 * This method is a user-space workaround for PHP's inability to garbage collect objects
-	 * with circular references.  This is currently necessary when using Propel in certain
-	 * daemon or large-volumne/high-memory operations.
+	 * This method is a user-space workaround for PHP's inability to garbage collect
+	 * objects with circular references (even in PHP 5.3). This is currently necessary
+	 * when using Propel in certain daemon or large-volumne/high-memory operations.
 	 *
-	 * @param      boolean $deep Whether to also clear the references on all associated objects.
+	 * @param      boolean $deep Whether to also clear the references on all referrer objects.
 	 */
 	public function clearAllReferences($deep = false)
 	{
@@ -1356,6 +1309,16 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		$this->aSubscriberGroup = null;
 		$this->aUserRelatedByCreatedBy = null;
 		$this->aUserRelatedByUpdatedBy = null;
+	}
+
+	/**
+	 * Return the string representation of this object
+	 *
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return (string) $this->exportTo(SubscriberGroupMembershipPeer::DEFAULT_STRING_FORMAT);
 	}
 
 	// extended_timestampable behavior
@@ -1420,25 +1383,6 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	{
 		$this->modifiedColumns[] = SubscriberGroupMembershipPeer::UPDATED_BY;
 		return $this;
-	}
-
-	/**
-	 * Catches calls to virtual methods
-	 */
-	public function __call($name, $params)
-	{
-		if (preg_match('/get(\w+)/', $name, $matches)) {
-			$virtualColumn = $matches[1];
-			if ($this->hasVirtualColumn($virtualColumn)) {
-				return $this->getVirtualColumn($virtualColumn);
-			}
-			// no lcfirst in php<5.3...
-			$virtualColumn[0] = strtolower($virtualColumn[0]);
-			if ($this->hasVirtualColumn($virtualColumn)) {
-				return $this->getVirtualColumn($virtualColumn);
-			}
-		}
-		return parent::__call($name, $params);
 	}
 
 } // BaseSubscriberGroupMembership

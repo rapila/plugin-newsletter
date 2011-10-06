@@ -24,12 +24,15 @@ abstract class BaseNewsletterPeer {
 
 	/** the related TableMap class for this table */
 	const TM_CLASS = 'NewsletterTableMap';
-	
+
 	/** The total number of columns. */
 	const NUM_COLUMNS = 11;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
+
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 11;
 
 	/** the column name for the ID field */
 	const ID = 'newsletters.ID';
@@ -64,6 +67,9 @@ abstract class BaseNewsletterPeer {
 	/** the column name for the UPDATED_BY field */
 	const UPDATED_BY = 'newsletters.UPDATED_BY';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+
 	/**
 	 * An identiy map to hold any loaded instances of Newsletter objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -79,7 +85,7 @@ abstract class BaseNewsletterPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('Id', 'Subject', 'NewsletterBody', 'LanguageId', 'IsApproved', 'IsHtml', 'TemplateName', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'UpdatedBy', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'subject', 'newsletterBody', 'languageId', 'isApproved', 'isHtml', 'templateName', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', ),
 		BasePeer::TYPE_COLNAME => array (self::ID, self::SUBJECT, self::NEWSLETTER_BODY, self::LANGUAGE_ID, self::IS_APPROVED, self::IS_HTML, self::TEMPLATE_NAME, self::CREATED_AT, self::UPDATED_AT, self::CREATED_BY, self::UPDATED_BY, ),
@@ -94,7 +100,7 @@ abstract class BaseNewsletterPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Subject' => 1, 'NewsletterBody' => 2, 'LanguageId' => 3, 'IsApproved' => 4, 'IsHtml' => 5, 'TemplateName' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, 'CreatedBy' => 9, 'UpdatedBy' => 10, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'subject' => 1, 'newsletterBody' => 2, 'languageId' => 3, 'isApproved' => 4, 'isHtml' => 5, 'templateName' => 6, 'createdAt' => 7, 'updatedAt' => 8, 'createdBy' => 9, 'updatedBy' => 10, ),
 		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::SUBJECT => 1, self::NEWSLETTER_BODY => 2, self::LANGUAGE_ID => 3, self::IS_APPROVED => 4, self::IS_HTML => 5, self::TEMPLATE_NAME => 6, self::CREATED_AT => 7, self::UPDATED_AT => 8, self::CREATED_BY => 9, self::UPDATED_BY => 10, ),
@@ -242,7 +248,7 @@ abstract class BaseNewsletterPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -261,7 +267,7 @@ abstract class BaseNewsletterPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -315,7 +321,7 @@ abstract class BaseNewsletterPeer {
 	 * @param      Newsletter $value A Newsletter object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(Newsletter $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -388,7 +394,7 @@ abstract class BaseNewsletterPeer {
 	 */
 	public static function clearRelatedInstancePool()
 	{
-		// Invalidate objects in NewsletterMailingPeer instance pool, 
+		// Invalidate objects in NewsletterMailingPeer instance pool,
 		// since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
 		NewsletterMailingPeer::clearInstancePool();
 	}
@@ -413,7 +419,7 @@ abstract class BaseNewsletterPeer {
 	}
 
 	/**
-	 * Retrieves the primary key from the DB resultset row 
+	 * Retrieves the primary key from the DB resultset row
 	 * For tables with a single-column primary key, that simple pkey value will be returned.  For tables with
 	 * a multi-column primary key, an array of the primary key columns will be returned.
 	 *
@@ -473,7 +479,7 @@ abstract class BaseNewsletterPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + NewsletterPeer::NUM_COLUMNS;
+			$col = $startcol + NewsletterPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = NewsletterPeer::OM_CLASS;
 			$obj = new $cls();
@@ -482,6 +488,7 @@ abstract class BaseNewsletterPeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related UserRelatedByCreatedBy table
@@ -509,9 +516,9 @@ abstract class BaseNewsletterPeer {
 		if (!$criteria->hasSelectClause()) {
 			NewsletterPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -559,9 +566,9 @@ abstract class BaseNewsletterPeer {
 		if (!$criteria->hasSelectClause()) {
 			NewsletterPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -602,7 +609,7 @@ abstract class BaseNewsletterPeer {
 		}
 
 		NewsletterPeer::addSelectColumns($criteria);
-		$startcol = (NewsletterPeer::NUM_COLUMNS - NewsletterPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = NewsletterPeer::NUM_HYDRATE_COLUMNS;
 		UserPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(NewsletterPeer::CREATED_BY, UserPeer::ID, $join_behavior);
@@ -668,7 +675,7 @@ abstract class BaseNewsletterPeer {
 		}
 
 		NewsletterPeer::addSelectColumns($criteria);
-		$startcol = (NewsletterPeer::NUM_COLUMNS - NewsletterPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = NewsletterPeer::NUM_HYDRATE_COLUMNS;
 		UserPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(NewsletterPeer::UPDATED_BY, UserPeer::ID, $join_behavior);
@@ -741,9 +748,9 @@ abstract class BaseNewsletterPeer {
 		if (!$criteria->hasSelectClause()) {
 			NewsletterPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -786,13 +793,13 @@ abstract class BaseNewsletterPeer {
 		}
 
 		NewsletterPeer::addSelectColumns($criteria);
-		$startcol2 = (NewsletterPeer::NUM_COLUMNS - NewsletterPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = NewsletterPeer::NUM_HYDRATE_COLUMNS;
 
 		UserPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + UserPeer::NUM_HYDRATE_COLUMNS;
 
 		UserPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (UserPeer::NUM_COLUMNS - UserPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + UserPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(NewsletterPeer::CREATED_BY, UserPeer::ID, $join_behavior);
 
@@ -876,7 +883,7 @@ abstract class BaseNewsletterPeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(NewsletterPeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -884,9 +891,9 @@ abstract class BaseNewsletterPeer {
 		if (!$criteria->hasSelectClause()) {
 			NewsletterPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -924,7 +931,7 @@ abstract class BaseNewsletterPeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(NewsletterPeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -932,9 +939,9 @@ abstract class BaseNewsletterPeer {
 		if (!$criteria->hasSelectClause()) {
 			NewsletterPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -976,7 +983,7 @@ abstract class BaseNewsletterPeer {
 		}
 
 		NewsletterPeer::addSelectColumns($criteria);
-		$startcol2 = (NewsletterPeer::NUM_COLUMNS - NewsletterPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = NewsletterPeer::NUM_HYDRATE_COLUMNS;
 
 
 		$stmt = BasePeer::doSelect($criteria, $con);
@@ -1025,7 +1032,7 @@ abstract class BaseNewsletterPeer {
 		}
 
 		NewsletterPeer::addSelectColumns($criteria);
-		$startcol2 = (NewsletterPeer::NUM_COLUMNS - NewsletterPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = NewsletterPeer::NUM_HYDRATE_COLUMNS;
 
 
 		$stmt = BasePeer::doSelect($criteria, $con);
@@ -1092,7 +1099,7 @@ abstract class BaseNewsletterPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a Newsletter or Criteria object.
+	 * Performs an INSERT on the database, given a Newsletter or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or Newsletter object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -1135,7 +1142,7 @@ abstract class BaseNewsletterPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a Newsletter or Criteria object.
+	 * Performs an UPDATE on the database, given a Newsletter or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or Newsletter object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -1174,11 +1181,12 @@ abstract class BaseNewsletterPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the newsletters table.
+	 * Deletes all rows from the newsletters table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(NewsletterPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -1204,7 +1212,7 @@ abstract class BaseNewsletterPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a Newsletter or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a Newsletter or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or Newsletter object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -1312,7 +1320,7 @@ abstract class BaseNewsletterPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(Newsletter $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

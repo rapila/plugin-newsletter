@@ -14,7 +14,8 @@
  *
  * @package    propel.generator.model.map
  */
-class NewsletterTableMap extends TableMap {
+class NewsletterTableMap extends TableMap
+{
 
 	/**
 	 * The (dot-path) name of this class
@@ -30,7 +31,7 @@ class NewsletterTableMap extends TableMap {
 	 */
 	public function initialize()
 	{
-	  // attributes
+		// attributes
 		$this->setName('newsletters');
 		$this->setPhpName('Newsletter');
 		$this->setClassname('Newsletter');
@@ -41,8 +42,8 @@ class NewsletterTableMap extends TableMap {
 		$this->addColumn('SUBJECT', 'Subject', 'VARCHAR', true, 255, null);
 		$this->addColumn('NEWSLETTER_BODY', 'NewsletterBody', 'BLOB', false, null, null);
 		$this->addColumn('LANGUAGE_ID', 'LanguageId', 'VARCHAR', true, 3, null);
-		$this->addColumn('IS_APPROVED', 'IsApproved', 'BOOLEAN', true, null, false);
-		$this->addColumn('IS_HTML', 'IsHtml', 'BOOLEAN', true, null, true);
+		$this->addColumn('IS_APPROVED', 'IsApproved', 'BOOLEAN', true, 1, false);
+		$this->addColumn('IS_HTML', 'IsHtml', 'BOOLEAN', true, 1, true);
 		$this->addColumn('TEMPLATE_NAME', 'TemplateName', 'VARCHAR', false, 60, null);
 		$this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
 		$this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
@@ -56,15 +57,15 @@ class NewsletterTableMap extends TableMap {
 	 */
 	public function buildRelations()
 	{
-    $this->addRelation('UserRelatedByCreatedBy', 'User', RelationMap::MANY_TO_ONE, array('created_by' => 'id', ), 'SET NULL', null);
-    $this->addRelation('UserRelatedByUpdatedBy', 'User', RelationMap::MANY_TO_ONE, array('updated_by' => 'id', ), 'SET NULL', null);
-    $this->addRelation('NewsletterMailing', 'NewsletterMailing', RelationMap::ONE_TO_MANY, array('id' => 'newsletter_id', ), 'CASCADE', null);
+		$this->addRelation('UserRelatedByCreatedBy', 'User', RelationMap::MANY_TO_ONE, array('created_by' => 'id', ), 'SET NULL', null);
+		$this->addRelation('UserRelatedByUpdatedBy', 'User', RelationMap::MANY_TO_ONE, array('updated_by' => 'id', ), 'SET NULL', null);
+		$this->addRelation('NewsletterMailing', 'NewsletterMailing', RelationMap::ONE_TO_MANY, array('id' => 'newsletter_id', ), 'CASCADE', null, 'NewsletterMailings');
 	} // buildRelations()
 
 	/**
-	 * 
+	 *
 	 * Gets the list of behaviors registered for this table
-	 * 
+	 *
 	 * @return array Associative array (name => parameters) of behaviors
 	 */
 	public function getBehaviors()
