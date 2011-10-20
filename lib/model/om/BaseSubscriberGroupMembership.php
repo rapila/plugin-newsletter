@@ -1374,7 +1374,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 */
 	public function getCreatedAtTimestamp()
 	{
-		return $this->getCreatedAt('U');
+		return (int)$this->getCreatedAt('U');
 	}
 	
 	/**
@@ -1393,7 +1393,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 */
 	public function getUpdatedAtTimestamp()
 	{
-		return $this->getUpdatedAt('U');
+		return (int)$this->getUpdatedAt('U');
 	}
 	
 	/**

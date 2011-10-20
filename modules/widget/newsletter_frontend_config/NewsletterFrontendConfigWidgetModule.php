@@ -1,5 +1,5 @@
 <?php
-class NewsletterEditWidgetModule extends EditWidgetModule {
+class NewsletterFrontendConfigWidgetModule extends FrontendConfigWidgetModule {
 
 	public function __construct($sSessionKey, $oFrontendModule) {
 		parent::__construct($sSessionKey, $oFrontendModule);
