@@ -501,6 +501,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 			$deleteQuery = SubscriberGroupMembershipQuery::create()
 				->filterByPrimaryKey($this->getPrimaryKey());
 			$ret = $this->preDelete($con);
+			// denyable behavior
+			if(!(SubscriberGroupMembershipPeer::isIgnoringRights() || $this->mayOperate("delete"))) {
+				throw new PropelException(new NotPermittedException("delete.by_role", array("role_key" => "subscriber_group_memberships")));
+			}
+
 			if ($ret) {
 				$deleteQuery->delete($con);
 				$this->postDelete($con);
@@ -544,6 +549,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 			$ret = $this->preSave($con);
 			if ($isInsert) {
 				$ret = $ret && $this->preInsert($con);
+				// denyable behavior
+				if(!(SubscriberGroupMembershipPeer::isIgnoringRights() || $this->mayOperate("insert"))) {
+					throw new PropelException(new NotPermittedException("insert.by_role", array("role_key" => "subscriber_group_memberships")));
+				}
+
 				// extended_timestampable behavior
 				if (!$this->isColumnModified(SubscriberGroupMembershipPeer::CREATED_AT)) {
 					$this->setCreatedAt(time());
@@ -564,6 +574,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 
 			} else {
 				$ret = $ret && $this->preUpdate($con);
+				// denyable behavior
+				if(!(SubscriberGroupMembershipPeer::isIgnoringRights() || $this->mayOperate("update"))) {
+					throw new PropelException(new NotPermittedException("update.by_role", array("role_key" => "subscriber_group_memberships")));
+				}
+
 				// extended_timestampable behavior
 				if ($this->isModified() && !$this->isColumnModified(SubscriberGroupMembershipPeer::UPDATED_AT)) {
 					$this->setUpdatedAt(time());
@@ -1321,6 +1336,26 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		return (string) $this->exportTo(SubscriberGroupMembershipPeer::DEFAULT_STRING_FORMAT);
 	}
 
+	// denyable behavior
+	public function mayOperate($sOperation, $oUser = false) {
+		if($oUser === false) {
+			$oUser = Session::getSession()->getUser();
+		}
+		if($oUser && ($this->isNew() || $this->getCreatedBy() === $oUser->getId()) && SubscriberGroupMembershipPeer::mayOperateOnOwn($oUser, $this, $sOperation)) {
+			return true;
+		}
+		return SubscriberGroupMembershipPeer::mayOperateOn($oUser, $this, $sOperation);
+	}
+	public function mayBeInserted($oUser = false) {
+		return $this->mayOperate($oUser, "insert");
+	}
+	public function mayBeUpdated($oUser = false) {
+		return $this->mayOperate($oUser, "update");
+	}
+	public function mayBeDeleted($oUser = false) {
+		return $this->mayOperate($oUser, "delete");
+	}
+
 	// extended_timestampable behavior
 	
 	/**
@@ -1339,7 +1374,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 */
 	public function getCreatedAtTimestamp()
 	{
-		return $this->getCreatedAt('U');
+		return (int)$this->getCreatedAt('U');
 	}
 	
 	/**
@@ -1358,7 +1393,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 */
 	public function getUpdatedAtTimestamp()
 	{
-		return $this->getUpdatedAt('U');
+		return (int)$this->getUpdatedAt('U');
 	}
 	
 	/**

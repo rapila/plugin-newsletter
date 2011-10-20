@@ -724,6 +724,11 @@ abstract class BaseNewsletter extends BaseObject  implements Persistent
 			$deleteQuery = NewsletterQuery::create()
 				->filterByPrimaryKey($this->getPrimaryKey());
 			$ret = $this->preDelete($con);
+			// denyable behavior
+			if(!(NewsletterPeer::isIgnoringRights() || $this->mayOperate("delete"))) {
+				throw new PropelException(new NotPermittedException("delete.by_role", array("role_key" => "newsletters")));
+			}
+
 			if ($ret) {
 				$deleteQuery->delete($con);
 				$this->postDelete($con);
@@ -767,6 +772,11 @@ abstract class BaseNewsletter extends BaseObject  implements Persistent
 			$ret = $this->preSave($con);
 			if ($isInsert) {
 				$ret = $ret && $this->preInsert($con);
+				// denyable behavior
+				if(!(NewsletterPeer::isIgnoringRights() || $this->mayOperate("insert"))) {
+					throw new PropelException(new NotPermittedException("insert.by_role", array("role_key" => "newsletters")));
+				}
+
 				// extended_timestampable behavior
 				if (!$this->isColumnModified(NewsletterPeer::CREATED_AT)) {
 					$this->setCreatedAt(time());
@@ -787,6 +797,11 @@ abstract class BaseNewsletter extends BaseObject  implements Persistent
 
 			} else {
 				$ret = $ret && $this->preUpdate($con);
+				// denyable behavior
+				if(!(NewsletterPeer::isIgnoringRights() || $this->mayOperate("update"))) {
+					throw new PropelException(new NotPermittedException("update.by_role", array("role_key" => "newsletters")));
+				}
+
 				// extended_timestampable behavior
 				if ($this->isModified() && !$this->isColumnModified(NewsletterPeer::UPDATED_AT)) {
 					$this->setUpdatedAt(time());
@@ -1732,6 +1747,26 @@ abstract class BaseNewsletter extends BaseObject  implements Persistent
 	{
 		return ReferencePeer::getReferencesFromObject($this);
 	}
+	// denyable behavior
+	public function mayOperate($sOperation, $oUser = false) {
+		if($oUser === false) {
+			$oUser = Session::getSession()->getUser();
+		}
+		if($oUser && ($this->isNew() || $this->getCreatedBy() === $oUser->getId()) && NewsletterPeer::mayOperateOnOwn($oUser, $this, $sOperation)) {
+			return true;
+		}
+		return NewsletterPeer::mayOperateOn($oUser, $this, $sOperation);
+	}
+	public function mayBeInserted($oUser = false) {
+		return $this->mayOperate($oUser, "insert");
+	}
+	public function mayBeUpdated($oUser = false) {
+		return $this->mayOperate($oUser, "update");
+	}
+	public function mayBeDeleted($oUser = false) {
+		return $this->mayOperate($oUser, "delete");
+	}
+
 	// extended_timestampable behavior
 	
 	/**
@@ -1750,7 +1785,7 @@ abstract class BaseNewsletter extends BaseObject  implements Persistent
 	 */
 	public function getCreatedAtTimestamp()
 	{
-		return $this->getCreatedAt('U');
+		return (int)$this->getCreatedAt('U');
 	}
 	
 	/**
@@ -1769,7 +1804,7 @@ abstract class BaseNewsletter extends BaseObject  implements Persistent
 	 */
 	public function getUpdatedAtTimestamp()
 	{
-		return $this->getUpdatedAt('U');
+		return (int)$this->getUpdatedAt('U');
 	}
 	
 	/**
