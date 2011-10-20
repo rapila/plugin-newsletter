@@ -1,6 +1,6 @@
 <?php
 
-class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBasedFrontendModule {
+class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display_list', 'newsletter_display_detail');
 	private $oSubscriber;
