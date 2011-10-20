@@ -115,15 +115,10 @@ class NewsletterFrontendModule extends DynamicFrontendModule implements WidgetBa
 	public function widgetData() {
 		return @unserialize($this->getData());	
 	}
-	
-	public function widgetSave($mData) {
-		$this->oLanguageObject->setData(serialize($mData));
-		return $this->oLanguageObject->save();
-	}
-	
+		
 	public function getWidget() {
 		$aOptions = @unserialize($this->getData()); 
-		$oWidget = new NewsletterEditWidgetModule(null, $this);
+		$oWidget = new NewsletterFrontendConfigWidgetModule(null, $this);
 		$oWidget->setDisplayMode($aOptions);
 		return $oWidget;
 	}
