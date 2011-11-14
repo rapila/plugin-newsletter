@@ -111,15 +111,4 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
 		$oEmail->send();
 	}
-	
-	public function widgetData() {
-		return @unserialize($this->getData());	
-	}
-		
-	public function getWidget() {
-		$aOptions = @unserialize($this->getData()); 
-		$oWidget = new NewsletterFrontendConfigWidgetModule(null, $this);
-		$oWidget->setDisplayMode($aOptions);
-		return $oWidget;
-	}
 }
