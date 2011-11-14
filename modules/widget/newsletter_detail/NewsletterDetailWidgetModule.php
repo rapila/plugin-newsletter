@@ -141,7 +141,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$oNewsletter->setSubject($aNewsletterData['subject']);
 		$oRichtextUtil = new RichtextUtil();
 		$oRichtextUtil->setTrackReferences($oNewsletter);
-		$oNewsletter->setNewsletterBody($oRichtextUtil->parseInputFromMce($aNewsletterData['newsletter_body']));
+		$oNewsletter->setNewsletterBody($oRichtextUtil->parseInputFromEditor($aNewsletterData['newsletter_body']));
 
 		$this->validate($aNewsletterData, $oNewsletter);
 		if(!Flash::noErrors()) {
