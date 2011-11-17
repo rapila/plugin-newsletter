@@ -32,7 +32,9 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			if(isset($_REQUEST['subscriber_group_id'])) {
 				$oSubscriber->deleteSubscriberGroupMembership($_REQUEST['subscriber_group_id']);
 			} else {
+				SubscriberPeer::ignoreRights(true);
 				$oSubscriber->delete();
+				SubscriberPeer::ignoreRights(false);
 			}
 		}
 		// display unsubscribe confirmation international
@@ -90,10 +92,14 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				if($aOptions['subscriber_group_id']) {
 					$this->oSubscriber->addSubscriberGroupMembershipIfNotExists($aOptions['subscriber_group_id']);
 				}
+				SubscriberGroupMembershipPeer::ignoreRights(true);
+				SubscriberPeer::ignoreRights(true);
 				$this->oSubscriber->save();
+				SubscriberPeer::ignoreRights(false);
+				SubscriberGroupMembershipPeer::ignoreRights(false);
 				$this->notifySubscriber();
 				unset($_REQUEST['subscriber_email']);
-				$oTemplate->replaceIdentifier('message', StringPeer::getString('newsletter.subscribe.success'));
+				$oTemplate->replaceIdentifier('message', StringPeer::getString('wns.newsletter.subscribe.success'));
 			}
 		}		
 		return $oTemplate;	

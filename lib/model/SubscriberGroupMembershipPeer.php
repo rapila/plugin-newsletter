@@ -12,5 +12,9 @@
  */
 class SubscriberGroupMembershipPeer extends BaseSubscriberGroupMembershipPeer {
 
+	public static function mayOperateOn($oUser, $mObject, $sOperation) {
+		return SubscriberPeer::mayOperateOn($oUser, $mObject->getSubscriber(), $sOperation);
+	}
+
 }
 
