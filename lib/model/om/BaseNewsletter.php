@@ -818,6 +818,8 @@ abstract class BaseNewsletter extends BaseObject  implements Persistent
 				$affectedRows = $this->doSave($con);
 				if ($isInsert) {
 					$this->postInsert($con);
+					// referencing behavior
+					ReferencePeer::saveUnsavedReferences($this);
 				} else {
 					$this->postUpdate($con);
 				}
@@ -1755,7 +1757,12 @@ abstract class BaseNewsletter extends BaseObject  implements Persistent
 		if($oUser && ($this->isNew() || $this->getCreatedBy() === $oUser->getId()) && NewsletterPeer::mayOperateOnOwn($oUser, $this, $sOperation)) {
 			return true;
 		}
-		return NewsletterPeer::mayOperateOn($oUser, $this, $sOperation);
+		if(NewsletterPeer::mayOperateOn($oUser, $this, $sOperation)) {
+			return true;
+		}
+		$bIsAllowed = false;
+		FilterModule::getFilters()->handleOperationIsDenied($sOperation, $this, $oUser, array(&$bIsAllowed));
+		return $bIsAllowed;
 	}
 	public function mayBeInserted($oUser = false) {
 		return $this->mayOperate("insert", $oUser);

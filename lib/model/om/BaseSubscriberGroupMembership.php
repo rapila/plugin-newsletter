@@ -1344,7 +1344,12 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		if($oUser && ($this->isNew() || $this->getCreatedBy() === $oUser->getId()) && SubscriberGroupMembershipPeer::mayOperateOnOwn($oUser, $this, $sOperation)) {
 			return true;
 		}
-		return SubscriberGroupMembershipPeer::mayOperateOn($oUser, $this, $sOperation);
+		if(SubscriberGroupMembershipPeer::mayOperateOn($oUser, $this, $sOperation)) {
+			return true;
+		}
+		$bIsAllowed = false;
+		FilterModule::getFilters()->handleOperationIsDenied($sOperation, $this, $oUser, array(&$bIsAllowed));
+		return $bIsAllowed;
 	}
 	public function mayBeInserted($oUser = false) {
 		return $this->mayOperate("insert", $oUser);
