@@ -95,8 +95,6 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				SubscriberGroupMembershipPeer::ignoreRights(true);
 				SubscriberPeer::ignoreRights(true);
 				$this->oSubscriber->save();
-				SubscriberPeer::ignoreRights(false);
-				SubscriberGroupMembershipPeer::ignoreRights(false);
 				$this->notifySubscriber();
 				unset($_REQUEST['subscriber_email']);
 				$oTemplate->replaceIdentifier('message', StringPeer::getString('wns.newsletter.subscribe.success'));
