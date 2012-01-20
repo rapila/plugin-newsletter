@@ -23,7 +23,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'group_sent_to', 'updated_at_formatted', 'send_test', 'duplicate', 'delete');
+		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'send_test', 'group_sent_to', 'updated_at_formatted', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
