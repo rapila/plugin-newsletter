@@ -16,7 +16,7 @@ jQuery(document).ready(function() {
 				}, true, true);
 			}
 			sidebar.handle('list-selection_changed', function(event, selection) {
-				newsletter_list.setOption('subscriber_group_id', selection[0] && selection[0].subscriber_group_id);
+				newsletter_list.setOption('subscriber_group_id', selection[0] && selection[0].id);
 				newsletter_list.reload();
 			});
 		});
