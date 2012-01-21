@@ -64,17 +64,16 @@ class NewslettersAdminModule extends AdminModule {
 	}
 	
 	public function getCriteria() {
-		$oCriteria = new Criteria();
+		$oQuery = NewsletterQuery::create();
 		if($this->oListWidget->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_ALL) {
-			return $oCriteria;
+			return $oQuery;
 		}
+		$oQuery->joinNewsletterMailing(null, Criteria::LEFT_JOIN)->useQuery('NewsletterMailing');
 		if($this->oListWidget->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
-			$oCriteria->addJoin(NewsletterPeer::ID, NewsletterMailingPeer::NEWSLETTER_ID, Criteria::INNER_JOIN);
-			$oCriteria->add(NewsletterMailingPeer::NEWSLETTER_ID, null, Criteria::ISNULL);
+			$oQuery->filterByNewsletterId(null, Criteria::ISNULL)->endUse();
 		} else {
-			$oCriteria->addJoin(NewsletterPeer::ID, NewsletterMailingPeer::NEWSLETTER_ID, Criteria::INNER_JOIN);
-			$oCriteria->add(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, $this->oListWidget->oDelegateProxy->getSubscriberGroupId());
+			$oQuery->filterBySubscriberGroupId($this->oListWidget->oDelegateProxy->getSubscriberGroupId())->endUse();
 		}
-		return $oCriteria;
+		return $oQuery;
 	}
 }
