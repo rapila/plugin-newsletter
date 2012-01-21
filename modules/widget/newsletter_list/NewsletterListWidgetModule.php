@@ -104,16 +104,26 @@ class NewsletterListWidgetModule extends WidgetModule {
 		}
 		return null;
 	}
-	
+
 	public function getLanguageName() {
 		return StringPeer::getString('language.'.$this->oDelegateProxy->getLanguageId(), null, $this->oDelegateProxy->getLanguageId());
 	}
 	
+	public function getSubscriberGroupName() {
+		if(is_numeric($this->oDelegateProxy->getSubscriberGroupId())) {
+			$oSubscriberGroup = SubscriberGroupPeer::retrieveByPK($this->oDelegateProxy->getSubscriberGroupId());
+			if($oSubscriberGroup) {
+				return $oSubscriberGroup->getName();
+			}
+		}
+    if($this->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
+			return StringPeer::getString('wns.subscriber_group.without');
+		}
+		return $this->oDelegateProxy->getSubscriberGroupId();
+	}
+	
   public function getCriteria() {
-		$oCriteria = new Criteria();
-		$oCriteria->setDistinct();
-    $oCriteria->addJoin(NewsletterPeer::ID, NewsletterMailingPeer::NEWSLETTER_ID, Criteria::LEFT_JOIN);
-		return $oCriteria;
+		return NewsletterQuery::create()->distinct()->joinNewsletterMailing(null, Criteria::LEFT_JOIN);
 	}
 
 }
