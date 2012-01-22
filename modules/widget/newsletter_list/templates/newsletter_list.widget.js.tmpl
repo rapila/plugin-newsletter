@@ -25,8 +25,8 @@ jQuery(document).ready(function() {
 						newsletter_detail.duplicateNewsletter(rowData.id, function(new_id) {
 							if(new_id) {
 								newsletter_detail.setNewsletterId(new_id);
-								newsletter_detail.open();
 								newsletter_detail.fill_data();
+								newsletter_detail.open();
 							}
 						});
 					});
