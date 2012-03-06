@@ -2,31 +2,14 @@ Widget.types.subscriber_detail = {
 	initialize: function() {
 		this.content = jQuery.parseHTML("{{includeTemplate=edit}}");
 		this.content.find('div.hide_if_not_saved').hide();
+		
+		Widget.callStatic('detail', 'create_for_instance', this);
 
-		Widget.create('detail', function(widget) {
-			this.detail_widget = widget.set_instance(this);
-			jQuery.extend(widget.settings, {
-				title: "{{writeString=wns.new_entry}}",
-				width: 550
-			});
-			if(this.auto_open) {
-				this.open();
-			}
-			this.content.find("select[name='subscriber_group_ids']").prepareWidget();
-			this.content.find("select[name='preferred_language_id']").prepareWidget(function(widget) {
-				widget.settings.international_option = false;
-				widget.settings.use_admin_languages = true;
-			}, jQuery.noop);
-		}.bind(this));
-	},
-	
-	open: function() {
-		if(!this.detail_widget) {
-			this.auto_open = true;
-			return false;
-		}
-		this.detail_widget.open();
-		this.detail_widget.content.find('input[name=name]').focus();
+		this.content.find("select[name='subscriber_group_ids']").prepareWidget();
+		this.content.find("select[name='preferred_language_id']").prepareWidget(function(widget) {
+			widget.settings.international_option = false;
+			widget.settings.use_admin_languages = true;
+		}, jQuery.noop);
 	},
 	
 	fill_data: function() {
@@ -41,12 +24,11 @@ Widget.types.subscriber_detail = {
 			this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.subscriber}} "+subscriber_data.Name);
 		});
 	},
-		
-	close: function() {
-		this.detail_widget.close();
-		this.close_callback();
-	},
 	
-	save_callback: jQuery.noop,
-	close_callback: jQuery.noop
+	settings: {
+	  detail_widget: {
+      title: "{{writeString=wns.new_entry}}",
+      width: 550
+	  }
+	}
 };
