@@ -14,12 +14,12 @@ class DisplayNewsletterFileModule extends FileModule {
 		$iId = Manager::usePath();
 		
 		if($sBase === 'newsletter') {
-			$this->oNewsletter = NewsletterPeer::retrieveByPK($iId);
+			$this->oNewsletter = NewsletterQuery::create()->findPk($iId);
 			if($this->oNewsletter === null) {
 				throw new Exception('No such newsletter exists');
 			}
 		} else if ($sBase === 'mailing') {
-			$this->oMailing = NewsletterMailingPeer::retrieveByPK($iId);
+			$this->oMailing = NewsletterMailingQuery::create()->findPk($iId);
 			if($this->oMailing === null) {
 				throw new Exception('No such mailing exists');
 			}

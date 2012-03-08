@@ -23,7 +23,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function getNewsletterData() {
-		$oNewsletter = NewsletterPeer::retrieveByPK($this->iNewsletterId);
+		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		$aResult = $oNewsletter->toArray();
 		unset($aResult['NewsletterBody']);
 		$aResult['template_options'] = self::getMatchingCustomTemplates();
@@ -52,7 +52,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function duplicateNewsletter($iOriginalId) {
-		$oNewsletter = NewsletterPeer::retrieveByPK($iOriginalId);
+		$oNewsletter = NewsletterQuery::create()->findPk($iOriginalId);
 		if($oNewsletter) {
 			$oNewNewsletter = new Newsletter();
 			$oNewNewsletter->setSubject('[Copy] '. $oNewsletter->getSubject());
@@ -69,7 +69,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		if($sTemplateName) {
 			return self::getNewsletterBodyTemplateByName($sTemplateName)->__toString();
 		}
-		$oNewsletter = NewsletterPeer::retrieveByPK($this->iNewsletterId);
+		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		if($oNewsletter !== null && $oNewsletter->getNewsletterBody() !== null) {
 			return RichtextUtil::parseStorageForBackendOutput(stream_get_contents($oNewsletter->getNewsletterBody()))->__toString();
 		} else if($oNewsletter !== null) {
@@ -83,7 +83,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		if($sTemplateName) {
 			return self::getNewsletterCssTemplateByName($sTemplateName)->render();
 		}
-		$oNewsletter = NewsletterPeer::retrieveByPK($this->iNewsletterId);
+		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		if($oNewsletter !== null) {
 			$sTemplateName = $oNewsletter->getTemplateName();
 			return self::getNewsletterCssTemplateByName($sTemplateName)->render();
@@ -128,7 +128,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function saveData($aNewsletterData) {
-		$oNewsletter = NewsletterPeer::retrieveByPK($this->iNewsletterId);
+		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		if($oNewsletter === null) {
 			$oNewsletter = new Newsletter();
 			$oNewsletter->setCreatedBy(Session::getSession()->getUserId());

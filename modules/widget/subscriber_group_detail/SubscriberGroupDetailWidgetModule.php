@@ -10,7 +10,7 @@ class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function getSubscriberGroupData() {
-		$oSubscriberGroup = SubscriberGroupPeer::retrieveByPK($this->iSubscriberGroupId);
+		$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->iSubscriberGroupId);
 		$aResult = $oSubscriberGroup->toArray();
 		$aResult['CreatedInfo'] = Util::formatCreatedInfo($oSubscriberGroup);
 		$aResult['UpdatedInfo'] = Util::formatUpdatedInfo($oSubscriberGroup);
@@ -25,7 +25,7 @@ class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function saveData($aSubscriberGroupData) {
-		$oSubscriberGroup = SubscriberGroupPeer::retrieveByPK($this->iSubscriberGroupId);
+		$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->iSubscriberGroupId);
 		if($oSubscriberGroup === null) {
 			$oSubscriberGroup = new SubscriberGroup();
 			$oSubscriberGroup->setCreatedBy(Session::getSession()->getUserId());

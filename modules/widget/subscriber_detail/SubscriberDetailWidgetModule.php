@@ -10,7 +10,7 @@ class SubscriberDetailWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function getSubscriberData() {
-		$oSubscriber = SubscriberPeer::retrieveByPK($this->iSubscriberId);
+		$oSubscriber = SubscriberQuery::create()->findPk($this->iSubscriberId);
 		$aResult = $oSubscriber->toArray();
 		$aResult['CreatedInfo'] = Util::formatCreatedInfo($oSubscriber);
 		$aResult['UpdatedInfo'] = Util::formatUpdatedInfo($oSubscriber);
@@ -30,7 +30,7 @@ class SubscriberDetailWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function saveData($aSubscriberData) {
-		$oSubscriber = SubscriberPeer::retrieveByPK($this->iSubscriberId);
+		$oSubscriber = SubscriberQuery::create()->findPk($this->iSubscriberId);
 		if($oSubscriber === null) {
 			$oSubscriber = new Subscriber();
 			$oSubscriber->setCreatedBy(Session::getSession()->getUserId());

@@ -111,7 +111,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	
 	public function getSubscriberGroupName() {
 		if(is_numeric($this->oDelegateProxy->getSubscriberGroupId())) {
-			$oSubscriberGroup = SubscriberGroupPeer::retrieveByPK($this->oDelegateProxy->getSubscriberGroupId());
+			$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->oDelegateProxy->getSubscriberGroupId());
 			if($oSubscriberGroup) {
 				return $oSubscriberGroup->getName();
 			}
