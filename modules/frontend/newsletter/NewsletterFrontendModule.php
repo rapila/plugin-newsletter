@@ -164,7 +164,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		}
 		$oOptinConfirmLink = LinkUtil::link($oSubscribePage->getLink(), null, array(self::PARAM_OPT_IN_CONFIRM => Subscriber::getOptInChecksumByEmailAndSubscriberGroupId($this->oSubscriber->getEmail(), $iSubscriberGroupId)));
 		
-		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), StringPeer::getLink('newsletter_subscription.optin_link_text')));
+		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), StringPeer::getString('newsletter_subscription.optin_link_text')));
 		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate);
 		$oEmail->setSender($sSenderName, $sSenderEmail);
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
