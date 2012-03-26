@@ -4,7 +4,9 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_subscribe_opt_in', 'newsletter_unsubscribe', 'newsletter_display_list', 'newsletter_display_detail');
 	private $oSubscriber;
+	private static $B_CONFIRMED;
 	const PARAM_OPT_IN_CONFIRM = 'opt_in_confirm';
+	
 	
 	public function __construct($oLanguageObject = null, $aRequestPath = null, $iId = 1) {
 		parent::__construct($oLanguageObject, $aRequestPath, $iId);
@@ -14,7 +16,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		if(isset($_REQUEST['unsubscribe'])) {
 			return $this->newsletterUnsubscribe();
 		}
-		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM])) {
+		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM]) && self::$B_CONFIRMED !== null) {
+			self::$B_CONFIRMED = true;
 			return $this->newsletterOptInConfirm();
 		}
 
@@ -22,8 +25,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		switch($aOptions['display_mode']) {
 			case 'newsletter_subscribe': return $this->newsletterSubscribe($aOptions);
 			case 'newsletter_subscribe_opt_in': return $this->newsletterSubscribe($aOptions, true);
-			case 'newsletter_display_list': return $this->displayNewsletterList();
-			case 'newsletter_display_detail': return $this->displayNewsletterDetail();
+			case 'newsletter_display_list': return $this->displayNewsletterList($aOptions);
+			case 'newsletter_display_detail': return $this->displayNewsletterDetail($aOptions);
 		}
 	}
 	
@@ -50,15 +53,23 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			SubscriberGroupMembershipPeer::ignoreRights(true);
 			$oSubscriberGroupMembership->setOptInHash(null);
 			$oSubscriberGroupMembership->save();
-			return $this->constructTemplate('email_subscription_optin_confirm');
+			return $this->constructTemplate('newsletter_optin_confirm');
 		}
-		return $this->constructTemplate('email_subscription_optin_error');
+		return $this->constructTemplate('newsletter_optin_error');
 	}
 	
-	private function displayNewsletterList() {
-		$aRecentNewsletters = NewsletterQuery::create()->filterApprovedForLanguage(Session::language())->orderByCreatedAt(Criteria::DESC)->limit(10)->find();
-		// Util::dumpAll($aRecentNewsletters);
+	private function displayNewsletterList($aOptions) {
+		$iSubscriberGroupId = @$aOptions['subscriber_group_id'];
+		$oQuery = NewsletterQuery::create()->filterApprovedForLanguage(Session::language())->orderByCreatedAt(Criteria::DESC);
+		if($iSubscriberGroupId) {
+			$oQuery->joinNewsletterMailing()->useQuery('NewsletterMailing')->filterBySubscriberGroupId($iSubscriberGroupId)->endUse();
+		}
+		$aRecentNewsletters = $oQuery->limit(10)->find();
+		$bHasNewsletters = count($aRecentNewsletters) > 0;
 		$oTemplate = $this->constructTemplate('newsletter_display_list');
+		if($bHasNewsletters === false) {
+			$oTemplate->replaceIdentifier('newsletter_item', TagWriter::quickTag('p', array('class' => 'no_result_message'), StringPeer::getString('wns.newsletter.no_newsletter_available')));
+		}
 		foreach($aRecentNewsletters as $oNewsletter) {
 			$oItemTemplate = $this->constructTemplate('newsletter_list_item');
 			$oItemTemplate->replaceIdentifier('subject', $oNewsletter->getSubject());
@@ -153,7 +164,9 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				throw new Exception('Error in'.__METHOD__.': a public and hidden page is required for optin subscribe action');
 			}
 		}
-		$oEmailTemplate->replaceIdentifier('optin_link', LinkUtil::link($oSubscribePage->getLink(), null, array(self::PARAM_OPT_IN_CONFIRM => Subscriber::getOptInChecksumByEmailAndSubscriberGroupId($this->oSubscriber->getEmail(), $iSubscriberGroupId))));
+		$oOptinConfirmLink = LinkUtil::link($oSubscribePage->getLink(), null, array(self::PARAM_OPT_IN_CONFIRM => Subscriber::getOptInChecksumByEmailAndSubscriberGroupId($this->oSubscriber->getEmail(), $iSubscriberGroupId)));
+		
+		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), StringPeer::getLink('newsletter_subscription.optin_link_text')));
 		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate);
 		$oEmail->setSender($sSenderName, $sSenderEmail);
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
