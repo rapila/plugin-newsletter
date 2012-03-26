@@ -100,9 +100,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 
 		if(Manager::isPost() && isset($_POST['newsletter_subscribe'])) {
 			$oFlash = Flash::getFlash();
-			if($oFlash->checkForValue('subscriber_email', 'email_required_for_subscription')) {
-				$oFlash->checkForEmail('subscriber_email', 'email_required_for_subscription');
-			}
+			$oFlash->checkForEmail('subscriber_email', 'email_required_for_subscription');
 
 			$oFlash->finishReporting();
 			if(Flash::noErrors()) {
