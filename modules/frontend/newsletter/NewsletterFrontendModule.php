@@ -16,7 +16,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		if(isset($_REQUEST['unsubscribe'])) {
 			return $this->newsletterUnsubscribe();
 		}
-		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM]) && self::$B_CONFIRMED !== null) {
+		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM]) && self::$B_CONFIRMED === null) {
 			self::$B_CONFIRMED = true;
 			return $this->newsletterOptInConfirm();
 		}
@@ -112,16 +112,21 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 					$this->oSubscriber->setName(isset($_POST['name']) ? $_POST['name'] : $this->oSubscriber->getEmail());
 					$this->oSubscriber->setCreatedAt(date('c'));
 				}
+				$bIsNewSubscription = false;
 				if($aOptions['subscriber_group_id']) {
-					$this->oSubscriber->addSubscriberGroupMembershipIfNotExists($aOptions['subscriber_group_id'], $bOptInRequired);
+					$bIsNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipIfNotExists($aOptions['subscriber_group_id'], $bOptInRequired);
 				}
 				SubscriberGroupMembershipPeer::ignoreRights(true);
 				SubscriberPeer::ignoreRights(true);
 				$this->oSubscriber->save();
-				if($bOptInRequired) {
-					$this->notifySubscriberOptIn($aOptions['subscriber_group_id']);
-				} else {
-					$this->notifySubscriber();
+				
+				// notifiy only if a new subscription has been added
+				if($bIsNewSubscription) {
+					if($bOptInRequired) {
+						$this->notifySubscriberOptIn($aOptions['subscriber_group_id'], $bIsNewSubscription);
+					} else {
+						$this->notifySubscriber($bIsNewSubscription);
+					}
 				}
 				unset($_REQUEST['subscriber_email']);
 				$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
@@ -134,7 +139,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		return $oTemplate;	
 	}
 	
-	public function notifySubscriber() {
+	public function notifySubscriber($bIsNewSubscription = true) {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_notification');
 		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
 		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila on '.$_SERVER['HTTP_HOST']);
@@ -147,7 +152,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmail->send();
 	}
 	
-	public function notifySubscriberOptIn($iSubscriberGroupId) {
+	public function notifySubscriberOptIn($iSubscriberGroupId, $bIsNewSubscription=true) {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
 		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
 		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila Newsletter on '.$_SERVER['HTTP_HOST']);

@@ -105,8 +105,8 @@ class Subscriber extends BaseSubscriber {
 			}
 		} 
 		if($bSubscriberGroupMembershipExists === false) {
-			$this->addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId, $bOptInRequired);
-		} 
+			return $this->addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId, $bOptInRequired);
+		}
 	}
 	
 	private function addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId, $bOptInRequired=false) {
@@ -115,7 +115,7 @@ class Subscriber extends BaseSubscriber {
 		if($bOptInRequired) {
 			$oSubscriberGroupMembership->setOptInHash($this->getOptInChecksum($iSubscriberGroupId));
 		}
-		$this->addSubscriberGroupMembership($oSubscriberGroupMembership);
+		return $this->addSubscriberGroupMembership($oSubscriberGroupMembership);
 	}
 		
 	public function getUnsubscribeChecksum() {
