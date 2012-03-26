@@ -39,7 +39,6 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			} else {
 				SubscriberPeer::ignoreRights(true);
 				$oSubscriber->delete();
-				SubscriberPeer::ignoreRights(false);
 			}
 		}
 		// display unsubscribe confirmation international
