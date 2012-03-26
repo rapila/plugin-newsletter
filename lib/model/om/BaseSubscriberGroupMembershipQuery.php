@@ -8,6 +8,7 @@
  *
  * @method     SubscriberGroupMembershipQuery orderBySubscriberId($order = Criteria::ASC) Order by the subscriber_id column
  * @method     SubscriberGroupMembershipQuery orderBySubscriberGroupId($order = Criteria::ASC) Order by the subscriber_group_id column
+ * @method     SubscriberGroupMembershipQuery orderByOptInHash($order = Criteria::ASC) Order by the opt_in_hash column
  * @method     SubscriberGroupMembershipQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     SubscriberGroupMembershipQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  * @method     SubscriberGroupMembershipQuery orderByCreatedBy($order = Criteria::ASC) Order by the created_by column
@@ -15,6 +16,7 @@
  *
  * @method     SubscriberGroupMembershipQuery groupBySubscriberId() Group by the subscriber_id column
  * @method     SubscriberGroupMembershipQuery groupBySubscriberGroupId() Group by the subscriber_group_id column
+ * @method     SubscriberGroupMembershipQuery groupByOptInHash() Group by the opt_in_hash column
  * @method     SubscriberGroupMembershipQuery groupByCreatedAt() Group by the created_at column
  * @method     SubscriberGroupMembershipQuery groupByUpdatedAt() Group by the updated_at column
  * @method     SubscriberGroupMembershipQuery groupByCreatedBy() Group by the created_by column
@@ -45,6 +47,7 @@
  *
  * @method     SubscriberGroupMembership findOneBySubscriberId(int $subscriber_id) Return the first SubscriberGroupMembership filtered by the subscriber_id column
  * @method     SubscriberGroupMembership findOneBySubscriberGroupId(int $subscriber_group_id) Return the first SubscriberGroupMembership filtered by the subscriber_group_id column
+ * @method     SubscriberGroupMembership findOneByOptInHash(string $opt_in_hash) Return the first SubscriberGroupMembership filtered by the opt_in_hash column
  * @method     SubscriberGroupMembership findOneByCreatedAt(string $created_at) Return the first SubscriberGroupMembership filtered by the created_at column
  * @method     SubscriberGroupMembership findOneByUpdatedAt(string $updated_at) Return the first SubscriberGroupMembership filtered by the updated_at column
  * @method     SubscriberGroupMembership findOneByCreatedBy(int $created_by) Return the first SubscriberGroupMembership filtered by the created_by column
@@ -52,6 +55,7 @@
  *
  * @method     array findBySubscriberId(int $subscriber_id) Return SubscriberGroupMembership objects filtered by the subscriber_id column
  * @method     array findBySubscriberGroupId(int $subscriber_group_id) Return SubscriberGroupMembership objects filtered by the subscriber_group_id column
+ * @method     array findByOptInHash(string $opt_in_hash) Return SubscriberGroupMembership objects filtered by the opt_in_hash column
  * @method     array findByCreatedAt(string $created_at) Return SubscriberGroupMembership objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return SubscriberGroupMembership objects filtered by the updated_at column
  * @method     array findByCreatedBy(int $created_by) Return SubscriberGroupMembership objects filtered by the created_by column
@@ -231,6 +235,34 @@ abstract class BaseSubscriberGroupMembershipQuery extends ModelCriteria
             $comparison = Criteria::IN;
         }
         return $this->addUsingAlias(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, $subscriberGroupId, $comparison);
+    }
+
+    /**
+     * Filter the query on the opt_in_hash column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByOptInHash('fooValue');   // WHERE opt_in_hash = 'fooValue'
+     * $query->filterByOptInHash('%fooValue%'); // WHERE opt_in_hash LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $optInHash The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return    SubscriberGroupMembershipQuery The current query, for fluid interface
+     */
+    public function filterByOptInHash($optInHash = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($optInHash)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $optInHash)) {
+                $optInHash = str_replace('*', '%', $optInHash);
+                $comparison = Criteria::LIKE;
+            }
+        }
+        return $this->addUsingAlias(SubscriberGroupMembershipPeer::OPT_IN_HASH, $optInHash, $comparison);
     }
 
     /**

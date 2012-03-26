@@ -37,6 +37,12 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	protected $subscriber_group_id;
 
 	/**
+	 * The value for the opt_in_hash field.
+	 * @var        string
+	 */
+	protected $opt_in_hash;
+
+	/**
 	 * The value for the created_at field.
 	 * @var        string
 	 */
@@ -112,6 +118,16 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	public function getSubscriberGroupId()
 	{
 		return $this->subscriber_group_id;
+	}
+
+	/**
+	 * Get the [opt_in_hash] column value.
+	 * 
+	 * @return     string
+	 */
+	public function getOptInHash()
+	{
+		return $this->opt_in_hash;
 	}
 
 	/**
@@ -259,6 +275,26 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	} // setSubscriberGroupId()
 
 	/**
+	 * Set the value of [opt_in_hash] column.
+	 * 
+	 * @param      string $v new value
+	 * @return     SubscriberGroupMembership The current object (for fluent API support)
+	 */
+	public function setOptInHash($v)
+	{
+		if ($v !== null) {
+			$v = (string) $v;
+		}
+
+		if ($this->opt_in_hash !== $v) {
+			$this->opt_in_hash = $v;
+			$this->modifiedColumns[] = SubscriberGroupMembershipPeer::OPT_IN_HASH;
+		}
+
+		return $this;
+	} // setOptInHash()
+
+	/**
 	 * Sets the value of [created_at] column to a normalized version of the date/time value specified.
 	 * 
 	 * @param      mixed $v string, integer (timestamp), or DateTime value.
@@ -384,10 +420,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 
 			$this->subscriber_id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
 			$this->subscriber_group_id = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
-			$this->created_at = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
-			$this->updated_at = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
-			$this->created_by = ($row[$startcol + 4] !== null) ? (int) $row[$startcol + 4] : null;
-			$this->updated_by = ($row[$startcol + 5] !== null) ? (int) $row[$startcol + 5] : null;
+			$this->opt_in_hash = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
+			$this->created_at = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
+			$this->updated_at = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
+			$this->created_by = ($row[$startcol + 5] !== null) ? (int) $row[$startcol + 5] : null;
+			$this->updated_by = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -396,7 +433,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 6; // 6 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS.
+			return $startcol + 7; // 7 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating SubscriberGroupMembership object", $e);
@@ -817,15 +854,18 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				return $this->getSubscriberGroupId();
 				break;
 			case 2:
-				return $this->getCreatedAt();
+				return $this->getOptInHash();
 				break;
 			case 3:
-				return $this->getUpdatedAt();
+				return $this->getCreatedAt();
 				break;
 			case 4:
-				return $this->getCreatedBy();
+				return $this->getUpdatedAt();
 				break;
 			case 5:
+				return $this->getCreatedBy();
+				break;
+			case 6:
 				return $this->getUpdatedBy();
 				break;
 			default:
@@ -859,10 +899,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		$result = array(
 			$keys[0] => $this->getSubscriberId(),
 			$keys[1] => $this->getSubscriberGroupId(),
-			$keys[2] => $this->getCreatedAt(),
-			$keys[3] => $this->getUpdatedAt(),
-			$keys[4] => $this->getCreatedBy(),
-			$keys[5] => $this->getUpdatedBy(),
+			$keys[2] => $this->getOptInHash(),
+			$keys[3] => $this->getCreatedAt(),
+			$keys[4] => $this->getUpdatedAt(),
+			$keys[5] => $this->getCreatedBy(),
+			$keys[6] => $this->getUpdatedBy(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aSubscriber) {
@@ -915,15 +956,18 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				$this->setSubscriberGroupId($value);
 				break;
 			case 2:
-				$this->setCreatedAt($value);
+				$this->setOptInHash($value);
 				break;
 			case 3:
-				$this->setUpdatedAt($value);
+				$this->setCreatedAt($value);
 				break;
 			case 4:
-				$this->setCreatedBy($value);
+				$this->setUpdatedAt($value);
 				break;
 			case 5:
+				$this->setCreatedBy($value);
+				break;
+			case 6:
 				$this->setUpdatedBy($value);
 				break;
 		} // switch()
@@ -952,10 +996,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 
 		if (array_key_exists($keys[0], $arr)) $this->setSubscriberId($arr[$keys[0]]);
 		if (array_key_exists($keys[1], $arr)) $this->setSubscriberGroupId($arr[$keys[1]]);
-		if (array_key_exists($keys[2], $arr)) $this->setCreatedAt($arr[$keys[2]]);
-		if (array_key_exists($keys[3], $arr)) $this->setUpdatedAt($arr[$keys[3]]);
-		if (array_key_exists($keys[4], $arr)) $this->setCreatedBy($arr[$keys[4]]);
-		if (array_key_exists($keys[5], $arr)) $this->setUpdatedBy($arr[$keys[5]]);
+		if (array_key_exists($keys[2], $arr)) $this->setOptInHash($arr[$keys[2]]);
+		if (array_key_exists($keys[3], $arr)) $this->setCreatedAt($arr[$keys[3]]);
+		if (array_key_exists($keys[4], $arr)) $this->setUpdatedAt($arr[$keys[4]]);
+		if (array_key_exists($keys[5], $arr)) $this->setCreatedBy($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setUpdatedBy($arr[$keys[6]]);
 	}
 
 	/**
@@ -969,6 +1014,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::SUBSCRIBER_ID)) $criteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_ID, $this->subscriber_id);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID)) $criteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, $this->subscriber_group_id);
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::OPT_IN_HASH)) $criteria->add(SubscriberGroupMembershipPeer::OPT_IN_HASH, $this->opt_in_hash);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::CREATED_AT)) $criteria->add(SubscriberGroupMembershipPeer::CREATED_AT, $this->created_at);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::UPDATED_AT)) $criteria->add(SubscriberGroupMembershipPeer::UPDATED_AT, $this->updated_at);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::CREATED_BY)) $criteria->add(SubscriberGroupMembershipPeer::CREATED_BY, $this->created_by);
@@ -1044,6 +1090,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	{
 		$copyObj->setSubscriberId($this->getSubscriberId());
 		$copyObj->setSubscriberGroupId($this->getSubscriberGroupId());
+		$copyObj->setOptInHash($this->getOptInHash());
 		$copyObj->setCreatedAt($this->getCreatedAt());
 		$copyObj->setUpdatedAt($this->getUpdatedAt());
 		$copyObj->setCreatedBy($this->getCreatedBy());
@@ -1294,6 +1341,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	{
 		$this->subscriber_id = null;
 		$this->subscriber_group_id = null;
+		$this->opt_in_hash = null;
 		$this->created_at = null;
 		$this->updated_at = null;
 		$this->created_by = null;

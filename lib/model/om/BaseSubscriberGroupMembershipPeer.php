@@ -26,19 +26,22 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	const TM_CLASS = 'SubscriberGroupMembershipTableMap';
 
 	/** The total number of columns. */
-	const NUM_COLUMNS = 6;
+	const NUM_COLUMNS = 7;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
 	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-	const NUM_HYDRATE_COLUMNS = 6;
+	const NUM_HYDRATE_COLUMNS = 7;
 
 	/** the column name for the SUBSCRIBER_ID field */
 	const SUBSCRIBER_ID = 'subscriber_group_memberships.SUBSCRIBER_ID';
 
 	/** the column name for the SUBSCRIBER_GROUP_ID field */
 	const SUBSCRIBER_GROUP_ID = 'subscriber_group_memberships.SUBSCRIBER_GROUP_ID';
+
+	/** the column name for the OPT_IN_HASH field */
+	const OPT_IN_HASH = 'subscriber_group_memberships.OPT_IN_HASH';
 
 	/** the column name for the CREATED_AT field */
 	const CREATED_AT = 'subscriber_group_memberships.CREATED_AT';
@@ -73,12 +76,12 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	protected static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('SubscriberId', 'SubscriberGroupId', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'UpdatedBy', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('subscriberId', 'subscriberGroupId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', ),
-		BasePeer::TYPE_COLNAME => array (self::SUBSCRIBER_ID, self::SUBSCRIBER_GROUP_ID, self::CREATED_AT, self::UPDATED_AT, self::CREATED_BY, self::UPDATED_BY, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('SUBSCRIBER_ID', 'SUBSCRIBER_GROUP_ID', 'CREATED_AT', 'UPDATED_AT', 'CREATED_BY', 'UPDATED_BY', ),
-		BasePeer::TYPE_FIELDNAME => array ('subscriber_id', 'subscriber_group_id', 'created_at', 'updated_at', 'created_by', 'updated_by', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, )
+		BasePeer::TYPE_PHPNAME => array ('SubscriberId', 'SubscriberGroupId', 'OptInHash', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'UpdatedBy', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('subscriberId', 'subscriberGroupId', 'optInHash', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', ),
+		BasePeer::TYPE_COLNAME => array (self::SUBSCRIBER_ID, self::SUBSCRIBER_GROUP_ID, self::OPT_IN_HASH, self::CREATED_AT, self::UPDATED_AT, self::CREATED_BY, self::UPDATED_BY, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('SUBSCRIBER_ID', 'SUBSCRIBER_GROUP_ID', 'OPT_IN_HASH', 'CREATED_AT', 'UPDATED_AT', 'CREATED_BY', 'UPDATED_BY', ),
+		BasePeer::TYPE_FIELDNAME => array ('subscriber_id', 'subscriber_group_id', 'opt_in_hash', 'created_at', 'updated_at', 'created_by', 'updated_by', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, )
 	);
 
 	/**
@@ -88,12 +91,12 @@ abstract class BaseSubscriberGroupMembershipPeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	protected static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('SubscriberId' => 0, 'SubscriberGroupId' => 1, 'CreatedAt' => 2, 'UpdatedAt' => 3, 'CreatedBy' => 4, 'UpdatedBy' => 5, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('subscriberId' => 0, 'subscriberGroupId' => 1, 'createdAt' => 2, 'updatedAt' => 3, 'createdBy' => 4, 'updatedBy' => 5, ),
-		BasePeer::TYPE_COLNAME => array (self::SUBSCRIBER_ID => 0, self::SUBSCRIBER_GROUP_ID => 1, self::CREATED_AT => 2, self::UPDATED_AT => 3, self::CREATED_BY => 4, self::UPDATED_BY => 5, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('SUBSCRIBER_ID' => 0, 'SUBSCRIBER_GROUP_ID' => 1, 'CREATED_AT' => 2, 'UPDATED_AT' => 3, 'CREATED_BY' => 4, 'UPDATED_BY' => 5, ),
-		BasePeer::TYPE_FIELDNAME => array ('subscriber_id' => 0, 'subscriber_group_id' => 1, 'created_at' => 2, 'updated_at' => 3, 'created_by' => 4, 'updated_by' => 5, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, )
+		BasePeer::TYPE_PHPNAME => array ('SubscriberId' => 0, 'SubscriberGroupId' => 1, 'OptInHash' => 2, 'CreatedAt' => 3, 'UpdatedAt' => 4, 'CreatedBy' => 5, 'UpdatedBy' => 6, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('subscriberId' => 0, 'subscriberGroupId' => 1, 'optInHash' => 2, 'createdAt' => 3, 'updatedAt' => 4, 'createdBy' => 5, 'updatedBy' => 6, ),
+		BasePeer::TYPE_COLNAME => array (self::SUBSCRIBER_ID => 0, self::SUBSCRIBER_GROUP_ID => 1, self::OPT_IN_HASH => 2, self::CREATED_AT => 3, self::UPDATED_AT => 4, self::CREATED_BY => 5, self::UPDATED_BY => 6, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('SUBSCRIBER_ID' => 0, 'SUBSCRIBER_GROUP_ID' => 1, 'OPT_IN_HASH' => 2, 'CREATED_AT' => 3, 'UPDATED_AT' => 4, 'CREATED_BY' => 5, 'UPDATED_BY' => 6, ),
+		BasePeer::TYPE_FIELDNAME => array ('subscriber_id' => 0, 'subscriber_group_id' => 1, 'opt_in_hash' => 2, 'created_at' => 3, 'updated_at' => 4, 'created_by' => 5, 'updated_by' => 6, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, )
 	);
 
 	/**
@@ -167,6 +170,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		if (null === $alias) {
 			$criteria->addSelectColumn(SubscriberGroupMembershipPeer::SUBSCRIBER_ID);
 			$criteria->addSelectColumn(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID);
+			$criteria->addSelectColumn(SubscriberGroupMembershipPeer::OPT_IN_HASH);
 			$criteria->addSelectColumn(SubscriberGroupMembershipPeer::CREATED_AT);
 			$criteria->addSelectColumn(SubscriberGroupMembershipPeer::UPDATED_AT);
 			$criteria->addSelectColumn(SubscriberGroupMembershipPeer::CREATED_BY);
@@ -174,6 +178,7 @@ abstract class BaseSubscriberGroupMembershipPeer {
 		} else {
 			$criteria->addSelectColumn($alias . '.SUBSCRIBER_ID');
 			$criteria->addSelectColumn($alias . '.SUBSCRIBER_GROUP_ID');
+			$criteria->addSelectColumn($alias . '.OPT_IN_HASH');
 			$criteria->addSelectColumn($alias . '.CREATED_AT');
 			$criteria->addSelectColumn($alias . '.UPDATED_AT');
 			$criteria->addSelectColumn($alias . '.CREATED_BY');
