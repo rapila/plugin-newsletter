@@ -43,6 +43,9 @@ class PropelMigration_1332754790
 SET FOREIGN_KEY_CHECKS = 0;
 
 ALTER TABLE `subscriber_group_memberships` ADD `opt_in_hash` CHAR( 32 ) NULL DEFAULT NULL AFTER `subscriber_group_id`;
+
+# This restores the fkey checks, after having unset them earlier
+SET FOREIGN_KEY_CHECKS = 1;
 ',
 );
 	}
