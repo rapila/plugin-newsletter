@@ -43,6 +43,7 @@
 			<reference local="subscriber_group_id" foreign="id" />
 		</foreign-key>
 		<column name="opt_in_hash" type="varchar" size="32" />
+		<column name="is_backend_created" description="is imported or manually added" type="boolean" required="true" default="0" />
 	</table>
 	
 	<table name="subscriber_groups" phpName="SubscriberGroup">

@@ -75,6 +75,10 @@ class SubscriberListWidgetModule extends WidgetModule {
 		}
 		return $this->oDelegateProxy->getSubscriberGroupId();
 	}
+	
+	public function getSubscriberGroupHasSubscriptions($iSubscriberGroupId) {
+		return SubscriberGroupMembershipQuery::create()->filterBySubscriberGroupId($iSubscriberGroupId)->count() > 0;
+	}
 
 	public function getCriteria() {
 		$oCriteria = new Criteria();
