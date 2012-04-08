@@ -25,6 +25,12 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	protected static $peer;
 
 	/**
+	 * The flag var to prevent infinit loop in deep copy
+	 * @var       boolean
+	 */
+	protected $startCopy = false;
+
+	/**
 	 * The value for the subscriber_id field.
 	 * @var        int
 	 */
@@ -41,6 +47,13 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 * @var        string
 	 */
 	protected $opt_in_hash;
+
+	/**
+	 * The value for the is_backend_created field.
+	 * Note: this column has a database default value of: false
+	 * @var        boolean
+	 */
+	protected $is_backend_created;
 
 	/**
 	 * The value for the created_at field.
@@ -101,6 +114,27 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	protected $alreadyInValidation = false;
 
 	/**
+	 * Applies default values to this object.
+	 * This method should be called from the object's constructor (or
+	 * equivalent initialization method).
+	 * @see        __construct()
+	 */
+	public function applyDefaultValues()
+	{
+		$this->is_backend_created = false;
+	}
+
+	/**
+	 * Initializes internal state of BaseSubscriberGroupMembership object.
+	 * @see        applyDefaults()
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+		$this->applyDefaultValues();
+	}
+
+	/**
 	 * Get the [subscriber_id] column value.
 	 * 
 	 * @return     int
@@ -128,6 +162,16 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	public function getOptInHash()
 	{
 		return $this->opt_in_hash;
+	}
+
+	/**
+	 * Get the [is_backend_created] column value.
+	 * is imported or manually added
+	 * @return     boolean
+	 */
+	public function getIsBackendCreated()
+	{
+		return $this->is_backend_created;
 	}
 
 	/**
@@ -295,6 +339,34 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	} // setOptInHash()
 
 	/**
+	 * Sets the value of the [is_backend_created] column.
+	 * Non-boolean arguments are converted using the following rules:
+	 *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+	 *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+	 * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+	 * is imported or manually added
+	 * @param      boolean|integer|string $v The new value
+	 * @return     SubscriberGroupMembership The current object (for fluent API support)
+	 */
+	public function setIsBackendCreated($v)
+	{
+		if ($v !== null) {
+			if (is_string($v)) {
+				$v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+			} else {
+				$v = (boolean) $v;
+			}
+		}
+
+		if ($this->is_backend_created !== $v) {
+			$this->is_backend_created = $v;
+			$this->modifiedColumns[] = SubscriberGroupMembershipPeer::IS_BACKEND_CREATED;
+		}
+
+		return $this;
+	} // setIsBackendCreated()
+
+	/**
 	 * Sets the value of [created_at] column to a normalized version of the date/time value specified.
 	 * 
 	 * @param      mixed $v string, integer (timestamp), or DateTime value.
@@ -396,6 +468,10 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 */
 	public function hasOnlyDefaultValues()
 	{
+			if ($this->is_backend_created !== false) {
+				return false;
+			}
+
 		// otherwise, everything was equal, so return TRUE
 		return true;
 	} // hasOnlyDefaultValues()
@@ -421,10 +497,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 			$this->subscriber_id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
 			$this->subscriber_group_id = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
 			$this->opt_in_hash = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
-			$this->created_at = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
-			$this->updated_at = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
-			$this->created_by = ($row[$startcol + 5] !== null) ? (int) $row[$startcol + 5] : null;
-			$this->updated_by = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
+			$this->is_backend_created = ($row[$startcol + 3] !== null) ? (boolean) $row[$startcol + 3] : null;
+			$this->created_at = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
+			$this->updated_at = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+			$this->created_by = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
+			$this->updated_by = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -433,7 +510,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 7; // 7 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS.
+			return $startcol + 8; // 8 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating SubscriberGroupMembership object", $e);
@@ -551,7 +628,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 			} else {
 				$con->commit();
 			}
-		} catch (PropelException $e) {
+		} catch (Exception $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -642,7 +719,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 			}
 			$con->commit();
 			return $affectedRows;
-		} catch (PropelException $e) {
+		} catch (Exception $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -698,19 +775,15 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				$this->setUserRelatedByUpdatedBy($this->aUserRelatedByUpdatedBy);
 			}
 
-
-			// If this object has been modified, then save it to the database.
-			if ($this->isModified()) {
+			if ($this->isNew() || $this->isModified()) {
+				// persist changes
 				if ($this->isNew()) {
-					$criteria = $this->buildCriteria();
-					$pk = BasePeer::doInsert($criteria, $con);
-					$affectedRows += 1;
-					$this->setNew(false);
+					$this->doInsert($con);
 				} else {
-					$affectedRows += SubscriberGroupMembershipPeer::doUpdate($this, $con);
+					$this->doUpdate($con);
 				}
-
-				$this->resetModified(); // [HL] After being saved an object is no longer 'modified'
+				$affectedRows += 1;
+				$this->resetModified();
 			}
 
 			$this->alreadyInSave = false;
@@ -718,6 +791,105 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		}
 		return $affectedRows;
 	} // doSave()
+
+	/**
+	 * Insert the row in the database.
+	 *
+	 * @param      PropelPDO $con
+	 *
+	 * @throws     PropelException
+	 * @see        doSave()
+	 */
+	protected function doInsert(PropelPDO $con)
+	{
+		$modifiedColumns = array();
+		$index = 0;
+
+
+		 // check the columns in natural order for more readable SQL queries
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::SUBSCRIBER_ID)) {
+			$modifiedColumns[':p' . $index++]  = '`SUBSCRIBER_ID`';
+		}
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID)) {
+			$modifiedColumns[':p' . $index++]  = '`SUBSCRIBER_GROUP_ID`';
+		}
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::OPT_IN_HASH)) {
+			$modifiedColumns[':p' . $index++]  = '`OPT_IN_HASH`';
+		}
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::IS_BACKEND_CREATED)) {
+			$modifiedColumns[':p' . $index++]  = '`IS_BACKEND_CREATED`';
+		}
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::CREATED_AT)) {
+			$modifiedColumns[':p' . $index++]  = '`CREATED_AT`';
+		}
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::UPDATED_AT)) {
+			$modifiedColumns[':p' . $index++]  = '`UPDATED_AT`';
+		}
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::CREATED_BY)) {
+			$modifiedColumns[':p' . $index++]  = '`CREATED_BY`';
+		}
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::UPDATED_BY)) {
+			$modifiedColumns[':p' . $index++]  = '`UPDATED_BY`';
+		}
+
+		$sql = sprintf(
+			'INSERT INTO `subscriber_group_memberships` (%s) VALUES (%s)',
+			implode(', ', $modifiedColumns),
+			implode(', ', array_keys($modifiedColumns))
+		);
+
+		try {
+			$stmt = $con->prepare($sql);
+			foreach ($modifiedColumns as $identifier => $columnName) {
+				switch ($columnName) {
+					case '`SUBSCRIBER_ID`':
+						$stmt->bindValue($identifier, $this->subscriber_id, PDO::PARAM_INT);
+						break;
+					case '`SUBSCRIBER_GROUP_ID`':
+						$stmt->bindValue($identifier, $this->subscriber_group_id, PDO::PARAM_INT);
+						break;
+					case '`OPT_IN_HASH`':
+						$stmt->bindValue($identifier, $this->opt_in_hash, PDO::PARAM_STR);
+						break;
+					case '`IS_BACKEND_CREATED`':
+						$stmt->bindValue($identifier, (int) $this->is_backend_created, PDO::PARAM_INT);
+						break;
+					case '`CREATED_AT`':
+						$stmt->bindValue($identifier, $this->created_at, PDO::PARAM_STR);
+						break;
+					case '`UPDATED_AT`':
+						$stmt->bindValue($identifier, $this->updated_at, PDO::PARAM_STR);
+						break;
+					case '`CREATED_BY`':
+						$stmt->bindValue($identifier, $this->created_by, PDO::PARAM_INT);
+						break;
+					case '`UPDATED_BY`':
+						$stmt->bindValue($identifier, $this->updated_by, PDO::PARAM_INT);
+						break;
+				}
+			}
+			$stmt->execute();
+		} catch (Exception $e) {
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), $e);
+		}
+
+		$this->setNew(false);
+	}
+
+	/**
+	 * Update the row in the database.
+	 *
+	 * @param      PropelPDO $con
+	 *
+	 * @see        doSave()
+	 */
+	protected function doUpdate(PropelPDO $con)
+	{
+		$selectCriteria = $this->buildPkeyCriteria();
+		$valuesCriteria = $this->buildCriteria();
+		BasePeer::doUpdate($selectCriteria, $valuesCriteria, $con);
+	}
 
 	/**
 	 * Array of ValidationFailed objects.
@@ -857,15 +1029,18 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				return $this->getOptInHash();
 				break;
 			case 3:
-				return $this->getCreatedAt();
+				return $this->getIsBackendCreated();
 				break;
 			case 4:
-				return $this->getUpdatedAt();
+				return $this->getCreatedAt();
 				break;
 			case 5:
-				return $this->getCreatedBy();
+				return $this->getUpdatedAt();
 				break;
 			case 6:
+				return $this->getCreatedBy();
+				break;
+			case 7:
 				return $this->getUpdatedBy();
 				break;
 			default:
@@ -900,10 +1075,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 			$keys[0] => $this->getSubscriberId(),
 			$keys[1] => $this->getSubscriberGroupId(),
 			$keys[2] => $this->getOptInHash(),
-			$keys[3] => $this->getCreatedAt(),
-			$keys[4] => $this->getUpdatedAt(),
-			$keys[5] => $this->getCreatedBy(),
-			$keys[6] => $this->getUpdatedBy(),
+			$keys[3] => $this->getIsBackendCreated(),
+			$keys[4] => $this->getCreatedAt(),
+			$keys[5] => $this->getUpdatedAt(),
+			$keys[6] => $this->getCreatedBy(),
+			$keys[7] => $this->getUpdatedBy(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aSubscriber) {
@@ -959,15 +1135,18 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				$this->setOptInHash($value);
 				break;
 			case 3:
-				$this->setCreatedAt($value);
+				$this->setIsBackendCreated($value);
 				break;
 			case 4:
-				$this->setUpdatedAt($value);
+				$this->setCreatedAt($value);
 				break;
 			case 5:
-				$this->setCreatedBy($value);
+				$this->setUpdatedAt($value);
 				break;
 			case 6:
+				$this->setCreatedBy($value);
+				break;
+			case 7:
 				$this->setUpdatedBy($value);
 				break;
 		} // switch()
@@ -997,10 +1176,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		if (array_key_exists($keys[0], $arr)) $this->setSubscriberId($arr[$keys[0]]);
 		if (array_key_exists($keys[1], $arr)) $this->setSubscriberGroupId($arr[$keys[1]]);
 		if (array_key_exists($keys[2], $arr)) $this->setOptInHash($arr[$keys[2]]);
-		if (array_key_exists($keys[3], $arr)) $this->setCreatedAt($arr[$keys[3]]);
-		if (array_key_exists($keys[4], $arr)) $this->setUpdatedAt($arr[$keys[4]]);
-		if (array_key_exists($keys[5], $arr)) $this->setCreatedBy($arr[$keys[5]]);
-		if (array_key_exists($keys[6], $arr)) $this->setUpdatedBy($arr[$keys[6]]);
+		if (array_key_exists($keys[3], $arr)) $this->setIsBackendCreated($arr[$keys[3]]);
+		if (array_key_exists($keys[4], $arr)) $this->setCreatedAt($arr[$keys[4]]);
+		if (array_key_exists($keys[5], $arr)) $this->setUpdatedAt($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setCreatedBy($arr[$keys[6]]);
+		if (array_key_exists($keys[7], $arr)) $this->setUpdatedBy($arr[$keys[7]]);
 	}
 
 	/**
@@ -1015,6 +1195,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::SUBSCRIBER_ID)) $criteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_ID, $this->subscriber_id);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID)) $criteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, $this->subscriber_group_id);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::OPT_IN_HASH)) $criteria->add(SubscriberGroupMembershipPeer::OPT_IN_HASH, $this->opt_in_hash);
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::IS_BACKEND_CREATED)) $criteria->add(SubscriberGroupMembershipPeer::IS_BACKEND_CREATED, $this->is_backend_created);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::CREATED_AT)) $criteria->add(SubscriberGroupMembershipPeer::CREATED_AT, $this->created_at);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::UPDATED_AT)) $criteria->add(SubscriberGroupMembershipPeer::UPDATED_AT, $this->updated_at);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::CREATED_BY)) $criteria->add(SubscriberGroupMembershipPeer::CREATED_BY, $this->created_by);
@@ -1091,10 +1272,23 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		$copyObj->setSubscriberId($this->getSubscriberId());
 		$copyObj->setSubscriberGroupId($this->getSubscriberGroupId());
 		$copyObj->setOptInHash($this->getOptInHash());
+		$copyObj->setIsBackendCreated($this->getIsBackendCreated());
 		$copyObj->setCreatedAt($this->getCreatedAt());
 		$copyObj->setUpdatedAt($this->getUpdatedAt());
 		$copyObj->setCreatedBy($this->getCreatedBy());
 		$copyObj->setUpdatedBy($this->getUpdatedBy());
+
+		if ($deepCopy && !$this->startCopy) {
+			// important: temporarily setNew(false) because this affects the behavior of
+			// the getter/setter methods for fkey referrer objects.
+			$copyObj->setNew(false);
+			// store object hash to prevent cycle
+			$this->startCopy = true;
+
+			//unflag object copy
+			$this->startCopy = false;
+		} // if ($deepCopy)
+
 		if ($makeNew) {
 			$copyObj->setNew(true);
 		}
@@ -1342,6 +1536,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		$this->subscriber_id = null;
 		$this->subscriber_group_id = null;
 		$this->opt_in_hash = null;
+		$this->is_backend_created = null;
 		$this->created_at = null;
 		$this->updated_at = null;
 		$this->created_by = null;
@@ -1349,6 +1544,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
 		$this->clearAllReferences();
+		$this->applyDefaultValues();
 		$this->resetModified();
 		$this->setNew(true);
 		$this->setDeleted(false);

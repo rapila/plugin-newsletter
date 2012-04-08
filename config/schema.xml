@@ -26,7 +26,7 @@
 	<table name="subscribers" phpName="Subscriber">
 		<column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
 		<column name="name" type="varchar" size="80" required="true" />
-		<column name="preferred_language_id" type="varchar" size="3" required="true" />
+		<column name="preferred_language_id" type="varchar" size="3" />
 		<column name="email" type="varchar" size="255" />
 		<unique>
 			<unique-column name="email"/>

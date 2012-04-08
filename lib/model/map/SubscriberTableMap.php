@@ -40,7 +40,7 @@ class SubscriberTableMap extends TableMap
 		// columns
 		$this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
 		$this->addColumn('NAME', 'Name', 'VARCHAR', true, 80, null);
-		$this->addColumn('PREFERRED_LANGUAGE_ID', 'PreferredLanguageId', 'VARCHAR', true, 3, null);
+		$this->addColumn('PREFERRED_LANGUAGE_ID', 'PreferredLanguageId', 'VARCHAR', false, 3, null);
 		$this->addColumn('EMAIL', 'Email', 'VARCHAR', false, 255, null);
 		$this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
 		$this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
