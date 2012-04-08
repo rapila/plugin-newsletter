@@ -39,8 +39,8 @@ class SubscriberPeer extends BaseSubscriberPeer {
 		return self::getByEmail($sEmail) !== null;
 	}
 	
-	public static function getSubscribersBySubscriberGroupMembership($mSubscriberGroupMemberShip = null, $iStart = null, $iLimit = null) {
-		$oCriteria = self::getSubscribersBySubscriberGroupMembershipCriteria($mSubscriberGroupMemberShip);
+	public static function getSubscribersBySubscriberGroupMembership($mSubscriberGroupMemberShip=null, $bIsBackendCreated=false, $iStart=null, $iLimit=null) {
+		$oCriteria = self::getSubscribersBySubscriberGroupMembershipCriteria($mSubscriberGroupMemberShip, $bIsBackendCreated);
 		if($iStart !== null) {
 			$oCriteria->setOffset($iStart);
 		}
@@ -50,11 +50,11 @@ class SubscriberPeer extends BaseSubscriberPeer {
 		return self::doSelect($oCriteria);
 	}
 	
-	public static function countSubscribersBySubscriberGroupMembership($mSubscriberGroupMemberShip = null) {
-		return self::doCount(self::getSubscribersBySubscriberGroupMembershipCriteria($mSubscriberGroupMemberShip));
+	public static function countSubscribersBySubscriberGroupMembership($mSubscriberGroupMemberShip=null, $bIsBackendCreated=false) {
+		return self::doCount(self::getSubscribersBySubscriberGroupMembershipCriteria($mSubscriberGroupMemberShip, $bIsBackendCreated));
 	}
 	
-	public static function getSubscribersBySubscriberGroupMembershipCriteria($mSubscriberGroupMemberShip = null) {
+	public static function getSubscribersBySubscriberGroupMembershipCriteria($mSubscriberGroupMemberShip=null, $bIsBackendCreated=false) {
 		$oCriteria = new Criteria();
 		$oCriteria->setDistinct();
 		if($mSubscriberGroupMemberShip !== null) {
@@ -63,6 +63,7 @@ class SubscriberPeer extends BaseSubscriberPeer {
 			$oCriteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, $aSubscriberGroupMemberShips, Criteria::IN);
 			$oCriteria->add(SubscriberGroupMembershipPeer::OPT_IN_HASH, null, Criteria::ISNULL);
 		}
+		$oCriteria->add(SubscriberGroupMembershipPeer::IS_BACKEND_CREATED, $bIsBackendCreated);
 		return $oCriteria;
 	}
 }

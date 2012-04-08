@@ -30,6 +30,12 @@ class SubscriberGroup extends BaseSubscriberGroup {
 		}
 		return parent::getSubscriberGroupMemberships($oCriteria, $oCon);
 	}
+	
+	public function countSubscriberGroupMembershipsByIsBackendCreated($bIsBackendCreated=true) {
+		$oCriteria = new Criteria();
+		$oCriteria->add(SubscriberGroupMembershipPeer::IS_BACKEND_CREATED, $bIsBackendCreated);
+		return $this->countSubscriberGroupMemberships($oCriteria);
+	}
 
 	public function getLinkToSubscriberData() {
 		$aArray = array();
