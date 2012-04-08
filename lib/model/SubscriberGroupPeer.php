@@ -57,11 +57,35 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 		return self::doCount(new Criteria()) > 0;
 	}
 	
-	public static function getAllAssoc($bDoJoinSubscriberMemberships = false, $bAddMemberShipCount = false) {
+	/** getAllAssoc()
+	* @param boolean inner_join subscriber_group_memberships
+	* @param boolean show external and backend_created subscriber groups
+	* @param boolean show count
+	* @return array assoc for select
+	*/
+	public static function getAllAssoc($bDoJoinSubscriberMemberships=false, $bIncludeTemporaryMailGroups=true, $bAddMemberShipCount=false) {
 		$aResult = array();
 		foreach(self::getSubscriberGroups(true, $bDoJoinSubscriberMemberships) as $oSubscriberGroup) {
-		  $sAddon = $bAddMemberShipCount? ' ('.$oSubscriberGroup->countSubscriberGroupMemberships().')' : '';
-			$aResult[(string) $oSubscriberGroup->getId()] = StringPeer::getString('subscriber_group_name.'.$oSubscriberGroup->getName(), null, $oSubscriberGroup->getName()).$sAddon;
+			$iGroupId = (string) $oSubscriberGroup->getId();
+			$sOriginalName = $oSubscriberGroup->getName();
+			$iCountMemberships = '';
+			$iCountBackendCreated = '';
+			
+			// add count info if required
+			if($bAddMemberShipCount) {
+				$iCountMemberships = ' ('.$oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(false).')';
+				$iCountBackendCreated = ' ('.$oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(true).')';
+			}
+			
+			// display subscriber_group info depending on whether backend created subscriber_group is shown
+			if($bIncludeTemporaryMailGroups && $iCountBackendCreated !== '') {
+				$aResult[$iGroupId] = $sOriginalName." ".StringPeer::getString('wns.backend_created.original_name_suffix').$iCountMemberships;
+			} else {
+				$aResult[$iGroupId] = $sOriginalName.$iCountMemberships;
+			}
+			if($bIncludeTemporaryMailGroups && $iCountBackendCreated !== '') {
+				$aResult[$iGroupId.MailGroupInputWidgetModule::BACKEND_CREATED_SUFFIX] = $sOriginalName." ".StringPeer::getString('wns.backend_created.temporary_name_suffix').$iCountBackendCreated;
+			}
 		}
 		return $aResult;
 	}
