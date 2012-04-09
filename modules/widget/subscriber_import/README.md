@@ -20,14 +20,14 @@
 * there is no history of *is_backend_created*. Once set to false a subscription is like all the others
 
 ## Modules affected by this widget
-### MailGroupInput:
+### MailGroupInput
 * a new setting *include_temporary_mail_groups* (default: true) has been added. All the temporary (external mail groups like registrees of events, is_backend_created) are displayed
 * only the main subscriber groups are displayed it set to false. usage: e.g. for displaying target subscriber group options in this widget
 
-### SubscriberList:
+### SubscriberList
 * if there are any *is_backend_created* subscriptions, a additional column and filter *is_backend_created* is displayed automatically in the subscriber list
 
-### NewsletterSend:
+### NewsletterSend
 * the subscriber_group_input property *multiple* is set to false if *is_backend_created* temporary subscriber groups exist.
 	For two reasons: 
 	1. it gets complicated to handle all processes at once so we consider a second reason
