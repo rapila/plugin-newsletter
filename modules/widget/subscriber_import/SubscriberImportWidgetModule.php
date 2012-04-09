@@ -17,6 +17,7 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 	public function addSubscibers($aSubscribers, $iTargetSubscriberGroup) {
 		$bRequiresCheck = false;
 		$aFailedAddresses = array();
+		
 		// if is string it has not been processed and validated by js
 		if(is_string($aSubscribers)) {
 			$aSubscribers = preg_split("/[\s,]+/", $aSubscribers);
@@ -50,6 +51,10 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 				$oSubscriber->save();
 			}
 		}
-		return array($iCountAll, $iMembershipsAdded, implode(', ', $aFailedAddresses));
+		$aResult = array($iCountAll, $iMembershipsAdded);
+		if(count($aFailedAddresses) > 0) {
+			return array_merge($aResult, array(count($aFailedAddresses), implode(', ', $aFailedAddresses)));
+		}
+		return $aResult;
 	}
 }
