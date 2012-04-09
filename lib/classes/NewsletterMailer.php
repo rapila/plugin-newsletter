@@ -71,7 +71,8 @@ class NewsletterMailer {
 			if($mRecipient instanceof Subscriber && $this->oUnsubscribePage) {
 				$sLanguageId = FrontendManager::shouldIncludeLanguageInLink() ? $this->oNewsletter->getLanguageId() : false;
 				if(method_exists($mRecipient, 'getUnsubscribeQueryParams')) {
-					$oEmailTemplateInstance->replaceIdentifier('unsubscribe_link', LinkUtil::absoluteLink(LinkUtil::link($this->oUnsubscribePage->getLink(), 'FrontendManager', $mRecipient->getUnsubscribeQueryParams(), $sLanguageId)));
+					$sUnsubscribeLink = LinkUtil::absoluteLink(LinkUtil::link($this->oUnsubscribePage->getLink(), 'FrontendManager', $mRecipient->getUnsubscribeQueryParams(), $sLanguageId));
+					$oEmailTemplateInstance->replaceIdentifier('unsubscribe_link', $sUnsubscribeLink);
 				}
 			}
 		}
