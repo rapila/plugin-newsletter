@@ -1,13 +1,13 @@
 Widget.types.mail_group_input = {
 	prepare: function() {
 		var option = jQuery('<option/>');
-		var mail_groups = this.getMailGroups(this.settings.include_external_mail_groups);
+		var mail_groups = this.getMailGroups(this.settings.include_temporary_mail_groups);
 		jQuery.each(mail_groups, function(group_id, group_name) {
 			option.clone().text(group_name).attr('value', group_id).appendTo(this._element);
 		}.bind(this));
 	},
 	
 	settings: {
-		include_external_mail_groups: true
+		include_temporary_mail_groups: true
 	}
 };

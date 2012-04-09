@@ -62,7 +62,7 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 	* @param boolean show count
 	* @return array assoc for select
 	*/
-	public static function getAllAssoc($bDoJoinSubscriberMemberships=false, $bIncludeExternalMailGroups=true, $bAddMemberShipCount=false) {
+	public static function getAllAssoc($bDoJoinSubscriberMemberships=false, $bIncludeTemporaryMailGroups=true, $bAddMemberShipCount=false) {
 		$aResult = array();
 		foreach(self::getSubscriberGroups(true, $bDoJoinSubscriberMemberships) as $oSubscriberGroup) {
 			$iGroupId = (string) $oSubscriberGroup->getId();
@@ -77,12 +77,12 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 			}
 			
 			// display subscriber_group info depending on whether backend created subscriber_group is shown
-			if($bIncludeExternalMailGroups && $iCountBackendCreated !== '') {
+			if($bIncludeTemporaryMailGroups && $iCountBackendCreated !== '') {
 				$aResult[$iGroupId] = $sOriginalName." ".StringPeer::getString('wns.backend_created.original_name_suffix').$iCountMemberships;
 			} else {
 				$aResult[$iGroupId] = $sOriginalName.$iCountMemberships;
 			}
-			if($bIncludeExternalMailGroups && $iCountBackendCreated !== '') {
+			if($bIncludeTemporaryMailGroups && $iCountBackendCreated !== '') {
 				$aResult[$iGroupId.MailGroupInputWidgetModule::BACKEND_CREATED_SUFFIX] = $sOriginalName." ".StringPeer::getString('wns.backend_created.temporary_name_suffix').$iCountBackendCreated;
 			}
 		}
