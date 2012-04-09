@@ -1,4 +1,4 @@
-Subscriber Import
+README: Subscriber import
 
 Description:
 • Subscriber import - at this point in time - simply imports email addresses - separated, @see SubscriberImportWidgetModule::addSubscribers()
@@ -22,11 +22,20 @@ The idea behind this import:
 Modules affected by this widget
 MailGroupInput:
 • a new setting "include_temporary_mail_groups" (default: true) has been added
-	all the tempora
+	all the temporary (external mail_groups like registrees of events, is_backend_created) are displayed
+• only the main subscriber groups are displayed it set to false. usage: e.g. subscriber_import target subscriber_group options
 
 SubscriberList:
 • if there are any is_backend_created subscriptions, a additional column and filter "is_backend_created" is displayed automatically in the subscriber list
 
+NewsletterSend:
+• the subscriber_group_input property "multiple" is set to false if "is_backend_created" temporary subscriber_groups exist.
+	for two reasons: 
+	1. it gets complicated to handle all processes at once so we consider a second reason
+	2. if you import email addresses it is highly recommended that you address this issue in the email. You can ignore this by just sending the same newsletter to both the initially targeted subscriber_group and the backend_created temporary one.
+
 TODO
-this widget should probably be included in the info_bar of the SubscriberListWidgetModule, together with the export option
-maybe the "action" button should contain this functionalities.
+• discuss open issues
+• this widget should be included in the info_bar of the SubscriberListWidgetModule (consider export option too)
+	maybe the "action" button should contain this functionalities.
+• merge to master if confirmed
