@@ -67,23 +67,25 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 		foreach(self::getSubscriberGroups(true, $bDoJoinSubscriberMemberships) as $oSubscriberGroup) {
 			$iGroupId = (string) $oSubscriberGroup->getId();
 			$sOriginalName = $oSubscriberGroup->getName();
-			$iCountMemberships = '';
-			$iCountBackendCreated = '';
+			$iCountMembershipsAddon = '';
+			$iCountBackendCreatedAddon = '';
 			
-			// add count info if required
+			// add membership count info if required
 			if($bAddMemberShipCount) {
-				$iCountMemberships = ' ('.$oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(false).')';
-				$iCountBackendCreated = ' ('.$oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(true).')';
+				$iCountMembershipsAddon = ' ('.$oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(false).')';
+				$iCountBackendCreated = $oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(true);
+				if($iCountBackendCreated > 0) {
+					$iCountBackendCreatedAddon = ' ('.$iCountBackendCreated.')';
+				}
 			}
-			
 			// display subscriber_group info depending on whether backend created subscriber_group is shown
-			if($bIncludeTemporaryMailGroups && $iCountBackendCreated !== '') {
-				$aResult[$iGroupId] = $sOriginalName." ".StringPeer::getString('wns.backend_created.original_name_suffix').$iCountMemberships;
+			if($bIncludeTemporaryMailGroups && $iCountBackendCreated > 0) {
+				$aResult[$iGroupId] = $sOriginalName." ".StringPeer::getString('wns.backend_created.original_name_suffix').$iCountMembershipsAddon;
 			} else {
-				$aResult[$iGroupId] = $sOriginalName.$iCountMemberships;
+				$aResult[$iGroupId] = $sOriginalName.$iCountMembershipsAddon;
 			}
-			if($bIncludeTemporaryMailGroups && $iCountBackendCreated !== '') {
-				$aResult[$iGroupId.MailGroupInputWidgetModule::BACKEND_CREATED_SUFFIX] = $sOriginalName." ".StringPeer::getString('wns.backend_created.temporary_name_suffix').$iCountBackendCreated;
+			if($bIncludeTemporaryMailGroups && $iCountBackendCreated > 0) {
+				$aResult[$iGroupId.MailGroupInputWidgetModule::BACKEND_CREATED_SUFFIX] = $sOriginalName." ".StringPeer::getString('wns.backend_created.temporary_name_suffix').$iCountBackendCreatedAddon;
 			}
 		}
 		return $aResult;
