@@ -15,8 +15,8 @@
 
 ## The idea behind this import:
 * As soon as there are subscriber_group_memberships marked with is_backend_created, a virtual subscriber group is created and displayed in the newsletter send dialog
-* _is_backend_created_ subscriptions are excluded from newletter mailing to the original subscriber group.
-* So newly imported subscribers can be invited, processed in a special way. As soon as they are sent, the boolean _is_backend_created_ is reset to false, so imported memberships become normal ones.
+* *is_backend_created* subscriptions are excluded from newletter mailing to the original subscriber group.
+* So newly imported subscribers can be invited, processed in a special way. As soon as they are sent, the boolean *is_backend_created* is reset to false, so imported memberships become normal ones.
 * there is no history of _is_backend_created_. Once set to false a subscription is like all the others
 
 ## Modules affected by this widget
