@@ -57,7 +57,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		}
 		$this->aRecipients = SubscriberPeer::getSubscribersBySubscriberGroupMembership($aMailGroups, $bIsBackendCreated);
 		FilterModule::getFilters()->handleMailGroupsRecipients($aMailGroups, array(&$this->aRecipients));
-		$this->aMailGroups = $aMailGroups;
+		$this->aMailGroups = is_array($aMailGroups) ? $aMailGroups : array($aMailGroups);
 		return ceil(count($this->aRecipients)/$this->iBatchSize);
 	}
 	
@@ -67,7 +67,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 	* when a newsletter was sent to a specific target subscriber_group
 	*/
 	public function resetBackendCreatedMemberships() {
-		SubscriberGroupMembershipQuery::create()->filterBySubscriberGroupId($this->iSubscriberGroupId)->filterIsBackendCreated(true)->update(array('IsBackendCreated' => false));
+		SubscriberGroupMembershipQuery::create()->filterBySubscriberGroupId($this->iSubscriberGroupId)->filterByIsBackendCreated(true)->update(array('IsBackendCreated' => false));
 	}
 
 	public function sendNewsletter($iBatchNumber = 0) {
