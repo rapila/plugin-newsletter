@@ -86,6 +86,7 @@ Widget.types.newsletter_detail = {
 		this.content.find("select[name='template_name']").val(newsletter_data.TemplateName || '');
 		this.content.find(".updated_info").text(newsletter_data.UpdatedInfo);
 		this.content.find(".created_info").text(newsletter_data.CreatedInfo);
+		this.content.find("span[class='detail_id']").text(newsletter_data.Id);
 		
 		this.newsletter_send_button = jQuery(this.content.find('.newsletter_send_button')).button().click(function() {
 			_this.send_newsletter('send', newsletter_data.Id);
