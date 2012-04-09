@@ -1,7 +1,7 @@
 ## Subscriber import widget
 
 # Description:
-* Subscriber import* at this point in time* simply imports email addresses* separated, @see SubscriberImportWidgetModule::addSubscribers()
+* Subscriber import simply imports separated email addresses (at this point in time) - @see SubscriberImportWidgetModule::addSubscribers()
 * to a specific target subscriber_group_id
 * creating a temporary, virtual subscriber_group (subscriber_group_id+identifier)
 @todo, if desired in the future this could be enhanced by handling import of excel with name, email, language?
@@ -32,8 +32,10 @@ NewsletterSend:
 	for two reasons: 
 	1. it gets complicated to handle all processes at once so we consider a second reason
 	2. if you import email addresses it is highly recommended that you address this issue in the email. You can ignore this by just sending the same newsletter to both the initially targeted subscriber_group and the backend_created temporary one.
+* the target subscriber_group_id has to be extracted from the param mail_groups
+* mail_groups can be array or string (multiple false)
 
-# TODO
+# Todo
 * discuss open issues
 * this widget should be included in the info_bar of the SubscriberListWidgetModule (consider export option, action button)
 * merge to master if confirmed
