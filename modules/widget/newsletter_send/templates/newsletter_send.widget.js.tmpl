@@ -57,7 +57,6 @@ Widget.types.newsletter_send = {
 		mail_groups.prepareWidget(function(widget) {
 			if(widget.getHasBackendCreatedSubscriberGroups()) {
 				_this.settings.reset_backend_created_subscriber_group_memberships = true;
-				mail_groups.prop('multiple', false);
 			}
 		}, jQuery.noop);
 	
@@ -132,6 +131,7 @@ Widget.types.newsletter_send = {
 		if(result) {
 			if(this.settings.reset_backend_created_subscriber_group_memberships) {
 				this.resetBackendCreatedMemberships();
+				this.fire('rapila-mail_groups_changed');
 			}
 			Widget.notifyUser('info', '{{writeString=wns.newsletter_send.sent_all}}');
 			markup.dialog('close');

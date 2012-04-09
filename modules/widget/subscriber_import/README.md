@@ -23,6 +23,7 @@
 ### MailGroupInput
 * a new setting *include_temporary_mail_groups* (default: true) has been added. All the temporary (external mail groups like registrees of events, is_backend_created) are displayed
 * only the main subscriber groups are displayed it set to false. usage: e.g. for displaying target subscriber group options in this widget
+* reload when mail_groups_changed is fired, if a backend_created group has geen mailed. I.e. the mail groups change because temporary subscriptions become permanent ones
 
 ### SubscriberList
 * if there are any *is_backend_created* subscriptions, a additional column and filter *is_backend_created* is displayed automatically in the subscriber list
@@ -34,6 +35,7 @@
 	2. if you import email addresses it is highly recommended that you address this issue in the email. You can ignore this by just sending the same newsletter to both the initially targeted subscriber group and the backend created temporary one.
 * the target *subscriber_group_id* has to be extracted from the param *mail_groups*.
 * *mail_groups* can be array or string (multiple false)
+* setting *reset_backend_created_subscriber_group_memberships*, reset *is_backend_created* to false after sending to backend_created subscriptions
 
 ## Todo
 * discuss open issues
