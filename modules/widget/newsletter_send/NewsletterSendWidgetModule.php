@@ -47,12 +47,10 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		if($aMailGroups === null && SubscriberGroupPeer::hasSubscriberGroups()) {
 			throw new LocalizedException("newsletter.mailing.subscriber_groups_required");
 		}
-		// if it is a string (multiple=false) and the mailgroup has a
+		// if it is a string (multiple=false) and the mailgroup has the suffix, get is_backend_created subscriptions only
 		$bIsBackendCreated = false;
-		if(is_string($aMailGroups) && strpos($aMailGroups, MailGroupInputWidgetModule::BACKEND_CREATED_SUFFIX)) {
-			$aName = explode('_', $aMailGroups);
-			$this->iSubscriberGroupId = (int) $aName[0];
-			$aMailGroups = $this->iSubscriberGroupId;
+		if(is_string($aMailGroups) && strpos($aMailGroups, MailGroupInputWidgetModule::BACKEND_CREATED_SUFFIX)) {			
+			$this->iSubscriberGroupId = $aMailGroups = (int) substr($aMailGroups, 0, -(strlen($aMailGroups)-1));
 			$bIsBackendCreated = true;
 		}
 		$this->aRecipients = SubscriberPeer::getSubscribersBySubscriberGroupMembership($aMailGroups, $bIsBackendCreated);
