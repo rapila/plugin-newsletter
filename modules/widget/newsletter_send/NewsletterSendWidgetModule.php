@@ -25,7 +25,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 	public function sendTestNewsletter($mRecipients = array()) {
 		$this->aUnsuccessfulAttempts = array();
 		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
-		$oNewsletterMailer = new NewsletterMailer($oNewsletter, $mRecipients, false, LinkUtil::getDomainHolderEmail('newsletter'));
+		$oNewsletterMailer = new NewsletterMailer($oNewsletter, array_unique($mRecipients), false, LinkUtil::getDomainHolderEmail('newsletter'));
 		if($oNewsletterMailer->send()) {
 			return true;
 		} else {
