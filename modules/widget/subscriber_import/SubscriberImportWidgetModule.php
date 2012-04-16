@@ -20,7 +20,7 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 		
 		// if is string it has not been processed and validated by js
 		if(is_string($aSubscribers)) {
-			$aSubscribers = preg_split("/[\s,]+/", $aSubscribers);
+			$aSubscribers = preg_split("/[\s,]+/", trim($aSubscribers));
 			$bRequiresCheck = true;
 		}
 		$iCountAll = count($aSubscribers);
