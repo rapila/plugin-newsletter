@@ -44,7 +44,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 ALTER TABLE `subscriber_group_memberships` CHANGE `opt_in_hash` `opt_in_hash` VARCHAR(32);
 
-ALTER TABLE `subscriber_group_memberships` ADD `is_backend_created` TINYINT UNSIGNED NOT NULL DEFAULT '0' AFTER `opt_in_hash` COMMENT \'is imported or manually added\';
+ALTER TABLE `subscriber_group_memberships` ADD `is_backend_created` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT \'is imported or manually added\' AFTER `opt_in_hash`;
+
 
 ALTER TABLE `subscribers` CHANGE `preferred_language_id` `preferred_language_id` VARCHAR( 3 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 
