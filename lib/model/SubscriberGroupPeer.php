@@ -72,7 +72,11 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 			
 			// add membership count info if required
 			if($bAddMemberShipCount) {
-				$iCountMembershipsAddon = ' ('.$oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(false).')';
+				if(!$bIncludeTemporaryMailGroups) {
+					$iCountMembershipsAddon = ' ('.$oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(false).' + '.$oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(true).')';
+				} else {
+					$iCountMembershipsAddon = ' ('.$oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(false).')';
+				}
 				$iCountBackendCreated = $oSubscriberGroup->countSubscriberGroupMembershipsByIsBackendCreated(true);
 				if($iCountBackendCreated > 0) {
 					$iCountBackendCreatedAddon = ' ('.$iCountBackendCreated.')';
