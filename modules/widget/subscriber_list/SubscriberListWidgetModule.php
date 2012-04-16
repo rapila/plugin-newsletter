@@ -88,6 +88,13 @@ class SubscriberListWidgetModule extends WidgetModule {
 		return $this->oDelegateProxy->getSubscriberGroupId();
 	}
 	
+	public function getBackendCreatedName() {
+		if($this->bIsBackendCreated === true) {
+			return true;
+		}
+		return null;
+	}
+	
 	public function getSubscriberGroupHasSubscriptions($iSubscriberGroupId) {
 		return SubscriberGroupMembershipQuery::create()->filterBySubscriberGroupId($iSubscriberGroupId)->count() > 0;
 	}
