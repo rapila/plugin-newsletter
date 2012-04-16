@@ -102,37 +102,20 @@ class SubscriberListWidgetModule extends WidgetModule {
 	}
 
 	public function getCriteria() {
-		$oCriteria = new Criteria();
+		$oQuery = SubscriberQuery::create();
+		$sJoinType = is_numeric($this->oDelegateProxy->getSubscriberGroupId()) ? Criteria::INNER_JOIN : Criteria::LEFT_JOIN;
+		$oSubscriberGroupMembershipQuery = $oQuery->joinSubscriberGroupMembership(null, $sJoinType)->useQuery('SubscriberGroupMembership');
 		if(is_numeric($this->oDelegateProxy->getSubscriberGroupId())) {
-			$oCriteria->addJoin(SubscriberPeer::ID, SubscriberGroupMembershipPeer::SUBSCRIBER_ID, Criteria::INNER_JOIN);
-			$oCriteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, $this->oDelegateProxy->getSubscriberGroupId());
+			$oSubscriberGroupMembershipQuery->filterBySubscriberGroupId($this->oDelegateProxy->getSubscriberGroupId());
 		} else {
-			$oCriteria->addJoin(SubscriberPeer::ID, SubscriberGroupMembershipPeer::SUBSCRIBER_ID, Criteria::LEFT_JOIN);
 			if($this->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
-				$oCriteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_ID, null, Criteria::ISNULL);
+				$oSubscriberGroupMembershipQuery->filterBySubscriberGroupId(null, Criteria::ISNULL);
 			}
 		}
 		if($this->bIsBackendCreated) {
-			$oCriteria->add(SubscriberGroupMembershipPeer::IS_BACKEND_CREATED, true);
+			$oSubscriberGroupMembershipQuery->filterByIsBackendCreated(true);
 		}
-		return $oCriteria->setDistinct();
+		$oSubscriberGroupMembershipQuery->endUse();
+		return $oQuery->distinct();
 	}
-
-	// public function getCriteria() {
-	// 	$oQuery = SubscriberQuery::create();
-	// 	$sJoinType = is_numeric($this->oDelegateProxy->getSubscriberGroupId()) ? Criteria::INNER_JOIN : Criteria::LEFT_JOIN;
-	// 	$oQuery->joinSubscriberGroupMembership(null, $sJoinType)->useQuery('SubscriberGroupMembership');
-	// 	if(is_numeric($this->oDelegateProxy->getSubscriberGroupId())) {
-	// 		$oQuery->filterBySubscriberGroupId($this->oDelegateProxy->getSubscriberGroupId());
-	// 	} else {
-	// 		if($this->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
-	// 			$oQuery->filterBySubscriberGroupId(null, Criteria::ISNULL);
-	// 		}
-	// 	}
-	// 	if($this->bIsBackendCreated) {
-	// 		$oQuery->filterByIsBackendCreated(true);
-	// 	}
-	// 	$oQuery->endUse();
-	// 	return $oQuery->distinct();
-	// }
 }
