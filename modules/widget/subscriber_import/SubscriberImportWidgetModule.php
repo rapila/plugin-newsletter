@@ -15,14 +15,18 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 	* @return array of integer received all / actually added
 	*/
 	public function addSubscibers($aSubscribers, $iTargetSubscriberGroup) {
-		$bRequiresCheck = false;
-		$aFailedAddresses = array();
+		$sSubscribers = '';
 		
 		// if is string it has not been processed and validated by js
 		if(is_string($aSubscribers)) {
-			$aSubscribers = preg_split("/[\s,]+/", trim($aSubscribers));
-			$bRequiresCheck = true;
+			// preg_match_all, use
+			$sSubscribers = trim($aSubscribers);$aSubscribers = array();
+			$sSubscribers = preg_replace_callback('/'.Flash::$EMAIL_CHECK_PATTERN.'/', function($aMatches) use (&$aSubscribers) {
+				$aSubscribers[] = $aMatches[0];
+				return '';
+			}, $sSubscribers);
 		}
+		$aSubscribers = array_unique($aSubscribers);
 		$iCountAll = count($aSubscribers);
 		$iMembershipsAdded = 0;
 		
@@ -31,13 +35,9 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 			
 			// create new if subscriber does not exist and email is correct
 			if($oSubscriber === null) {
-				if($bRequiresCheck && preg_match(Flash::$EMAIL_CHECK_PATTERN, $sEmail) === 0) {
-					$aFailedAddresses[] = $sEmail;
-				} else {
-					$oSubscriber = new Subscriber();
-					$oSubscriber->setEmail($sEmail);
-					$oSubscriber->setName($sEmail);
-				}
+				$oSubscriber = new Subscriber();
+				$oSubscriber->setEmail($sEmail);
+				$oSubscriber->setName($sEmail);
 			}
 			// add subscriber_group_membership if a subscriber exists and no subscriber_group_membership exists
 			if($oSubscriber !== null) {
@@ -51,10 +51,6 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 				$oSubscriber->save();
 			}
 		}
-		$aResult = array($iCountAll, $iMembershipsAdded);
-		if(count($aFailedAddresses) > 0) {
-			return array_merge($aResult, array(count($aFailedAddresses), implode(', ', $aFailedAddresses)));
-		}
-		return $aResult;
+		return array('all' => $iCountAll, 'added' => $iMembershipsAdded, 'text' => $sSubscribers);
 	}
 }

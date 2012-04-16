@@ -5,7 +5,6 @@ Widget.types.subscriber_import = {
 		this._element.append(jQuery.parseHTML('{{includeTemplate=import}}'));
 		this.import_emails = this._element.find('textarea[name=import_emails]');
 		this.import_message = this._element.find('div.import_message');
-		this.import_errors = this._element.find('div.import_errors');
 		var do_import = this._element.find('button.do_import').button();
 		
 		this.mail_groups = this._element.find("select[name='mail_group_ids']");
@@ -23,30 +22,10 @@ Widget.types.subscriber_import = {
 	add_subscribers: function(emails, markup) {
 		var _this = this;
 		this.addSubscibers(this.import_emails.val(), this.mail_groups.val(), function(result) {
-			var import_message = "{{writeString=wns.subscriber_import.imported}} "+result[1]+" / "+result[0];
-			_this.import_message.html(import_message);
-			console.log(result);
-			if(result[2]) {
-				var import_error_message = "{{writeString=wns.subscriber_import.errors}} ("+result[2]+") "+result[3];
-				this.import_errors.html(import_error_message);
-			} else {
-				this.import_errors.html('');
-			}
-		});
-	},
-
-	valid_emails_in_field: function(field) {
-		var valid_emails = [];
-		jQuery.each(field.val().split(/[\s\n,]+/), function(i, email) {
-			if(jQuery.validateEmail(email)) {
-				valid_emails.push(email);
-			}
-		});
-		if(valid_emails.length === 0) {
-			valid_emails.push(this.settings.default_email);
-		}
-		return valid_emails;
-	},
-	
-	settings: {}
+			var import_message = "{{writeString=wns.subscriber_import.imported}} "+result.added+" / "+result.all;
+			_this.import_message.text(import_message);
+			_this.import_emails.val(result.text);
+			result.added && Widget.fire('newsletter-mail_groups_changed');
+	});
+	}
 };

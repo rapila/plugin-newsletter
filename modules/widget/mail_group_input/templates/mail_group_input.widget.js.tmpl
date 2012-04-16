@@ -1,11 +1,13 @@
 Widget.types.mail_group_input = {
 	prepare: function() {
 		this.reload();
-		Widget.handle('rapila-mail_groups_changed', this.reload.bind(this));
+		Widget.handle('newsletter-mail_groups_changed', this.reload.bind(this));
 	},
 	
 	reload: function() {
 		var _this = this;
+		var current = this.val();
+		this._element.empty();
 		var option = jQuery('<option/>');
 		var mail_groups = this.getMailGroups(this.settings.include_temporary_mail_groups);
 		jQuery.each(mail_groups, function(group_id, group_name) {
@@ -14,6 +16,17 @@ Widget.types.mail_group_input = {
 		if(this.getHasBackendCreatedSubscriberGroups()) {
 			_this._element.prop('multiple', false);
 		}
+		if(current) {
+			this.val(current);
+		}
+	},
+	
+	val: function(value) {
+		if(value) {
+			this._element.val(value);
+			return;
+		}
+		return this._element.val();
 	},
 	
 	settings: {
