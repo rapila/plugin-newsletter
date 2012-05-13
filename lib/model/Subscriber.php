@@ -93,11 +93,12 @@ class Subscriber extends BaseSubscriber {
 	}
 	
 	/**
-	 * @param integer subscriber_group_id
+ 	 * @param integer subscriber_group_id
+ 	 * @param boolean opt_in_confirm_required, default: false
 	 * @return void
 	 * usage: for adding subscriptions without touching the others @see setHasNewsletterBySubscriberGroupIds()
 	 */
-	public function addSubscriberGroupMembershipIfNotExists($iSubscriberGroupId) {
+	public function addSubscriberGroupMembershipIfNotExists($iSubscriberGroupId, $bOptInConfirmRequired=false) {
 		$bSubscriberGroupMembershipExists = false;
 		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
 			if($iSubscriberGroupId == $oSubscriberGroupMembership->getSubscriberGroupId()) {
@@ -109,9 +110,10 @@ class Subscriber extends BaseSubscriber {
 		} 
 	}
 	
-	private function addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId) {
+	private function addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId, $bOptInConfirmRequired=false) {
 		$oSubscriberGroupMembership = new SubscriberGroupMembership();
 		$oSubscriberGroupMembership->setSubscriberGroupId($iSubscriberGroupId);
+		$oSubscriberGroupMembership->setOptInConfirmRequired($bOptInConfirmRequired);
 		$this->addSubscriberGroupMembership($oSubscriberGroupMembership);
 	}
 	

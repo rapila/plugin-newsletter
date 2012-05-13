@@ -43,6 +43,13 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	protected $subscriber_group_id;
 
 	/**
+	 * The value for the opt_in_confirm_required field.
+	 * Note: this column has a database default value of: false
+	 * @var        boolean
+	 */
+	protected $opt_in_confirm_required;
+
+	/**
 	 * The value for the created_at field.
 	 * @var        string
 	 */
@@ -101,6 +108,27 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	protected $alreadyInValidation = false;
 
 	/**
+	 * Applies default values to this object.
+	 * This method should be called from the object's constructor (or
+	 * equivalent initialization method).
+	 * @see        __construct()
+	 */
+	public function applyDefaultValues()
+	{
+		$this->opt_in_confirm_required = false;
+	}
+
+	/**
+	 * Initializes internal state of BaseSubscriberGroupMembership object.
+	 * @see        applyDefaults()
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+		$this->applyDefaultValues();
+	}
+
+	/**
 	 * Get the [subscriber_id] column value.
 	 * 
 	 * @return     int
@@ -118,6 +146,16 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	public function getSubscriberGroupId()
 	{
 		return $this->subscriber_group_id;
+	}
+
+	/**
+	 * Get the [opt_in_confirm_required] column value.
+	 * 
+	 * @return     boolean
+	 */
+	public function getOptInConfirmRequired()
+	{
+		return $this->opt_in_confirm_required;
 	}
 
 	/**
@@ -265,6 +303,34 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	} // setSubscriberGroupId()
 
 	/**
+	 * Sets the value of the [opt_in_confirm_required] column.
+	 * Non-boolean arguments are converted using the following rules:
+	 *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+	 *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+	 * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+	 * 
+	 * @param      boolean|integer|string $v The new value
+	 * @return     SubscriberGroupMembership The current object (for fluent API support)
+	 */
+	public function setOptInConfirmRequired($v)
+	{
+		if ($v !== null) {
+			if (is_string($v)) {
+				$v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+			} else {
+				$v = (boolean) $v;
+			}
+		}
+
+		if ($this->opt_in_confirm_required !== $v) {
+			$this->opt_in_confirm_required = $v;
+			$this->modifiedColumns[] = SubscriberGroupMembershipPeer::OPT_IN_CONFIRM_REQUIRED;
+		}
+
+		return $this;
+	} // setOptInConfirmRequired()
+
+	/**
 	 * Sets the value of [created_at] column to a normalized version of the date/time value specified.
 	 * 
 	 * @param      mixed $v string, integer (timestamp), or DateTime value.
@@ -366,6 +432,10 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	 */
 	public function hasOnlyDefaultValues()
 	{
+			if ($this->opt_in_confirm_required !== false) {
+				return false;
+			}
+
 		// otherwise, everything was equal, so return TRUE
 		return true;
 	} // hasOnlyDefaultValues()
@@ -390,10 +460,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 
 			$this->subscriber_id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
 			$this->subscriber_group_id = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
-			$this->created_at = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
-			$this->updated_at = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
-			$this->created_by = ($row[$startcol + 4] !== null) ? (int) $row[$startcol + 4] : null;
-			$this->updated_by = ($row[$startcol + 5] !== null) ? (int) $row[$startcol + 5] : null;
+			$this->opt_in_confirm_required = ($row[$startcol + 2] !== null) ? (boolean) $row[$startcol + 2] : null;
+			$this->created_at = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
+			$this->updated_at = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
+			$this->created_by = ($row[$startcol + 5] !== null) ? (int) $row[$startcol + 5] : null;
+			$this->updated_by = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -402,7 +473,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 6; // 6 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS.
+			return $startcol + 7; // 7 = SubscriberGroupMembershipPeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating SubscriberGroupMembership object", $e);
@@ -705,6 +776,9 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID)) {
 			$modifiedColumns[':p' . $index++]  = '`SUBSCRIBER_GROUP_ID`';
 		}
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::OPT_IN_CONFIRM_REQUIRED)) {
+			$modifiedColumns[':p' . $index++]  = '`OPT_IN_CONFIRM_REQUIRED`';
+		}
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::CREATED_AT)) {
 			$modifiedColumns[':p' . $index++]  = '`CREATED_AT`';
 		}
@@ -733,6 +807,9 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 						break;
 					case '`SUBSCRIBER_GROUP_ID`':
 						$stmt->bindValue($identifier, $this->subscriber_group_id, PDO::PARAM_INT);
+						break;
+					case '`OPT_IN_CONFIRM_REQUIRED`':
+						$stmt->bindValue($identifier, (int) $this->opt_in_confirm_required, PDO::PARAM_INT);
 						break;
 					case '`CREATED_AT`':
 						$stmt->bindValue($identifier, $this->created_at, PDO::PARAM_STR);
@@ -906,15 +983,18 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				return $this->getSubscriberGroupId();
 				break;
 			case 2:
-				return $this->getCreatedAt();
+				return $this->getOptInConfirmRequired();
 				break;
 			case 3:
-				return $this->getUpdatedAt();
+				return $this->getCreatedAt();
 				break;
 			case 4:
-				return $this->getCreatedBy();
+				return $this->getUpdatedAt();
 				break;
 			case 5:
+				return $this->getCreatedBy();
+				break;
+			case 6:
 				return $this->getUpdatedBy();
 				break;
 			default:
@@ -948,10 +1028,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		$result = array(
 			$keys[0] => $this->getSubscriberId(),
 			$keys[1] => $this->getSubscriberGroupId(),
-			$keys[2] => $this->getCreatedAt(),
-			$keys[3] => $this->getUpdatedAt(),
-			$keys[4] => $this->getCreatedBy(),
-			$keys[5] => $this->getUpdatedBy(),
+			$keys[2] => $this->getOptInConfirmRequired(),
+			$keys[3] => $this->getCreatedAt(),
+			$keys[4] => $this->getUpdatedAt(),
+			$keys[5] => $this->getCreatedBy(),
+			$keys[6] => $this->getUpdatedBy(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aSubscriber) {
@@ -1004,15 +1085,18 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 				$this->setSubscriberGroupId($value);
 				break;
 			case 2:
-				$this->setCreatedAt($value);
+				$this->setOptInConfirmRequired($value);
 				break;
 			case 3:
-				$this->setUpdatedAt($value);
+				$this->setCreatedAt($value);
 				break;
 			case 4:
-				$this->setCreatedBy($value);
+				$this->setUpdatedAt($value);
 				break;
 			case 5:
+				$this->setCreatedBy($value);
+				break;
+			case 6:
 				$this->setUpdatedBy($value);
 				break;
 		} // switch()
@@ -1041,10 +1125,11 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 
 		if (array_key_exists($keys[0], $arr)) $this->setSubscriberId($arr[$keys[0]]);
 		if (array_key_exists($keys[1], $arr)) $this->setSubscriberGroupId($arr[$keys[1]]);
-		if (array_key_exists($keys[2], $arr)) $this->setCreatedAt($arr[$keys[2]]);
-		if (array_key_exists($keys[3], $arr)) $this->setUpdatedAt($arr[$keys[3]]);
-		if (array_key_exists($keys[4], $arr)) $this->setCreatedBy($arr[$keys[4]]);
-		if (array_key_exists($keys[5], $arr)) $this->setUpdatedBy($arr[$keys[5]]);
+		if (array_key_exists($keys[2], $arr)) $this->setOptInConfirmRequired($arr[$keys[2]]);
+		if (array_key_exists($keys[3], $arr)) $this->setCreatedAt($arr[$keys[3]]);
+		if (array_key_exists($keys[4], $arr)) $this->setUpdatedAt($arr[$keys[4]]);
+		if (array_key_exists($keys[5], $arr)) $this->setCreatedBy($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setUpdatedBy($arr[$keys[6]]);
 	}
 
 	/**
@@ -1058,6 +1143,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::SUBSCRIBER_ID)) $criteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_ID, $this->subscriber_id);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID)) $criteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, $this->subscriber_group_id);
+		if ($this->isColumnModified(SubscriberGroupMembershipPeer::OPT_IN_CONFIRM_REQUIRED)) $criteria->add(SubscriberGroupMembershipPeer::OPT_IN_CONFIRM_REQUIRED, $this->opt_in_confirm_required);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::CREATED_AT)) $criteria->add(SubscriberGroupMembershipPeer::CREATED_AT, $this->created_at);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::UPDATED_AT)) $criteria->add(SubscriberGroupMembershipPeer::UPDATED_AT, $this->updated_at);
 		if ($this->isColumnModified(SubscriberGroupMembershipPeer::CREATED_BY)) $criteria->add(SubscriberGroupMembershipPeer::CREATED_BY, $this->created_by);
@@ -1133,6 +1219,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	{
 		$copyObj->setSubscriberId($this->getSubscriberId());
 		$copyObj->setSubscriberGroupId($this->getSubscriberGroupId());
+		$copyObj->setOptInConfirmRequired($this->getOptInConfirmRequired());
 		$copyObj->setCreatedAt($this->getCreatedAt());
 		$copyObj->setUpdatedAt($this->getUpdatedAt());
 		$copyObj->setCreatedBy($this->getCreatedBy());
@@ -1395,6 +1482,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 	{
 		$this->subscriber_id = null;
 		$this->subscriber_group_id = null;
+		$this->opt_in_confirm_required = null;
 		$this->created_at = null;
 		$this->updated_at = null;
 		$this->created_by = null;
@@ -1402,6 +1490,7 @@ abstract class BaseSubscriberGroupMembership extends BaseObject  implements Pers
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
 		$this->clearAllReferences();
+		$this->applyDefaultValues();
 		$this->resetModified();
 		$this->setNew(true);
 		$this->setDeleted(false);
