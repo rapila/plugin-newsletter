@@ -14,16 +14,16 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function getNewsletterIsApproved() {
-		return NewsletterPeer::retrieveByPK($this->iNewsletterId)->getIsApproved();
+		return NewsletterQuery::create()->findPk($this->iNewsletterId)->getIsApproved();
 	}
 	
 	public function getNewsletterSubject() {
-		return NewsletterPeer::retrieveByPK($this->iNewsletterId)->getSubject();
+		return NewsletterQuery::create()->findPk($this->iNewsletterId)->getSubject();
 	}
 	
 	public function sendTestNewsletter($mRecipients = array()) {
 		$this->aUnsuccessfulAttempts = array();
-		$oNewsletter = NewsletterPeer::retrieveByPK($this->iNewsletterId);
+		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		$oNewsletterMailer = new NewsletterMailer($oNewsletter, $mRecipients, false, LinkUtil::getDomainHolderEmail('newsletter'));
 		if($oNewsletterMailer->send()) {
 			return true;
@@ -60,7 +60,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		$bRequiresUnsubsribeLink = true;
 		
 		// send newsletter if newsletter is chosen and there are recipients
-		$oNewsletter = NewsletterPeer::retrieveByPK($this->iNewsletterId);
+		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		if($oNewsletter === null) {
 			throw new LocalizedException("newsletter.mailing.newsletter_missing");
 		}

@@ -42,7 +42,7 @@
 		<foreign-key foreignTable="subscriber_groups" onDelete="cascade">
 			<reference local="subscriber_group_id" foreign="id" />
 		</foreign-key>
-		<column name="opt_in_confirm_required" type="boolean" required="false" default="0" />
+		<column name="opt_in_hash" type="varchar" size="32" />
 	</table>
 	
 	<table name="subscriber_groups" phpName="SubscriberGroup">

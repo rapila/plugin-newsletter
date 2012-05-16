@@ -25,12 +25,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	protected static $peer;
 
 	/**
-	 * The flag var to prevent infinit loop in deep copy
-	 * @var       boolean
-	 */
-	protected $startCopy = false;
-
-	/**
 	 * The value for the id field.
 	 * @var        int
 	 */
@@ -112,18 +106,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	 * @var        boolean
 	 */
 	protected $alreadyInValidation = false;
-
-	/**
-	 * An array of objects scheduled for deletion.
-	 * @var		array
-	 */
-	protected $newsletterMailingsScheduledForDeletion = null;
-
-	/**
-	 * An array of objects scheduled for deletion.
-	 * @var		array
-	 */
-	protected $subscriberGroupMembershipsScheduledForDeletion = null;
 
 	/**
 	 * Applies default values to this object.
@@ -628,7 +610,7 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 			} else {
 				$con->commit();
 			}
-		} catch (Exception $e) {
+		} catch (PropelException $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -719,7 +701,7 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 			}
 			$con->commit();
 			return $affectedRows;
-		} catch (Exception $e) {
+		} catch (PropelException $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -761,24 +743,27 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 				$this->setUserRelatedByUpdatedBy($this->aUserRelatedByUpdatedBy);
 			}
 
-			if ($this->isNew() || $this->isModified()) {
-				// persist changes
-				if ($this->isNew()) {
-					$this->doInsert($con);
-				} else {
-					$this->doUpdate($con);
-				}
-				$affectedRows += 1;
-				$this->resetModified();
+			if ($this->isNew() ) {
+				$this->modifiedColumns[] = SubscriberGroupPeer::ID;
 			}
 
-			if ($this->newsletterMailingsScheduledForDeletion !== null) {
-				if (!$this->newsletterMailingsScheduledForDeletion->isEmpty()) {
-					NewsletterMailingQuery::create()
-						->filterByPrimaryKeys($this->newsletterMailingsScheduledForDeletion->getPrimaryKeys(false))
-						->delete($con);
-					$this->newsletterMailingsScheduledForDeletion = null;
+			// If this object has been modified, then save it to the database.
+			if ($this->isModified()) {
+				if ($this->isNew()) {
+					$criteria = $this->buildCriteria();
+					if ($criteria->keyContainsValue(SubscriberGroupPeer::ID) ) {
+						throw new PropelException('Cannot insert a value for auto-increment primary key ('.SubscriberGroupPeer::ID.')');
+					}
+
+					$pk = BasePeer::doInsert($criteria, $con);
+					$affectedRows += 1;
+					$this->setId($pk);  //[IMV] update autoincrement primary key
+					$this->setNew(false);
+				} else {
+					$affectedRows += SubscriberGroupPeer::doUpdate($this, $con);
 				}
+
+				$this->resetModified(); // [HL] After being saved an object is no longer 'modified'
 			}
 
 			if ($this->collNewsletterMailings !== null) {
@@ -786,15 +771,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
-				}
-			}
-
-			if ($this->subscriberGroupMembershipsScheduledForDeletion !== null) {
-				if (!$this->subscriberGroupMembershipsScheduledForDeletion->isEmpty()) {
-					SubscriberGroupMembershipQuery::create()
-						->filterByPrimaryKeys($this->subscriberGroupMembershipsScheduledForDeletion->getPrimaryKeys(false))
-						->delete($con);
-					$this->subscriberGroupMembershipsScheduledForDeletion = null;
 				}
 			}
 
@@ -811,116 +787,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 		}
 		return $affectedRows;
 	} // doSave()
-
-	/**
-	 * Insert the row in the database.
-	 *
-	 * @param      PropelPDO $con
-	 *
-	 * @throws     PropelException
-	 * @see        doSave()
-	 */
-	protected function doInsert(PropelPDO $con)
-	{
-		$modifiedColumns = array();
-		$index = 0;
-
-		$this->modifiedColumns[] = SubscriberGroupPeer::ID;
-		if (null !== $this->id) {
-			throw new PropelException('Cannot insert a value for auto-increment primary key (' . SubscriberGroupPeer::ID . ')');
-		}
-
-		 // check the columns in natural order for more readable SQL queries
-		if ($this->isColumnModified(SubscriberGroupPeer::ID)) {
-			$modifiedColumns[':p' . $index++]  = '`ID`';
-		}
-		if ($this->isColumnModified(SubscriberGroupPeer::NAME)) {
-			$modifiedColumns[':p' . $index++]  = '`NAME`';
-		}
-		if ($this->isColumnModified(SubscriberGroupPeer::IS_DEFAULT)) {
-			$modifiedColumns[':p' . $index++]  = '`IS_DEFAULT`';
-		}
-		if ($this->isColumnModified(SubscriberGroupPeer::DESCRIPTION)) {
-			$modifiedColumns[':p' . $index++]  = '`DESCRIPTION`';
-		}
-		if ($this->isColumnModified(SubscriberGroupPeer::CREATED_AT)) {
-			$modifiedColumns[':p' . $index++]  = '`CREATED_AT`';
-		}
-		if ($this->isColumnModified(SubscriberGroupPeer::UPDATED_AT)) {
-			$modifiedColumns[':p' . $index++]  = '`UPDATED_AT`';
-		}
-		if ($this->isColumnModified(SubscriberGroupPeer::CREATED_BY)) {
-			$modifiedColumns[':p' . $index++]  = '`CREATED_BY`';
-		}
-		if ($this->isColumnModified(SubscriberGroupPeer::UPDATED_BY)) {
-			$modifiedColumns[':p' . $index++]  = '`UPDATED_BY`';
-		}
-
-		$sql = sprintf(
-			'INSERT INTO `subscriber_groups` (%s) VALUES (%s)',
-			implode(', ', $modifiedColumns),
-			implode(', ', array_keys($modifiedColumns))
-		);
-
-		try {
-			$stmt = $con->prepare($sql);
-			foreach ($modifiedColumns as $identifier => $columnName) {
-				switch ($columnName) {
-					case '`ID`':
-						$stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
-						break;
-					case '`NAME`':
-						$stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
-						break;
-					case '`IS_DEFAULT`':
-						$stmt->bindValue($identifier, (int) $this->is_default, PDO::PARAM_INT);
-						break;
-					case '`DESCRIPTION`':
-						$stmt->bindValue($identifier, $this->description, PDO::PARAM_STR);
-						break;
-					case '`CREATED_AT`':
-						$stmt->bindValue($identifier, $this->created_at, PDO::PARAM_STR);
-						break;
-					case '`UPDATED_AT`':
-						$stmt->bindValue($identifier, $this->updated_at, PDO::PARAM_STR);
-						break;
-					case '`CREATED_BY`':
-						$stmt->bindValue($identifier, $this->created_by, PDO::PARAM_INT);
-						break;
-					case '`UPDATED_BY`':
-						$stmt->bindValue($identifier, $this->updated_by, PDO::PARAM_INT);
-						break;
-				}
-			}
-			$stmt->execute();
-		} catch (Exception $e) {
-			Propel::log($e->getMessage(), Propel::LOG_ERR);
-			throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), $e);
-		}
-
-		try {
-			$pk = $con->lastInsertId();
-		} catch (Exception $e) {
-			throw new PropelException('Unable to get autoincrement id.', $e);
-		}
-		$this->setId($pk);
-
-		$this->setNew(false);
-	}
-
-	/**
-	 * Update the row in the database.
-	 *
-	 * @param      PropelPDO $con
-	 *
-	 * @see        doSave()
-	 */
-	protected function doUpdate(PropelPDO $con)
-	{
-		$selectCriteria = $this->buildPkeyCriteria();
-		$valuesCriteria = $this->buildCriteria();
-		BasePeer::doUpdate($selectCriteria, $valuesCriteria, $con);
-	}
 
 	/**
 	 * Array of ValidationFailed objects.
@@ -1305,12 +1171,10 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 		$copyObj->setCreatedBy($this->getCreatedBy());
 		$copyObj->setUpdatedBy($this->getUpdatedBy());
 
-		if ($deepCopy && !$this->startCopy) {
+		if ($deepCopy) {
 			// important: temporarily setNew(false) because this affects the behavior of
 			// the getter/setter methods for fkey referrer objects.
 			$copyObj->setNew(false);
-			// store object hash to prevent cycle
-			$this->startCopy = true;
 
 			foreach ($this->getNewsletterMailings() as $relObj) {
 				if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
@@ -1324,8 +1188,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 				}
 			}
 
-			//unflag object copy
-			$this->startCopy = false;
 		} // if ($deepCopy)
 
 		if ($makeNew) {
@@ -1558,30 +1420,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	}
 
 	/**
-	 * Sets a collection of NewsletterMailing objects related by a one-to-many relationship
-	 * to the current object.
-	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-	 * and new objects from the given Propel collection.
-	 *
-	 * @param      PropelCollection $newsletterMailings A Propel collection.
-	 * @param      PropelPDO $con Optional connection object
-	 */
-	public function setNewsletterMailings(PropelCollection $newsletterMailings, PropelPDO $con = null)
-	{
-		$this->newsletterMailingsScheduledForDeletion = $this->getNewsletterMailings(new Criteria(), $con)->diff($newsletterMailings);
-
-		foreach ($newsletterMailings as $newsletterMailing) {
-			// Fix issue with collection modified by reference
-			if ($newsletterMailing->isNew()) {
-				$newsletterMailing->setSubscriberGroup($this);
-			}
-			$this->addNewsletterMailing($newsletterMailing);
-		}
-
-		$this->collNewsletterMailings = $newsletterMailings;
-	}
-
-	/**
 	 * Returns the number of related NewsletterMailing objects.
 	 *
 	 * @param      Criteria $criteria
@@ -1622,19 +1460,11 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 			$this->initNewsletterMailings();
 		}
 		if (!$this->collNewsletterMailings->contains($l)) { // only add it if the **same** object is not already associated
-			$this->doAddNewsletterMailing($l);
+			$this->collNewsletterMailings[]= $l;
+			$l->setSubscriberGroup($this);
 		}
 
 		return $this;
-	}
-
-	/**
-	 * @param	NewsletterMailing $newsletterMailing The newsletterMailing object to add.
-	 */
-	protected function doAddNewsletterMailing($newsletterMailing)
-	{
-		$this->collNewsletterMailings[]= $newsletterMailing;
-		$newsletterMailing->setSubscriberGroup($this);
 	}
 
 
@@ -1781,30 +1611,6 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	}
 
 	/**
-	 * Sets a collection of SubscriberGroupMembership objects related by a one-to-many relationship
-	 * to the current object.
-	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-	 * and new objects from the given Propel collection.
-	 *
-	 * @param      PropelCollection $subscriberGroupMemberships A Propel collection.
-	 * @param      PropelPDO $con Optional connection object
-	 */
-	public function setSubscriberGroupMemberships(PropelCollection $subscriberGroupMemberships, PropelPDO $con = null)
-	{
-		$this->subscriberGroupMembershipsScheduledForDeletion = $this->getSubscriberGroupMemberships(new Criteria(), $con)->diff($subscriberGroupMemberships);
-
-		foreach ($subscriberGroupMemberships as $subscriberGroupMembership) {
-			// Fix issue with collection modified by reference
-			if ($subscriberGroupMembership->isNew()) {
-				$subscriberGroupMembership->setSubscriberGroup($this);
-			}
-			$this->addSubscriberGroupMembership($subscriberGroupMembership);
-		}
-
-		$this->collSubscriberGroupMemberships = $subscriberGroupMemberships;
-	}
-
-	/**
 	 * Returns the number of related SubscriberGroupMembership objects.
 	 *
 	 * @param      Criteria $criteria
@@ -1845,19 +1651,11 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 			$this->initSubscriberGroupMemberships();
 		}
 		if (!$this->collSubscriberGroupMemberships->contains($l)) { // only add it if the **same** object is not already associated
-			$this->doAddSubscriberGroupMembership($l);
+			$this->collSubscriberGroupMemberships[]= $l;
+			$l->setSubscriberGroup($this);
 		}
 
 		return $this;
-	}
-
-	/**
-	 * @param	SubscriberGroupMembership $subscriberGroupMembership The subscriberGroupMembership object to add.
-	 */
-	protected function doAddSubscriberGroupMembership($subscriberGroupMembership)
-	{
-		$this->collSubscriberGroupMemberships[]= $subscriberGroupMembership;
-		$subscriberGroupMembership->setSubscriberGroup($this);
 	}
 
 

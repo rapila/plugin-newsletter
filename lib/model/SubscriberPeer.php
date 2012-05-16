@@ -61,6 +61,7 @@ class SubscriberPeer extends BaseSubscriberPeer {
 			$aSubscriberGroupMemberShips = is_array($mSubscriberGroupMemberShip) ? $mSubscriberGroupMemberShip : array($mSubscriberGroupMemberShip);
 			$oCriteria->addJoin(SubscriberPeer::ID, SubscriberGroupMembershipPeer::SUBSCRIBER_ID, Criteria::INNER_JOIN);
 			$oCriteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, $aSubscriberGroupMemberShips, Criteria::IN);
+			$oCriteria->add(SubscriberGroupMembershipPeer::OPT_IN_HASH, null, Criteria::ISNULL);
 		}
 		return $oCriteria;
 	}

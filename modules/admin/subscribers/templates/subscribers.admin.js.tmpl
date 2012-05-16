@@ -1,44 +1,81 @@
 jQuery(document).ready(function() {
-	// init main content
-	var subscriber_list = AdminInterface.content.find('table.subscriber_list');
-	var sidebar;
-	subscriber_list.prepareWidget(function(subscriber_list) {
-		AdminInterface.sidebar.find('.ui-list').prepareWidget(function(widget) {
-			sidebar = widget;
-			sidebar.settings.row_click_active_mode = 'activate';
-			var initial_selection = "{{writeRequestValue=subscriber_group_id}}";
-			if(initial_selection) {
-				sidebar.handle('loaded', function() {
-					sidebar.activate_row(sidebar.row_from_row_data({id: parseInt(initial_selection, 10)}));
-				}, true, true);
-			}
-			sidebar.handle('list-selection_changed', function(event, selection) {
-				subscriber_list.setOption('subscriber_group_id', selection[0] && selection[0].subscriber_group_id);
-				subscriber_list.reload();
-			});	
-		});
-		// init infobar
-		AdminInterface.info_bar.prepareWidget(function(info_bar) {
-			info_bar.add_button('add-new-item', function() {
-				Widget.create('subscriber_detail', function(widget) {
-					widget.open();
-					var current_value = [''+subscriber_list.getOption('subscriber_group_id')+''];
-					widget.content.find("select[name='subscriber_group_ids']").val(current_value);
-					widget.save_callback = function() {
-						subscriber_list.reload();
-					};
-				});
-			}, 'n', true).add_button('add-new-item', function() {
-				Widget.create('sidebar_input', function(widget) {
-					widget.add_new_sidebar_input("{{writeString=wns.subscriber_group.default_name}}", 'SubscriberGroup', sidebar, 'rapila-subscriber_groups_changed');
-				});
-			}).add_search_input("{{writeString=wns.search.enter_search}}", function(search) {
-				if(subscriber_list.setSearch(search)) {
+
+	var sidebar = AdminInterface.sidebar;
+	var content_list = AdminInterface.content;
+	var info_bar = AdminInterface.info_bar;
+	
+	var handlers = [];
+	
+	sidebar.children('[data-widget-type]').prepareWidget(function(widget) {
+		sidebar = widget;
+	}.deferred(handlers));
+	content_list.children('[data-widget-type]').prepareWidget(function(widget) {
+		content_list = widget;
+	}.deferred(handlers));
+	info_bar.prepareWidget(function(widget) {
+		info_bar = widget;
+	}.deferred(handlers));
+	
+	jQuery.when.apply(jQuery, handlers).then(function() {
+		
+		// add buttons and search_input
+		info_bar.add_button('add-new-item', function() {
+			Widget.create('subscriber_detail', function(widget) {
+				widget.open();
+				var current_value = [''+subscriber_list.getOption('subscriber_group_id')+''];
+				widget.content.find("select[name='subscriber_group_ids']").val(current_value);
+				widget.save_callback = function() {
 					subscriber_list.reload();
-				}
+				};
 			});
-			// add row_count_info
-			info_bar.add_row_count_info_for_list(subscriber_list);
-		});
+		}, 'n', true).add_button('add-new-item', function() {
+			Widget.create('sidebar_input', function(widget) {
+				widget.add_new_sidebar_input("{{writeString=wns.subscriber_group.default_name}}", 'SubscriberGroup', sidebar, 'rapila-subscriber_groups_changed');
+			});
+		}).add_search_input("{{writeString=wns.search.enter_search}}", function(search) {
+			if(content_list.setSearch(search)) {
+				content_list.reload();
+			}
+		}).add_row_count_info_for_list(content_list);		
+
+		// sidebar items edit and delete buttons
+		var remove_item = info_bar.add_button('remove-item', function() {
+			var rowData = sidebar.collect_row_data(sidebar.active_row());
+			if(rowData.subscriber_group_id) {
+				content_list.getOption('subscriberGroupHasSubscriptions', rowData.subscriber_group_id, function(result) {
+					if(!result) {
+						return sidebar.delete_row(sidebar.active_row());
+					}
+					var delete_message = "{{writeString=wns.subscriber_group.delete_information}}";
+					Widget.confirm("{{writeString=wns.rapila_alert.information}}", delete_message, function(confirmed) {
+						if(confirmed) {
+							sidebar.delete_row(sidebar.active_row());
+						}
+					}.bind(this));
+				});
+			}
+		}).disable();
+		
+		var edit_item = info_bar.add_button('edit-item', function() {
+			Widget.create('subscriber_group_detail', function(widget) {
+				widget.setSubscriberGroupId(sidebar.active_row_datas()[0].subscriber_group_id);
+				widget.open();
+				widget.fill_data();
+				widget.save_callback = function() {
+					sidebar.reload();
+				};
+			});
+		}).disable();
+		
+		// sidebar selection change handler
+		sidebar.settings.row_click_active_mode = 'activate';
+		sidebar.handle('list-selection_changed', function(event, selection) {
+			var subscriber_group_id = selection[0] && selection[0].subscriber_group_id;
+			var has_detail = selection.length === 1 && subscriber_group_id.constructor === Number;
+			remove_item[has_detail ? 'enable' : 'disable']();
+			edit_item[has_detail ? 'enable' : 'disable']();
+			content_list.setOption('subscriber_group_id', subscriber_group_id);
+			content_list.reload();
+		});	
 	});
 });

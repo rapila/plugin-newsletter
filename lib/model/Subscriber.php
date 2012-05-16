@@ -10,11 +10,11 @@ class Subscriber extends BaseSubscriber {
 	public function getSubscribedGroupIds($bWithKeyAsValue=true) {
 		$aResult = array();
 		foreach($this->getSubscriberGroupMemberships() as $oMembership) {
-		  if($bWithKeyAsValue) {
-  			$aResult[$oMembership->getSubscriberGroupId()] = $oMembership->getSubscriberGroupId();
-		  } else {
-        $aResult[] = $oMembership->getSubscriberGroupId();
-		  }
+			if($bWithKeyAsValue) {
+				$aResult[$oMembership->getSubscriberGroupId()] = $oMembership->getSubscriberGroupId();
+			} else {
+				$aResult[] = $oMembership->getSubscriberGroupId();
+			}
 		}
 		return $aResult;
 	}
@@ -98,7 +98,7 @@ class Subscriber extends BaseSubscriber {
 	 * @return void
 	 * usage: for adding subscriptions without touching the others @see setHasNewsletterBySubscriberGroupIds()
 	 */
-	public function addSubscriberGroupMembershipIfNotExists($iSubscriberGroupId, $bOptInConfirmRequired=false) {
+	public function addSubscriberGroupMembershipIfNotExists($iSubscriberGroupId) {
 		$bSubscriberGroupMembershipExists = false;
 		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
 			if($iSubscriberGroupId == $oSubscriberGroupMembership->getSubscriberGroupId()) {
@@ -106,19 +106,31 @@ class Subscriber extends BaseSubscriber {
 			}
 		} 
 		if($bSubscriberGroupMembershipExists === false) {
-			$this->addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId);
-		} 
+		  $bOptInRequired = true;
+			return $this->addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId, $bOptInRequired);
+		}
 	}
 	
-	private function addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId, $bOptInConfirmRequired=false) {
+	private function addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId, $bOptInRequired=false) {
+	  // bOptInRequired is only set to true if sent from anonymous web form
 		$oSubscriberGroupMembership = new SubscriberGroupMembership();
 		$oSubscriberGroupMembership->setSubscriberGroupId($iSubscriberGroupId);
-		$oSubscriberGroupMembership->setOptInConfirmRequired($bOptInConfirmRequired);
-		$this->addSubscriberGroupMembership($oSubscriberGroupMembership);
+		if($bOptInRequired) {
+  		$oSubscriberGroupMembership->setOptInHash($this->getOptInChecksum($iSubscriberGroupId));
+		}
+		return $this->addSubscriberGroupMembership($oSubscriberGroupMembership);
 	}
-	
+		
 	public function getUnsubscribeChecksum() {
 		return md5($this->getEmail().$this->getCreatedAt());
+	}
+	
+	public function getOptInChecksum($iSubscriberGroupId) {
+		return self::getOptInChecksumByEmailAndSubscriberGroupId($this->getEmail(), $iSubscriberGroupId);
+	}
+	
+	public static function getOptInChecksumByEmailAndSubscriberGroupId($sEmail, $iSubscriberGroupId) {
+		return md5($sEmail.$iSubscriberGroupId);
 	}
 	
 	public function getUnsubscribeQueryParams($iSubscriberGroupId = null) {
