@@ -107,7 +107,6 @@ Widget.types.newsletter_send = {
 		markup.find("select[name='mail_group_ids[]']").prop('disabled', true);
 		markup.find("select[name='sender_email']").prop('disabled', true);
 		progress.progressbar('value', 0).show();
-		// get cleanup group id
 		this.prepareForSending(mail_groups, sender, function(batch_count) {
 			this.sendNewsletter(0, function(result) {
 				if(arguments[1]) {
