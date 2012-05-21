@@ -41,7 +41,6 @@ class SubscriberGroupMembershipTableMap extends TableMap
 		$this->addForeignPrimaryKey('SUBSCRIBER_ID', 'SubscriberId', 'INTEGER' , 'subscribers', 'ID', true, null, null);
 		$this->addForeignPrimaryKey('SUBSCRIBER_GROUP_ID', 'SubscriberGroupId', 'INTEGER' , 'subscriber_groups', 'ID', true, null, null);
 		$this->addColumn('OPT_IN_HASH', 'OptInHash', 'VARCHAR', false, 32, null);
-		$this->addColumn('IS_BACKEND_CREATED', 'IsBackendCreated', 'BOOLEAN', true, 1, false);
 		$this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
 		$this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
 		$this->addForeignKey('CREATED_BY', 'CreatedBy', 'INTEGER', 'users', 'ID', false, null, null);

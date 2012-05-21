@@ -36,6 +36,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 	
 	public function getSenderEmails() {
 		$aResult = Settings::getSetting('newsletter_plugin', 'sender_email_addresses', array(LinkUtil::getDomainHolderEmail('newsletter')));
+		// @todo add authorized users to sender_email_addresses
 		return $aResult;
 	}
 	
@@ -47,25 +48,10 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		if($aMailGroups === null && SubscriberGroupPeer::hasSubscriberGroups()) {
 			throw new LocalizedException("newsletter.mailing.subscriber_groups_required");
 		}
-		// if it is a string (multiple=false) and the mailgroup has the suffix, get is_backend_created subscriptions only
-		$bIsBackendCreated = false;
-		if(is_string($aMailGroups) && strpos($aMailGroups, MailGroupInputWidgetModule::BACKEND_CREATED_SUFFIX)) {			
-			$this->iSubscriberGroupId = $aMailGroups = (int) substr($aMailGroups, 0, -(strlen($aMailGroups)-1));
-			$bIsBackendCreated = true;
-		}
-		$this->aRecipients = SubscriberPeer::getSubscribersBySubscriberGroupMembership($aMailGroups, $bIsBackendCreated);
+		$this->aRecipients = SubscriberPeer::getSubscribersBySubscriberGroupMembership($aMailGroups);
 		FilterModule::getFilters()->handleMailGroupsRecipients($aMailGroups, array(&$this->aRecipients));
 		$this->aMailGroups = is_array($aMailGroups) ? $aMailGroups : array($aMailGroups);
 		return ceil(count($this->aRecipients)/$this->iBatchSize);
-	}
-	
-	/** resetBackendCreatedMemberships()
-	* description:
-	* does update all memberships that are backend_created and belong to the ubscriber_group that was set
-	* when a newsletter was sent to a specific target subscriber_group
-	*/
-	public function resetBackendCreatedMemberships() {
-		SubscriberGroupMembershipQuery::create()->filterBySubscriberGroupId($this->iSubscriberGroupId)->filterByIsBackendCreated(true)->update(array('IsBackendCreated' => false));
 	}
 
 	public function sendNewsletter($iBatchNumber = 0) {

@@ -43,6 +43,7 @@ class NewsletterMailingTableMap extends TableMap
 		$this->addForeignKey('SUBSCRIBER_GROUP_ID', 'SubscriberGroupId', 'INTEGER', 'subscriber_groups', 'ID', false, null, null);
 		$this->addColumn('EXTERNAL_MAIL_GROUP_ID', 'ExternalMailGroupId', 'VARCHAR', false, 255, null);
 		$this->addForeignKey('NEWSLETTER_ID', 'NewsletterId', 'INTEGER', 'newsletters', 'ID', true, null, null);
+		$this->addColumn('RECIPIENT_COUNT', 'RecipientCount', 'INTEGER', false, null, null);
 		$this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
 		$this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
 		$this->addForeignKey('CREATED_BY', 'CreatedBy', 'INTEGER', 'users', 'ID', false, null, null);

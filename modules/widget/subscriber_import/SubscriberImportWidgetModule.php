@@ -44,7 +44,6 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 				if(!$oSubscriber->hasNewsletterBySubscriberGroupId((int) $iTargetSubscriberGroup)) {
 					$oSubscriberGroupMembership = new SubscriberGroupMembership();
 					$oSubscriberGroupMembership->setSubscriberGroupId($iTargetSubscriberGroup);
-					$oSubscriberGroupMembership->setIsBackendCreated(true);
 					$oSubscriber->addSubscriberGroupMembership($oSubscriberGroupMembership);
 					$iMembershipsAdded++;
 				}

@@ -13,9 +13,6 @@ Widget.types.mail_group_input = {
 		jQuery.each(mail_groups, function(group_id, group_name) {
 			option.clone().text(group_name).attr('value', group_id).appendTo(this._element);
 		}.bind(this));
-		if(this.getHasBackendCreatedSubscriberGroups()) {
-			_this._element.prop('multiple', false);
-		}
 		if(current) {
 			this.val(current);
 		}

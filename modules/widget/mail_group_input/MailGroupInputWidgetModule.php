@@ -4,7 +4,6 @@
 */
 class MailGroupInputWidgetModule extends WidgetModule {
 	
-	const BACKEND_CREATED_SUFFIX = '_import';
 	public function getMailGroups($bIncludeTemporaryMailGroups=true) {
 		
 		// Get subscriber groups, add membership count if external mailgroups are not include, i.e. called from subscriber_import widget

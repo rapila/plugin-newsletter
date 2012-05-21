@@ -34,10 +34,10 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oSubscriber = SubscriberPeer::getByEmail($_REQUEST['unsubscribe']);
 		// if subscriber exists and the required checksum is correct
 		if($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_REQUEST['checksum']) {
+			SubscriberPeer::ignoreRights(true);
 			if(isset($_REQUEST['subscriber_group_id'])) {
 				$oSubscriber->deleteSubscriberGroupMembership($_REQUEST['subscriber_group_id']);
 			} else {
-				SubscriberPeer::ignoreRights(true);
 				$oSubscriber->delete();
 			}
 		}

@@ -5,15 +5,12 @@
 class SubscriberListWidgetModule extends WidgetModule {
 	
 	private $oListWidget;
-	private $bIsBackendCreated;
-	private $oIsBackendCreatedFilter;
 	public $oDelegateProxy;
 	
 	public function __construct() {
 		$this->oListWidget = new ListWidgetModule();
 		$this->oDelegateProxy = new CriteriaListWidgetDelegate($this, "Subscriber", 'name');
 		$this->oListWidget->setDelegate($this->oDelegateProxy);
-		$this->oIsBackendCreatedFilter = WidgetModule::getWidget('boolean_input', null, false);
 	}
 	
 	public function doWidget() {
@@ -24,11 +21,7 @@ class SubscriberListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		$aColumns = array('id', 'email', 'name', 'preferred_language_id');
-		if(SubscriberGroupMembershipQuery::create()->filterByIsBackendCreated(true)->count() > 0) {
-			$aColumns = array_merge($aColumns, array('is_backend_created'));
-		}
-		return array_merge($aColumns, array('delete'));
+		return array('id', 'email', 'name', 'preferred_language_id', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -45,11 +38,6 @@ class SubscriberListWidgetModule extends WidgetModule {
 				break;
 			case 'email':
 				$aResult['heading'] = StringPeer::getString('wns.email');
-				break;
-			case 'is_backend_created':
-				$aResult['heading'] = StringPeer::getString('wns.subscriber.is_backend_created');
-				$aResult['heading_filter'] = array('boolean_input', $this->oIsBackendCreatedFilter->getSessionKey());
-				$aResult['is_sortable'] = false;
 				break;
 			case 'delete':
 				$aResult['heading'] = ' ';
@@ -88,13 +76,6 @@ class SubscriberListWidgetModule extends WidgetModule {
 		return $this->oDelegateProxy->getSubscriberGroupId();
 	}
 	
-	public function getBackendCreatedName() {
-		if($this->bIsBackendCreated === true) {
-			return true;
-		}
-		return null;
-	}
-	
 	public function getSubscriberGroupHasSubscriptions($iSubscriberGroupId) {
 		return SubscriberGroupMembershipQuery::create()->filterBySubscriberGroupId($iSubscriberGroupId)->count() > 0;
 	}
@@ -104,9 +85,6 @@ class SubscriberListWidgetModule extends WidgetModule {
 		return $oSubscriber->deleteSubscriberGroupMembership($this->oDelegateProxy->getSubscriberGroupId());
 	}
 
-	public function setIsBackendCreated($bIsBackendCreated) {
-		$this->bIsBackendCreated = $bIsBackendCreated;
-	}
 
 	public function getCriteria() {
 		$oQuery = SubscriberQuery::create();
@@ -118,9 +96,6 @@ class SubscriberListWidgetModule extends WidgetModule {
 			if($this->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
 				$oSubscriberGroupMembershipQuery->filterBySubscriberGroupId(null, Criteria::ISNULL);
 			}
-		}
-		if($this->bIsBackendCreated) {
-			$oSubscriberGroupMembershipQuery->filterByIsBackendCreated(true);
 		}
 		$oSubscriberGroupMembershipQuery->endUse();
 		return $oQuery->distinct();

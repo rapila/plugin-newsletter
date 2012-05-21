@@ -140,14 +140,5 @@ class Subscriber extends BaseSubscriber {
 		return $aParameters;
 	}
 	
-	public function getIsBackendCreated() {
-		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
-			if($oSubscriberGroupMembership->getIsBackendCreated() === true) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 }
 
