@@ -62,7 +62,7 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 	* @param boolean show count
 	* @return array assoc for select
 	*/
-	public static function getAllAssoc($bDoJoinSubscriberMemberships=false, $bIncludeTemporaryMailGroups=true, $bAddMemberShipCount=false) {
+	public static function getAllAssoc($bDoJoinSubscriberMemberships=false, $bAddMemberShipCount=false) {
 		$aResult = array();
 		foreach(self::getSubscriberGroups(true, $bDoJoinSubscriberMemberships) as $oSubscriberGroup) {
 			$iGroupId = (string) $oSubscriberGroup->getId();

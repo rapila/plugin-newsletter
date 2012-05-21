@@ -61,6 +61,12 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	protected $newsletter_id;
 
 	/**
+	 * The value for the recipient_count field.
+	 * @var        int
+	 */
+	protected $recipient_count;
+
+	/**
 	 * The value for the created_at field.
 	 * @var        string
 	 */
@@ -194,6 +200,16 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	public function getNewsletterId()
 	{
 		return $this->newsletter_id;
+	}
+
+	/**
+	 * Get the [recipient_count] column value.
+	 * 
+	 * @return     int
+	 */
+	public function getRecipientCount()
+	{
+		return $this->recipient_count;
 	}
 
 	/**
@@ -403,6 +419,26 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 	} // setNewsletterId()
 
 	/**
+	 * Set the value of [recipient_count] column.
+	 * 
+	 * @param      int $v new value
+	 * @return     NewsletterMailing The current object (for fluent API support)
+	 */
+	public function setRecipientCount($v)
+	{
+		if ($v !== null) {
+			$v = (int) $v;
+		}
+
+		if ($this->recipient_count !== $v) {
+			$this->recipient_count = $v;
+			$this->modifiedColumns[] = NewsletterMailingPeer::RECIPIENT_COUNT;
+		}
+
+		return $this;
+	} // setRecipientCount()
+
+	/**
 	 * Sets the value of [created_at] column to a normalized version of the date/time value specified.
 	 * 
 	 * @param      mixed $v string, integer (timestamp), or DateTime value.
@@ -531,10 +567,11 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 			$this->subscriber_group_id = ($row[$startcol + 2] !== null) ? (int) $row[$startcol + 2] : null;
 			$this->external_mail_group_id = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
 			$this->newsletter_id = ($row[$startcol + 4] !== null) ? (int) $row[$startcol + 4] : null;
-			$this->created_at = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
-			$this->updated_at = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
-			$this->created_by = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
-			$this->updated_by = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
+			$this->recipient_count = ($row[$startcol + 5] !== null) ? (int) $row[$startcol + 5] : null;
+			$this->created_at = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
+			$this->updated_at = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
+			$this->created_by = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
+			$this->updated_by = ($row[$startcol + 9] !== null) ? (int) $row[$startcol + 9] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -543,7 +580,7 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 9; // 9 = NewsletterMailingPeer::NUM_HYDRATE_COLUMNS.
+			return $startcol + 10; // 10 = NewsletterMailingPeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating NewsletterMailing object", $e);
@@ -859,6 +896,9 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		if ($this->isColumnModified(NewsletterMailingPeer::NEWSLETTER_ID)) {
 			$modifiedColumns[':p' . $index++]  = '`NEWSLETTER_ID`';
 		}
+		if ($this->isColumnModified(NewsletterMailingPeer::RECIPIENT_COUNT)) {
+			$modifiedColumns[':p' . $index++]  = '`RECIPIENT_COUNT`';
+		}
 		if ($this->isColumnModified(NewsletterMailingPeer::CREATED_AT)) {
 			$modifiedColumns[':p' . $index++]  = '`CREATED_AT`';
 		}
@@ -896,6 +936,9 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 						break;
 					case '`NEWSLETTER_ID`':
 						$stmt->bindValue($identifier, $this->newsletter_id, PDO::PARAM_INT);
+						break;
+					case '`RECIPIENT_COUNT`':
+						$stmt->bindValue($identifier, $this->recipient_count, PDO::PARAM_INT);
 						break;
 					case '`CREATED_AT`':
 						$stmt->bindValue($identifier, $this->created_at, PDO::PARAM_STR);
@@ -1085,15 +1128,18 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 				return $this->getNewsletterId();
 				break;
 			case 5:
-				return $this->getCreatedAt();
+				return $this->getRecipientCount();
 				break;
 			case 6:
-				return $this->getUpdatedAt();
+				return $this->getCreatedAt();
 				break;
 			case 7:
-				return $this->getCreatedBy();
+				return $this->getUpdatedAt();
 				break;
 			case 8:
+				return $this->getCreatedBy();
+				break;
+			case 9:
 				return $this->getUpdatedBy();
 				break;
 			default:
@@ -1130,10 +1176,11 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 			$keys[2] => $this->getSubscriberGroupId(),
 			$keys[3] => $this->getExternalMailGroupId(),
 			$keys[4] => $this->getNewsletterId(),
-			$keys[5] => $this->getCreatedAt(),
-			$keys[6] => $this->getUpdatedAt(),
-			$keys[7] => $this->getCreatedBy(),
-			$keys[8] => $this->getUpdatedBy(),
+			$keys[5] => $this->getRecipientCount(),
+			$keys[6] => $this->getCreatedAt(),
+			$keys[7] => $this->getUpdatedAt(),
+			$keys[8] => $this->getCreatedBy(),
+			$keys[9] => $this->getUpdatedBy(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aSubscriberGroup) {
@@ -1195,15 +1242,18 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 				$this->setNewsletterId($value);
 				break;
 			case 5:
-				$this->setCreatedAt($value);
+				$this->setRecipientCount($value);
 				break;
 			case 6:
-				$this->setUpdatedAt($value);
+				$this->setCreatedAt($value);
 				break;
 			case 7:
-				$this->setCreatedBy($value);
+				$this->setUpdatedAt($value);
 				break;
 			case 8:
+				$this->setCreatedBy($value);
+				break;
+			case 9:
 				$this->setUpdatedBy($value);
 				break;
 		} // switch()
@@ -1235,10 +1285,11 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		if (array_key_exists($keys[2], $arr)) $this->setSubscriberGroupId($arr[$keys[2]]);
 		if (array_key_exists($keys[3], $arr)) $this->setExternalMailGroupId($arr[$keys[3]]);
 		if (array_key_exists($keys[4], $arr)) $this->setNewsletterId($arr[$keys[4]]);
-		if (array_key_exists($keys[5], $arr)) $this->setCreatedAt($arr[$keys[5]]);
-		if (array_key_exists($keys[6], $arr)) $this->setUpdatedAt($arr[$keys[6]]);
-		if (array_key_exists($keys[7], $arr)) $this->setCreatedBy($arr[$keys[7]]);
-		if (array_key_exists($keys[8], $arr)) $this->setUpdatedBy($arr[$keys[8]]);
+		if (array_key_exists($keys[5], $arr)) $this->setRecipientCount($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setCreatedAt($arr[$keys[6]]);
+		if (array_key_exists($keys[7], $arr)) $this->setUpdatedAt($arr[$keys[7]]);
+		if (array_key_exists($keys[8], $arr)) $this->setCreatedBy($arr[$keys[8]]);
+		if (array_key_exists($keys[9], $arr)) $this->setUpdatedBy($arr[$keys[9]]);
 	}
 
 	/**
@@ -1255,6 +1306,7 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		if ($this->isColumnModified(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID)) $criteria->add(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, $this->subscriber_group_id);
 		if ($this->isColumnModified(NewsletterMailingPeer::EXTERNAL_MAIL_GROUP_ID)) $criteria->add(NewsletterMailingPeer::EXTERNAL_MAIL_GROUP_ID, $this->external_mail_group_id);
 		if ($this->isColumnModified(NewsletterMailingPeer::NEWSLETTER_ID)) $criteria->add(NewsletterMailingPeer::NEWSLETTER_ID, $this->newsletter_id);
+		if ($this->isColumnModified(NewsletterMailingPeer::RECIPIENT_COUNT)) $criteria->add(NewsletterMailingPeer::RECIPIENT_COUNT, $this->recipient_count);
 		if ($this->isColumnModified(NewsletterMailingPeer::CREATED_AT)) $criteria->add(NewsletterMailingPeer::CREATED_AT, $this->created_at);
 		if ($this->isColumnModified(NewsletterMailingPeer::UPDATED_AT)) $criteria->add(NewsletterMailingPeer::UPDATED_AT, $this->updated_at);
 		if ($this->isColumnModified(NewsletterMailingPeer::CREATED_BY)) $criteria->add(NewsletterMailingPeer::CREATED_BY, $this->created_by);
@@ -1325,6 +1377,7 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		$copyObj->setSubscriberGroupId($this->getSubscriberGroupId());
 		$copyObj->setExternalMailGroupId($this->getExternalMailGroupId());
 		$copyObj->setNewsletterId($this->getNewsletterId());
+		$copyObj->setRecipientCount($this->getRecipientCount());
 		$copyObj->setCreatedAt($this->getCreatedAt());
 		$copyObj->setUpdatedAt($this->getUpdatedAt());
 		$copyObj->setCreatedBy($this->getCreatedBy());
@@ -1591,6 +1644,7 @@ abstract class BaseNewsletterMailing extends BaseObject  implements Persistent
 		$this->subscriber_group_id = null;
 		$this->external_mail_group_id = null;
 		$this->newsletter_id = null;
+		$this->recipient_count = null;
 		$this->created_at = null;
 		$this->updated_at = null;
 		$this->created_by = null;
