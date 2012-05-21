@@ -11,7 +11,6 @@
  * @method     NewsletterMailingQuery orderBySubscriberGroupId($order = Criteria::ASC) Order by the subscriber_group_id column
  * @method     NewsletterMailingQuery orderByExternalMailGroupId($order = Criteria::ASC) Order by the external_mail_group_id column
  * @method     NewsletterMailingQuery orderByNewsletterId($order = Criteria::ASC) Order by the newsletter_id column
- * @method     NewsletterMailingQuery orderByRecipientCount($order = Criteria::ASC) Order by the recipient_count column
  * @method     NewsletterMailingQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     NewsletterMailingQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  * @method     NewsletterMailingQuery orderByCreatedBy($order = Criteria::ASC) Order by the created_by column
@@ -22,7 +21,6 @@
  * @method     NewsletterMailingQuery groupBySubscriberGroupId() Group by the subscriber_group_id column
  * @method     NewsletterMailingQuery groupByExternalMailGroupId() Group by the external_mail_group_id column
  * @method     NewsletterMailingQuery groupByNewsletterId() Group by the newsletter_id column
- * @method     NewsletterMailingQuery groupByRecipientCount() Group by the recipient_count column
  * @method     NewsletterMailingQuery groupByCreatedAt() Group by the created_at column
  * @method     NewsletterMailingQuery groupByUpdatedAt() Group by the updated_at column
  * @method     NewsletterMailingQuery groupByCreatedBy() Group by the created_by column
@@ -56,7 +54,6 @@
  * @method     NewsletterMailing findOneBySubscriberGroupId(int $subscriber_group_id) Return the first NewsletterMailing filtered by the subscriber_group_id column
  * @method     NewsletterMailing findOneByExternalMailGroupId(string $external_mail_group_id) Return the first NewsletterMailing filtered by the external_mail_group_id column
  * @method     NewsletterMailing findOneByNewsletterId(int $newsletter_id) Return the first NewsletterMailing filtered by the newsletter_id column
- * @method     NewsletterMailing findOneByRecipientCount(int $recipient_count) Return the first NewsletterMailing filtered by the recipient_count column
  * @method     NewsletterMailing findOneByCreatedAt(string $created_at) Return the first NewsletterMailing filtered by the created_at column
  * @method     NewsletterMailing findOneByUpdatedAt(string $updated_at) Return the first NewsletterMailing filtered by the updated_at column
  * @method     NewsletterMailing findOneByCreatedBy(int $created_by) Return the first NewsletterMailing filtered by the created_by column
@@ -67,7 +64,6 @@
  * @method     array findBySubscriberGroupId(int $subscriber_group_id) Return NewsletterMailing objects filtered by the subscriber_group_id column
  * @method     array findByExternalMailGroupId(string $external_mail_group_id) Return NewsletterMailing objects filtered by the external_mail_group_id column
  * @method     array findByNewsletterId(int $newsletter_id) Return NewsletterMailing objects filtered by the newsletter_id column
- * @method     array findByRecipientCount(int $recipient_count) Return NewsletterMailing objects filtered by the recipient_count column
  * @method     array findByCreatedAt(string $created_at) Return NewsletterMailing objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return NewsletterMailing objects filtered by the updated_at column
  * @method     array findByCreatedBy(int $created_by) Return NewsletterMailing objects filtered by the created_by column
@@ -160,7 +156,7 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
 	 */
 	protected function findPkSimple($key, $con)
 	{
-		$sql = 'SELECT `ID`, `DATE_SENT`, `SUBSCRIBER_GROUP_ID`, `EXTERNAL_MAIL_GROUP_ID`, `NEWSLETTER_ID`, `RECIPIENT_COUNT`, `CREATED_AT`, `UPDATED_AT`, `CREATED_BY`, `UPDATED_BY` FROM `newsletter_mailings` WHERE `ID` = :p0';
+		$sql = 'SELECT `ID`, `DATE_SENT`, `SUBSCRIBER_GROUP_ID`, `EXTERNAL_MAIL_GROUP_ID`, `NEWSLETTER_ID`, `CREATED_AT`, `UPDATED_AT`, `CREATED_BY`, `UPDATED_BY` FROM `newsletter_mailings` WHERE `ID` = :p0';
 		try {
 			$stmt = $con->prepare($sql);
 			$stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -423,46 +419,6 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
 			}
 		}
 		return $this->addUsingAlias(NewsletterMailingPeer::NEWSLETTER_ID, $newsletterId, $comparison);
-	}
-
-	/**
-	 * Filter the query on the recipient_count column
-	 *
-	 * Example usage:
-	 * <code>
-	 * $query->filterByRecipientCount(1234); // WHERE recipient_count = 1234
-	 * $query->filterByRecipientCount(array(12, 34)); // WHERE recipient_count IN (12, 34)
-	 * $query->filterByRecipientCount(array('min' => 12)); // WHERE recipient_count > 12
-	 * </code>
-	 *
-	 * @param     mixed $recipientCount The value to use as filter.
-	 *              Use scalar values for equality.
-	 *              Use array values for in_array() equivalent.
-	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
-	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-	 *
-	 * @return    NewsletterMailingQuery The current query, for fluid interface
-	 */
-	public function filterByRecipientCount($recipientCount = null, $comparison = null)
-	{
-		if (is_array($recipientCount)) {
-			$useMinMax = false;
-			if (isset($recipientCount['min'])) {
-				$this->addUsingAlias(NewsletterMailingPeer::RECIPIENT_COUNT, $recipientCount['min'], Criteria::GREATER_EQUAL);
-				$useMinMax = true;
-			}
-			if (isset($recipientCount['max'])) {
-				$this->addUsingAlias(NewsletterMailingPeer::RECIPIENT_COUNT, $recipientCount['max'], Criteria::LESS_EQUAL);
-				$useMinMax = true;
-			}
-			if ($useMinMax) {
-				return $this;
-			}
-			if (null === $comparison) {
-				$comparison = Criteria::IN;
-			}
-		}
-		return $this->addUsingAlias(NewsletterMailingPeer::RECIPIENT_COUNT, $recipientCount, $comparison);
 	}
 
 	/**

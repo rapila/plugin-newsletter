@@ -26,13 +26,13 @@ abstract class BaseNewsletterMailingPeer {
 	const TM_CLASS = 'NewsletterMailingTableMap';
 
 	/** The total number of columns. */
-	const NUM_COLUMNS = 10;
+	const NUM_COLUMNS = 9;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
 	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-	const NUM_HYDRATE_COLUMNS = 10;
+	const NUM_HYDRATE_COLUMNS = 9;
 
 	/** the column name for the ID field */
 	const ID = 'newsletter_mailings.ID';
@@ -48,9 +48,6 @@ abstract class BaseNewsletterMailingPeer {
 
 	/** the column name for the NEWSLETTER_ID field */
 	const NEWSLETTER_ID = 'newsletter_mailings.NEWSLETTER_ID';
-
-	/** the column name for the RECIPIENT_COUNT field */
-	const RECIPIENT_COUNT = 'newsletter_mailings.RECIPIENT_COUNT';
 
 	/** the column name for the CREATED_AT field */
 	const CREATED_AT = 'newsletter_mailings.CREATED_AT';
@@ -85,12 +82,12 @@ abstract class BaseNewsletterMailingPeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	protected static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'DateSent', 'SubscriberGroupId', 'ExternalMailGroupId', 'NewsletterId', 'RecipientCount', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'UpdatedBy', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'dateSent', 'subscriberGroupId', 'externalMailGroupId', 'newsletterId', 'recipientCount', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::DATE_SENT, self::SUBSCRIBER_GROUP_ID, self::EXTERNAL_MAIL_GROUP_ID, self::NEWSLETTER_ID, self::RECIPIENT_COUNT, self::CREATED_AT, self::UPDATED_AT, self::CREATED_BY, self::UPDATED_BY, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'DATE_SENT', 'SUBSCRIBER_GROUP_ID', 'EXTERNAL_MAIL_GROUP_ID', 'NEWSLETTER_ID', 'RECIPIENT_COUNT', 'CREATED_AT', 'UPDATED_AT', 'CREATED_BY', 'UPDATED_BY', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'date_sent', 'subscriber_group_id', 'external_mail_group_id', 'newsletter_id', 'recipient_count', 'created_at', 'updated_at', 'created_by', 'updated_by', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'DateSent', 'SubscriberGroupId', 'ExternalMailGroupId', 'NewsletterId', 'CreatedAt', 'UpdatedAt', 'CreatedBy', 'UpdatedBy', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'dateSent', 'subscriberGroupId', 'externalMailGroupId', 'newsletterId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::DATE_SENT, self::SUBSCRIBER_GROUP_ID, self::EXTERNAL_MAIL_GROUP_ID, self::NEWSLETTER_ID, self::CREATED_AT, self::UPDATED_AT, self::CREATED_BY, self::UPDATED_BY, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'DATE_SENT', 'SUBSCRIBER_GROUP_ID', 'EXTERNAL_MAIL_GROUP_ID', 'NEWSLETTER_ID', 'CREATED_AT', 'UPDATED_AT', 'CREATED_BY', 'UPDATED_BY', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'date_sent', 'subscriber_group_id', 'external_mail_group_id', 'newsletter_id', 'created_at', 'updated_at', 'created_by', 'updated_by', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
 	);
 
 	/**
@@ -100,12 +97,12 @@ abstract class BaseNewsletterMailingPeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	protected static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'DateSent' => 1, 'SubscriberGroupId' => 2, 'ExternalMailGroupId' => 3, 'NewsletterId' => 4, 'RecipientCount' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, 'CreatedBy' => 8, 'UpdatedBy' => 9, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'dateSent' => 1, 'subscriberGroupId' => 2, 'externalMailGroupId' => 3, 'newsletterId' => 4, 'recipientCount' => 5, 'createdAt' => 6, 'updatedAt' => 7, 'createdBy' => 8, 'updatedBy' => 9, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::DATE_SENT => 1, self::SUBSCRIBER_GROUP_ID => 2, self::EXTERNAL_MAIL_GROUP_ID => 3, self::NEWSLETTER_ID => 4, self::RECIPIENT_COUNT => 5, self::CREATED_AT => 6, self::UPDATED_AT => 7, self::CREATED_BY => 8, self::UPDATED_BY => 9, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'DATE_SENT' => 1, 'SUBSCRIBER_GROUP_ID' => 2, 'EXTERNAL_MAIL_GROUP_ID' => 3, 'NEWSLETTER_ID' => 4, 'RECIPIENT_COUNT' => 5, 'CREATED_AT' => 6, 'UPDATED_AT' => 7, 'CREATED_BY' => 8, 'UPDATED_BY' => 9, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'date_sent' => 1, 'subscriber_group_id' => 2, 'external_mail_group_id' => 3, 'newsletter_id' => 4, 'recipient_count' => 5, 'created_at' => 6, 'updated_at' => 7, 'created_by' => 8, 'updated_by' => 9, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'DateSent' => 1, 'SubscriberGroupId' => 2, 'ExternalMailGroupId' => 3, 'NewsletterId' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, 'CreatedBy' => 7, 'UpdatedBy' => 8, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'dateSent' => 1, 'subscriberGroupId' => 2, 'externalMailGroupId' => 3, 'newsletterId' => 4, 'createdAt' => 5, 'updatedAt' => 6, 'createdBy' => 7, 'updatedBy' => 8, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::DATE_SENT => 1, self::SUBSCRIBER_GROUP_ID => 2, self::EXTERNAL_MAIL_GROUP_ID => 3, self::NEWSLETTER_ID => 4, self::CREATED_AT => 5, self::UPDATED_AT => 6, self::CREATED_BY => 7, self::UPDATED_BY => 8, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'DATE_SENT' => 1, 'SUBSCRIBER_GROUP_ID' => 2, 'EXTERNAL_MAIL_GROUP_ID' => 3, 'NEWSLETTER_ID' => 4, 'CREATED_AT' => 5, 'UPDATED_AT' => 6, 'CREATED_BY' => 7, 'UPDATED_BY' => 8, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'date_sent' => 1, 'subscriber_group_id' => 2, 'external_mail_group_id' => 3, 'newsletter_id' => 4, 'created_at' => 5, 'updated_at' => 6, 'created_by' => 7, 'updated_by' => 8, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
 	);
 
 	/**
@@ -182,7 +179,6 @@ abstract class BaseNewsletterMailingPeer {
 			$criteria->addSelectColumn(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID);
 			$criteria->addSelectColumn(NewsletterMailingPeer::EXTERNAL_MAIL_GROUP_ID);
 			$criteria->addSelectColumn(NewsletterMailingPeer::NEWSLETTER_ID);
-			$criteria->addSelectColumn(NewsletterMailingPeer::RECIPIENT_COUNT);
 			$criteria->addSelectColumn(NewsletterMailingPeer::CREATED_AT);
 			$criteria->addSelectColumn(NewsletterMailingPeer::UPDATED_AT);
 			$criteria->addSelectColumn(NewsletterMailingPeer::CREATED_BY);
@@ -193,7 +189,6 @@ abstract class BaseNewsletterMailingPeer {
 			$criteria->addSelectColumn($alias . '.SUBSCRIBER_GROUP_ID');
 			$criteria->addSelectColumn($alias . '.EXTERNAL_MAIL_GROUP_ID');
 			$criteria->addSelectColumn($alias . '.NEWSLETTER_ID');
-			$criteria->addSelectColumn($alias . '.RECIPIENT_COUNT');
 			$criteria->addSelectColumn($alias . '.CREATED_AT');
 			$criteria->addSelectColumn($alias . '.UPDATED_AT');
 			$criteria->addSelectColumn($alias . '.CREATED_BY');

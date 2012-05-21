@@ -93,11 +93,12 @@ class Subscriber extends BaseSubscriber {
 	}
 	
 	/**
-	 * @param integer subscriber_group_id
+ 	 * @param integer subscriber_group_id
+ 	 * @param boolean opt_in_confirm_required, default: false
 	 * @return void
 	 * usage: for adding subscriptions without touching the others @see setHasNewsletterBySubscriberGroupIds()
 	 */
-	public function addSubscriberGroupMembershipIfNotExists($iSubscriberGroupId, $bOptInRequired=false) {
+	public function addSubscriberGroupMembershipIfNotExists($iSubscriberGroupId) {
 		$bSubscriberGroupMembershipExists = false;
 		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
 			if($iSubscriberGroupId == $oSubscriberGroupMembership->getSubscriberGroupId()) {
@@ -105,15 +106,17 @@ class Subscriber extends BaseSubscriber {
 			}
 		} 
 		if($bSubscriberGroupMembershipExists === false) {
+		  $bOptInRequired = true;
 			return $this->addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId, $bOptInRequired);
 		}
 	}
 	
 	private function addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId, $bOptInRequired=false) {
+	  // bOptInRequired is only set to true if sent from anonymous web form
 		$oSubscriberGroupMembership = new SubscriberGroupMembership();
 		$oSubscriberGroupMembership->setSubscriberGroupId($iSubscriberGroupId);
 		if($bOptInRequired) {
-			$oSubscriberGroupMembership->setOptInHash($this->getOptInChecksum($iSubscriberGroupId));
+  		$oSubscriberGroupMembership->setOptInHash($this->getOptInChecksum($iSubscriberGroupId));
 		}
 		return $this->addSubscriberGroupMembership($oSubscriberGroupMembership);
 	}

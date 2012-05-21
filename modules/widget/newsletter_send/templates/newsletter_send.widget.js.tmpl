@@ -55,9 +55,7 @@ Widget.types.newsletter_send = {
 		});
 		var mail_groups = send_markup.find("select[name='mail_group_ids[]']");
 		mail_groups.prepareWidget(function(widget) {
-			if(widget.getHasBackendCreatedSubscriberGroups()) {
-				_this.settings.reset_backend_created_subscriber_group_memberships = true;
-			}
+
 		}, jQuery.noop);
 	
 		send_markup.bind('submit', function(event) {
@@ -129,9 +127,6 @@ Widget.types.newsletter_send = {
 	
 	handle_send_response: function(result, markup) {
 		if(result) {
-			if(this.settings.reset_backend_created_subscriber_group_memberships) {
-				this.resetBackendCreatedMemberships();
-			}
 			Widget.notifyUser('info', '{{writeString=wns.newsletter_send.sent_all}}');
 			markup.dialog('close');
 		} else {
@@ -155,7 +150,6 @@ Widget.types.newsletter_send = {
 	close_callback: jQuery.noop,
 	
 	settings: {
-		default_email: '{{writeSessionAttribute=getUser->getEmail}}',
-		reset_backend_created_subscriber_group_memberships: false
+		default_email: '{{writeSessionAttribute=getUser->getEmail}}'
 	}
 };

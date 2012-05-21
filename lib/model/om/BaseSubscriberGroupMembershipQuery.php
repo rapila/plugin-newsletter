@@ -9,6 +9,7 @@
  * @method     SubscriberGroupMembershipQuery orderBySubscriberId($order = Criteria::ASC) Order by the subscriber_id column
  * @method     SubscriberGroupMembershipQuery orderBySubscriberGroupId($order = Criteria::ASC) Order by the subscriber_group_id column
  * @method     SubscriberGroupMembershipQuery orderByOptInHash($order = Criteria::ASC) Order by the opt_in_hash column
+ * @method     SubscriberGroupMembershipQuery orderByIsBackendCreated($order = Criteria::ASC) Order by the is_backend_created column
  * @method     SubscriberGroupMembershipQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     SubscriberGroupMembershipQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  * @method     SubscriberGroupMembershipQuery orderByCreatedBy($order = Criteria::ASC) Order by the created_by column
@@ -17,6 +18,7 @@
  * @method     SubscriberGroupMembershipQuery groupBySubscriberId() Group by the subscriber_id column
  * @method     SubscriberGroupMembershipQuery groupBySubscriberGroupId() Group by the subscriber_group_id column
  * @method     SubscriberGroupMembershipQuery groupByOptInHash() Group by the opt_in_hash column
+ * @method     SubscriberGroupMembershipQuery groupByIsBackendCreated() Group by the is_backend_created column
  * @method     SubscriberGroupMembershipQuery groupByCreatedAt() Group by the created_at column
  * @method     SubscriberGroupMembershipQuery groupByUpdatedAt() Group by the updated_at column
  * @method     SubscriberGroupMembershipQuery groupByCreatedBy() Group by the created_by column
@@ -48,6 +50,7 @@
  * @method     SubscriberGroupMembership findOneBySubscriberId(int $subscriber_id) Return the first SubscriberGroupMembership filtered by the subscriber_id column
  * @method     SubscriberGroupMembership findOneBySubscriberGroupId(int $subscriber_group_id) Return the first SubscriberGroupMembership filtered by the subscriber_group_id column
  * @method     SubscriberGroupMembership findOneByOptInHash(string $opt_in_hash) Return the first SubscriberGroupMembership filtered by the opt_in_hash column
+ * @method     SubscriberGroupMembership findOneByIsBackendCreated(boolean $is_backend_created) Return the first SubscriberGroupMembership filtered by the is_backend_created column
  * @method     SubscriberGroupMembership findOneByCreatedAt(string $created_at) Return the first SubscriberGroupMembership filtered by the created_at column
  * @method     SubscriberGroupMembership findOneByUpdatedAt(string $updated_at) Return the first SubscriberGroupMembership filtered by the updated_at column
  * @method     SubscriberGroupMembership findOneByCreatedBy(int $created_by) Return the first SubscriberGroupMembership filtered by the created_by column
@@ -56,6 +59,7 @@
  * @method     array findBySubscriberId(int $subscriber_id) Return SubscriberGroupMembership objects filtered by the subscriber_id column
  * @method     array findBySubscriberGroupId(int $subscriber_group_id) Return SubscriberGroupMembership objects filtered by the subscriber_group_id column
  * @method     array findByOptInHash(string $opt_in_hash) Return SubscriberGroupMembership objects filtered by the opt_in_hash column
+ * @method     array findByIsBackendCreated(boolean $is_backend_created) Return SubscriberGroupMembership objects filtered by the is_backend_created column
  * @method     array findByCreatedAt(string $created_at) Return SubscriberGroupMembership objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return SubscriberGroupMembership objects filtered by the updated_at column
  * @method     array findByCreatedBy(int $created_by) Return SubscriberGroupMembership objects filtered by the created_by column
@@ -148,7 +152,7 @@ abstract class BaseSubscriberGroupMembershipQuery extends ModelCriteria
 	 */
 	protected function findPkSimple($key, $con)
 	{
-		$sql = 'SELECT `SUBSCRIBER_ID`, `SUBSCRIBER_GROUP_ID`, `OPT_IN_HASH`, `CREATED_AT`, `UPDATED_AT`, `CREATED_BY`, `UPDATED_BY` FROM `subscriber_group_memberships` WHERE `SUBSCRIBER_ID` = :p0 AND `SUBSCRIBER_GROUP_ID` = :p1';
+		$sql = 'SELECT `SUBSCRIBER_ID`, `SUBSCRIBER_GROUP_ID`, `OPT_IN_HASH`, `IS_BACKEND_CREATED`, `CREATED_AT`, `UPDATED_AT`, `CREATED_BY`, `UPDATED_BY` FROM `subscriber_group_memberships` WHERE `SUBSCRIBER_ID` = :p0 AND `SUBSCRIBER_GROUP_ID` = :p1';
 		try {
 			$stmt = $con->prepare($sql);
 			$stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
@@ -329,6 +333,32 @@ abstract class BaseSubscriberGroupMembershipQuery extends ModelCriteria
 			}
 		}
 		return $this->addUsingAlias(SubscriberGroupMembershipPeer::OPT_IN_HASH, $optInHash, $comparison);
+	}
+
+	/**
+	 * Filter the query on the is_backend_created column
+	 *
+	 * Example usage:
+	 * <code>
+	 * $query->filterByIsBackendCreated(true); // WHERE is_backend_created = true
+	 * $query->filterByIsBackendCreated('yes'); // WHERE is_backend_created = true
+	 * </code>
+	 *
+	 * @param     boolean|string $isBackendCreated The value to use as filter.
+	 *              Non-boolean arguments are converted using the following rules:
+	 *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+	 *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+	 *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    SubscriberGroupMembershipQuery The current query, for fluid interface
+	 */
+	public function filterByIsBackendCreated($isBackendCreated = null, $comparison = null)
+	{
+		if (is_string($isBackendCreated)) {
+			$is_backend_created = in_array(strtolower($isBackendCreated), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+		}
+		return $this->addUsingAlias(SubscriberGroupMembershipPeer::IS_BACKEND_CREATED, $isBackendCreated, $comparison);
 	}
 
 	/**
