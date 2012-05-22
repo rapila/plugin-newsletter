@@ -82,6 +82,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 			return $iBatchNumber+1;
 		} else {
 			// return batch count/boolean and register Mailings per group
+			$bOneGroupOnly = count($this->aMailGroups) === 1;
 			foreach($this->aMailGroups as $mMailGroupId) {
 				$oNewsletterMailing = new NewsletterMailing();
 				$oNewsletterMailing->setDateSent(date('c'));
@@ -89,6 +90,10 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 					$oNewsletterMailing->setSubscriberGroupId($mMailGroupId);
 				} else {
 					$oNewsletterMailing->setExternalMailGroupId($mMailGroupId);
+				}
+				// @todo check change jm > write recipient count if newsletter is sent to singe group only
+				if($bOneGroupOnly) {
+					$oNewsletterMailing->setRecipientCount(count($this->aRecipients));
 				}
 				$oNewsletterMailing->setNewsletterId($oNewsletter->getId());
 				$oNewsletterMailing->save();
