@@ -43,6 +43,12 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	protected $name;
 
 	/**
+	 * The value for the display_name field.
+	 * @var        string
+	 */
+	protected $display_name;
+
+	/**
 	 * The value for the is_default field.
 	 * Note: this column has a database default value of: false
 	 * @var        boolean
@@ -164,6 +170,16 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	public function getName()
 	{
 		return $this->name;
+	}
+
+	/**
+	 * Get the [display_name] column value.
+	 * 
+	 * @return     string
+	 */
+	public function getDisplayName()
+	{
+		return $this->display_name;
 	}
 
 	/**
@@ -321,6 +337,26 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 
 		return $this;
 	} // setName()
+
+	/**
+	 * Set the value of [display_name] column.
+	 * 
+	 * @param      string $v new value
+	 * @return     SubscriberGroup The current object (for fluent API support)
+	 */
+	public function setDisplayName($v)
+	{
+		if ($v !== null) {
+			$v = (string) $v;
+		}
+
+		if ($this->display_name !== $v) {
+			$this->display_name = $v;
+			$this->modifiedColumns[] = SubscriberGroupPeer::DISPLAY_NAME;
+		}
+
+		return $this;
+	} // setDisplayName()
 
 	/**
 	 * Sets the value of the [is_default] column.
@@ -500,12 +536,13 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 
 			$this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
 			$this->name = ($row[$startcol + 1] !== null) ? (string) $row[$startcol + 1] : null;
-			$this->is_default = ($row[$startcol + 2] !== null) ? (boolean) $row[$startcol + 2] : null;
-			$this->description = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
-			$this->created_at = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
-			$this->updated_at = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
-			$this->created_by = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
-			$this->updated_by = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
+			$this->display_name = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
+			$this->is_default = ($row[$startcol + 3] !== null) ? (boolean) $row[$startcol + 3] : null;
+			$this->description = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
+			$this->created_at = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+			$this->updated_at = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
+			$this->created_by = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
+			$this->updated_by = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -514,7 +551,7 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 8; // 8 = SubscriberGroupPeer::NUM_HYDRATE_COLUMNS.
+			return $startcol + 9; // 9 = SubscriberGroupPeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating SubscriberGroup object", $e);
@@ -837,6 +874,9 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 		if ($this->isColumnModified(SubscriberGroupPeer::NAME)) {
 			$modifiedColumns[':p' . $index++]  = '`NAME`';
 		}
+		if ($this->isColumnModified(SubscriberGroupPeer::DISPLAY_NAME)) {
+			$modifiedColumns[':p' . $index++]  = '`DISPLAY_NAME`';
+		}
 		if ($this->isColumnModified(SubscriberGroupPeer::IS_DEFAULT)) {
 			$modifiedColumns[':p' . $index++]  = '`IS_DEFAULT`';
 		}
@@ -871,6 +911,9 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 						break;
 					case '`NAME`':
 						$stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
+						break;
+					case '`DISPLAY_NAME`':
+						$stmt->bindValue($identifier, $this->display_name, PDO::PARAM_STR);
 						break;
 					case '`IS_DEFAULT`':
 						$stmt->bindValue($identifier, (int) $this->is_default, PDO::PARAM_INT);
@@ -1061,21 +1104,24 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 				return $this->getName();
 				break;
 			case 2:
-				return $this->getIsDefault();
+				return $this->getDisplayName();
 				break;
 			case 3:
-				return $this->getDescription();
+				return $this->getIsDefault();
 				break;
 			case 4:
-				return $this->getCreatedAt();
+				return $this->getDescription();
 				break;
 			case 5:
-				return $this->getUpdatedAt();
+				return $this->getCreatedAt();
 				break;
 			case 6:
-				return $this->getCreatedBy();
+				return $this->getUpdatedAt();
 				break;
 			case 7:
+				return $this->getCreatedBy();
+				break;
+			case 8:
 				return $this->getUpdatedBy();
 				break;
 			default:
@@ -1109,12 +1155,13 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 		$result = array(
 			$keys[0] => $this->getId(),
 			$keys[1] => $this->getName(),
-			$keys[2] => $this->getIsDefault(),
-			$keys[3] => $this->getDescription(),
-			$keys[4] => $this->getCreatedAt(),
-			$keys[5] => $this->getUpdatedAt(),
-			$keys[6] => $this->getCreatedBy(),
-			$keys[7] => $this->getUpdatedBy(),
+			$keys[2] => $this->getDisplayName(),
+			$keys[3] => $this->getIsDefault(),
+			$keys[4] => $this->getDescription(),
+			$keys[5] => $this->getCreatedAt(),
+			$keys[6] => $this->getUpdatedAt(),
+			$keys[7] => $this->getCreatedBy(),
+			$keys[8] => $this->getUpdatedBy(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aUserRelatedByCreatedBy) {
@@ -1167,21 +1214,24 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 				$this->setName($value);
 				break;
 			case 2:
-				$this->setIsDefault($value);
+				$this->setDisplayName($value);
 				break;
 			case 3:
-				$this->setDescription($value);
+				$this->setIsDefault($value);
 				break;
 			case 4:
-				$this->setCreatedAt($value);
+				$this->setDescription($value);
 				break;
 			case 5:
-				$this->setUpdatedAt($value);
+				$this->setCreatedAt($value);
 				break;
 			case 6:
-				$this->setCreatedBy($value);
+				$this->setUpdatedAt($value);
 				break;
 			case 7:
+				$this->setCreatedBy($value);
+				break;
+			case 8:
 				$this->setUpdatedBy($value);
 				break;
 		} // switch()
@@ -1210,12 +1260,13 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 
 		if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
 		if (array_key_exists($keys[1], $arr)) $this->setName($arr[$keys[1]]);
-		if (array_key_exists($keys[2], $arr)) $this->setIsDefault($arr[$keys[2]]);
-		if (array_key_exists($keys[3], $arr)) $this->setDescription($arr[$keys[3]]);
-		if (array_key_exists($keys[4], $arr)) $this->setCreatedAt($arr[$keys[4]]);
-		if (array_key_exists($keys[5], $arr)) $this->setUpdatedAt($arr[$keys[5]]);
-		if (array_key_exists($keys[6], $arr)) $this->setCreatedBy($arr[$keys[6]]);
-		if (array_key_exists($keys[7], $arr)) $this->setUpdatedBy($arr[$keys[7]]);
+		if (array_key_exists($keys[2], $arr)) $this->setDisplayName($arr[$keys[2]]);
+		if (array_key_exists($keys[3], $arr)) $this->setIsDefault($arr[$keys[3]]);
+		if (array_key_exists($keys[4], $arr)) $this->setDescription($arr[$keys[4]]);
+		if (array_key_exists($keys[5], $arr)) $this->setCreatedAt($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setUpdatedAt($arr[$keys[6]]);
+		if (array_key_exists($keys[7], $arr)) $this->setCreatedBy($arr[$keys[7]]);
+		if (array_key_exists($keys[8], $arr)) $this->setUpdatedBy($arr[$keys[8]]);
 	}
 
 	/**
@@ -1229,6 +1280,7 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 
 		if ($this->isColumnModified(SubscriberGroupPeer::ID)) $criteria->add(SubscriberGroupPeer::ID, $this->id);
 		if ($this->isColumnModified(SubscriberGroupPeer::NAME)) $criteria->add(SubscriberGroupPeer::NAME, $this->name);
+		if ($this->isColumnModified(SubscriberGroupPeer::DISPLAY_NAME)) $criteria->add(SubscriberGroupPeer::DISPLAY_NAME, $this->display_name);
 		if ($this->isColumnModified(SubscriberGroupPeer::IS_DEFAULT)) $criteria->add(SubscriberGroupPeer::IS_DEFAULT, $this->is_default);
 		if ($this->isColumnModified(SubscriberGroupPeer::DESCRIPTION)) $criteria->add(SubscriberGroupPeer::DESCRIPTION, $this->description);
 		if ($this->isColumnModified(SubscriberGroupPeer::CREATED_AT)) $criteria->add(SubscriberGroupPeer::CREATED_AT, $this->created_at);
@@ -1298,6 +1350,7 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
 	{
 		$copyObj->setName($this->getName());
+		$copyObj->setDisplayName($this->getDisplayName());
 		$copyObj->setIsDefault($this->getIsDefault());
 		$copyObj->setDescription($this->getDescription());
 		$copyObj->setCreatedAt($this->getCreatedAt());
@@ -1942,6 +1995,7 @@ abstract class BaseSubscriberGroup extends BaseObject  implements Persistent
 	{
 		$this->id = null;
 		$this->name = null;
+		$this->display_name = null;
 		$this->is_default = null;
 		$this->description = null;
 		$this->created_at = null;

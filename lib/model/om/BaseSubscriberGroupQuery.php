@@ -8,6 +8,7 @@
  *
  * @method     SubscriberGroupQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     SubscriberGroupQuery orderByName($order = Criteria::ASC) Order by the name column
+ * @method     SubscriberGroupQuery orderByDisplayName($order = Criteria::ASC) Order by the display_name column
  * @method     SubscriberGroupQuery orderByIsDefault($order = Criteria::ASC) Order by the is_default column
  * @method     SubscriberGroupQuery orderByDescription($order = Criteria::ASC) Order by the description column
  * @method     SubscriberGroupQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
@@ -17,6 +18,7 @@
  *
  * @method     SubscriberGroupQuery groupById() Group by the id column
  * @method     SubscriberGroupQuery groupByName() Group by the name column
+ * @method     SubscriberGroupQuery groupByDisplayName() Group by the display_name column
  * @method     SubscriberGroupQuery groupByIsDefault() Group by the is_default column
  * @method     SubscriberGroupQuery groupByDescription() Group by the description column
  * @method     SubscriberGroupQuery groupByCreatedAt() Group by the created_at column
@@ -49,6 +51,7 @@
  *
  * @method     SubscriberGroup findOneById(int $id) Return the first SubscriberGroup filtered by the id column
  * @method     SubscriberGroup findOneByName(string $name) Return the first SubscriberGroup filtered by the name column
+ * @method     SubscriberGroup findOneByDisplayName(string $display_name) Return the first SubscriberGroup filtered by the display_name column
  * @method     SubscriberGroup findOneByIsDefault(boolean $is_default) Return the first SubscriberGroup filtered by the is_default column
  * @method     SubscriberGroup findOneByDescription(string $description) Return the first SubscriberGroup filtered by the description column
  * @method     SubscriberGroup findOneByCreatedAt(string $created_at) Return the first SubscriberGroup filtered by the created_at column
@@ -58,6 +61,7 @@
  *
  * @method     array findById(int $id) Return SubscriberGroup objects filtered by the id column
  * @method     array findByName(string $name) Return SubscriberGroup objects filtered by the name column
+ * @method     array findByDisplayName(string $display_name) Return SubscriberGroup objects filtered by the display_name column
  * @method     array findByIsDefault(boolean $is_default) Return SubscriberGroup objects filtered by the is_default column
  * @method     array findByDescription(string $description) Return SubscriberGroup objects filtered by the description column
  * @method     array findByCreatedAt(string $created_at) Return SubscriberGroup objects filtered by the created_at column
@@ -152,7 +156,7 @@ abstract class BaseSubscriberGroupQuery extends ModelCriteria
 	 */
 	protected function findPkSimple($key, $con)
 	{
-		$sql = 'SELECT `ID`, `NAME`, `IS_DEFAULT`, `DESCRIPTION`, `CREATED_AT`, `UPDATED_AT`, `CREATED_BY`, `UPDATED_BY` FROM `subscriber_groups` WHERE `ID` = :p0';
+		$sql = 'SELECT `ID`, `NAME`, `DISPLAY_NAME`, `IS_DEFAULT`, `DESCRIPTION`, `CREATED_AT`, `UPDATED_AT`, `CREATED_BY`, `UPDATED_BY` FROM `subscriber_groups` WHERE `ID` = :p0';
 		try {
 			$stmt = $con->prepare($sql);
 			$stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -289,6 +293,34 @@ abstract class BaseSubscriberGroupQuery extends ModelCriteria
 			}
 		}
 		return $this->addUsingAlias(SubscriberGroupPeer::NAME, $name, $comparison);
+	}
+
+	/**
+	 * Filter the query on the display_name column
+	 *
+	 * Example usage:
+	 * <code>
+	 * $query->filterByDisplayName('fooValue');   // WHERE display_name = 'fooValue'
+	 * $query->filterByDisplayName('%fooValue%'); // WHERE display_name LIKE '%fooValue%'
+	 * </code>
+	 *
+	 * @param     string $displayName The value to use as filter.
+	 *              Accepts wildcards (* and % trigger a LIKE)
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    SubscriberGroupQuery The current query, for fluid interface
+	 */
+	public function filterByDisplayName($displayName = null, $comparison = null)
+	{
+		if (null === $comparison) {
+			if (is_array($displayName)) {
+				$comparison = Criteria::IN;
+			} elseif (preg_match('/[\%\*]/', $displayName)) {
+				$displayName = str_replace('*', '%', $displayName);
+				$comparison = Criteria::LIKE;
+			}
+		}
+		return $this->addUsingAlias(SubscriberGroupPeer::DISPLAY_NAME, $displayName, $comparison);
 	}
 
 	/**

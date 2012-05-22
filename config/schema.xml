@@ -49,6 +49,7 @@
 	<table name="subscriber_groups" phpName="SubscriberGroup">
 		<column name="id" type="integer" required="true" autoIncrement="true" primaryKey="true" />
 		<column name="name" type="varchar" size="80" required="true" />
+		<column name="display_name" type="varchar" size="120" />
 		<column name="is_default" type="boolean" required="true" default="0" />
 		<column name="description" type="varchar" size="255" />
 	</table>
