@@ -44,7 +44,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 ALTER TABLE `subscriber_groups` ADD
 (
-	`display_name` VARCHAR(120)
+	`display_name` VARCHAR( 120 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL AFTER `name` 
 );
 
 # This restores the fkey checks, after having unset them earlier
