@@ -21,17 +21,21 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 		return self::doSelect($oCriteria);
 	}
 	
-	public static function getSubscriberGroups($bOrderByName = false, $bJoinBySubscribers = false) {
-		$oCriteria = new Criteria();
+	public static function getSubscriberGroups($bOrderByName = false, $bJoinBySubscribers = false, $bIncludeGeneratedMailGroups = true) {
+		$oQuery = SubscriberGroupQuery::create();
 		if($bJoinBySubscribers) {
-			$oCriteria->addJoin(self::ID, SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, Criteria::INNER_JOIN);
+			$oQuery->joinSubscriberGroupMembership();
 		}
 		if($bOrderByName) {
-			$oCriteria->addAscendingOrderByColumn(self::NAME);
+			$oQuery->orderByName();
 		} else {
-			$oCriteria->addAscendingOrderByColumn(self::ID);
+			$oQuery->orderById();
 		}
-		return self::doSelect($oCriteria);
+		// @todo check change jm
+		if($bIncludeGeneratedMailGroups === false) {
+			$oQuery->filterbyDisplayName(null, Criteria::ISNOTNULL);
+		}
+		return $oQuery->find();
 	}
 	
 	public static function getSubscriberGroupArray() {
@@ -62,9 +66,9 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 	* @param boolean show count
 	* @return array assoc for select
 	*/
-	public static function getAllAssoc($bDoJoinSubscriberMemberships=false, $bAddMemberShipCount=false) {
+	public static function getAllAssoc($bDoJoinSubscriberMemberships=false, $bAddMemberShipCount=false, $bIncludeGeneratedMailGroups=true) {
 		$aResult = array();
-		foreach(self::getSubscriberGroups(true, $bDoJoinSubscriberMemberships) as $oSubscriberGroup) {
+		foreach(self::getSubscriberGroups(true, $bDoJoinSubscriberMemberships, $bIncludeGeneratedMailGroups) as $oSubscriberGroup) {
 			$iGroupId = (string) $oSubscriberGroup->getId();
 			$iCountMembershipsAddon = '';
 			
