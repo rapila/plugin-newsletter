@@ -9,6 +9,7 @@ Widget.types.subscriber_import = {
 		
 		this.mail_groups = this._element.find("select[name='mail_group_ids']");
 		this.mail_groups.prepareWidget(function(mail_group_input) {
+			mail_group_input.settings.include_generated_mail_groups = false;
 			mail_group_input.settings.include_temporary_mail_groups = false;
 		}, jQuery.noop);
 
