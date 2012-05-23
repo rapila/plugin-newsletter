@@ -35,7 +35,7 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 		// @todo check change jm
 		// always add temporary groups with all importet subscribers
 		$oSubscriberGroup = new SubscriberGroup();
-		$oSubscriberGroup->setName(GENERATED_PREFIX.date('Y-m-d'));
+		$oSubscriberGroup->setName(self::GENERATED_PREFIX.date('YmdHs'));
 		$oSubscriberGroup->save();
 		array_push($aTargetSubscriberGroups, $oSubscriberGroup->getId());
 		
