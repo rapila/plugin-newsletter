@@ -127,7 +127,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 						$this->notifySubscriber($bIsNewSubscription);
 					}
 				}
-				unset($_REQUEST['subscriber_email']);
+				// unset($_REQUEST['subscriber_email']);
 				$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
 				if($bOptInRequired === false) {
 					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success');
