@@ -38,7 +38,29 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			if(isset($_REQUEST['subscriber_group_id'])) {
 				$oSubscriber->deleteSubscriberGroupMembership($_REQUEST['subscriber_group_id']);
 			} else {
+				// @todo check change jm, not very elegant
+				$aSubscriberGroupMemberShips =  $oSubscriber->getSubscriberGroupMemberships();
+				$aValidSubscriptions = array();
+				if(count($aSubscriberGroupMemberShips) > 1) {
+					foreach($aSubscriberGroupMemberShips as $oSubscriberGroupMembership) {
+						if($oSubscriberGroupMembership->getSubscriberGroup()->getDisplayName() == null) {
+							continue;
+						}
+						$aValidSubscriptions[] = $oSubscriberGroupMembership;
+					}
+				}
+				// display newsletter options to opt-in or out if there is more then one valid one
+				// otherwise delete the subscriber and inform
+				if(count($aValidSubscriptions) > 1) {
+					$oTemplate = $this->constructTemplate('unsubscribe_optin_confirm');
+					foreach($aValidSubscriptions as $oSubscriberGroupMemberships) {
+						$oSubsriberGroupOption = TagWriter::quickTag('input', array('type' => 'checkbox', 'name' => 'subscriber_groups[]'), $oSubscriberGroupMemberships->getSubscriberGroup()->getDisplayName());
+						$oTemplate->replaceIdentifierMultiple('subscriber_group_checkbox', $oSubscriberGroupOption);
+					}
+					return $oTemplate;
+				}
 				$oSubscriber->delete();
+
 			}
 		}
 		// display unsubscribe confirmation international
