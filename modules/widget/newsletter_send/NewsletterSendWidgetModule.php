@@ -36,7 +36,12 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 	
 	public function getSenderEmails() {
 		$aResult = Settings::getSetting('newsletter_plugin', 'sender_email_addresses', array(LinkUtil::getDomainHolderEmail('newsletter')));
-		// @todo add authorized users to sender_email_addresses
+		// @todo check change jm
+		$oUser = Session::user();
+		if($oUser) {
+			$aResult[] = $oUser->getEmail();
+		}
+		
 		return $aResult;
 	}
 	
