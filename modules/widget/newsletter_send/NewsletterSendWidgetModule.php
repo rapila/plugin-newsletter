@@ -62,7 +62,9 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 			// numeric key are indexes of old email lists
 			if(is_numeric($mIndex)) {
 				$aResult[$mConfig] = $mConfig;
-			} 
+			} else {
+				$aResult[$mIndex] = $mConfig;
+			}
 		}
 		$oUser = Session::user();
 		if($oUser) {
