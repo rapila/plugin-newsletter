@@ -59,8 +59,8 @@ Widget.types.newsletter_send = {
 		}, jQuery.noop);
 	
 		send_markup.bind('submit', function(event) {
-			var sender_name= jQuery(".sender_list option[value='"+sender_dropdown.val()+"']").text();
-			_this.send_newsletter(mail_groups.val(), sender_dropdown.val(), sender_dropdown.text(), send_progress, send_markup);
+			var sender_name= jQuery(".sender_list option:selected").text();
+			_this.send_newsletter(mail_groups.val(), sender_dropdown.val(), sender_name, send_progress, send_markup);
 			return false;
 		});
 		
