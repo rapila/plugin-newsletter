@@ -59,6 +59,7 @@ Widget.types.newsletter_send = {
 		}, jQuery.noop);
 	
 		send_markup.bind('submit', function(event) {
+			var sender_name= jQuery(".sender_list option[value='"+sender_dropdown.val()+"']").text();
 			_this.send_newsletter(mail_groups.val(), sender_dropdown.val(), sender_dropdown.text(), send_progress, send_markup);
 			return false;
 		});
@@ -115,6 +116,7 @@ Widget.types.newsletter_send = {
 				if(result === true || result === false) {
 					progress.progressbar('value', 100);
 					this.handle_send_response(result, markup);
+					Widget.fire('rapila-mailing_list_changed');
 				} else {
 					progress.progressbar('value', (100/batch_count)*result);
 					this.sendNewsletter(result, arguments.callee);

@@ -33,7 +33,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$aResult['HasBeedSent'] = $oNewsletter->countNewsletterMailings() > 0;
 		$aNewsletterMailings = array();
 		$oCriteria = new Criteria();
-		$oCriteria->addDescendingOrderByColumn(NewsletterMailingPeer::DATE_SENT);
+		$oCriteria->addAscendingOrderByColumn(NewsletterMailingPeer::DATE_SENT);
 		foreach($oNewsletter->getNewsletterMailings($oCriteria) as $oNewletterMailing) {
 			$aNewsletterMailingInfo = array();
 			$aNewsletterMailingInfo['UserInitials'] = $oNewletterMailing->getUserRelatedByCreatedBy() ? $oNewletterMailing->getUserRelatedByCreatedBy()->getInitials() : '';
