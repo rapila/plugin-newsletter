@@ -5,24 +5,42 @@
 * @package newsletter
 */
 class NewsletterMailer {
+	
 	private $aRecipients;
+	
 	private $oNewsletter;
-	private $bUseSubscriberGroups;
+	
 	private $oUnsubscribePage;
+	
 	private $sSenderName;
+	
 	private $sSenderEmailAddress;
 
 	private $aInvalidEmails = array();
 	
-	public function __construct($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $sSenderEmailAddress) {
+ /** __construct()
+	* @param object Newsletter
+	* @param array recipients mixed string email / object 
+	* @param boolean $bRequiresUnsubsribeLink
+	* @param string sender email
+	* @param string sender name
+	* 
+	* @return void
+	*/
+	public function __construct($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $sSenderEmailAddress, $sSenderName) {
 		if($oNewsletter === null) {
 			throw new Exception('Error in'.__METHOD__.': requires a Newsletter object, null given');
 		}
+		// prepare sender email and name
 		$this->aRecipients = $aRecipients;
 		$this->oNewsletter = $oNewsletter;
-		$this->bUseSubscriberGroups = MailGroupInputWidgetModule::hasSubscriberGroups();
-		$this->sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', "Newsletter Plugin Sender Name");
 		$this->sSenderEmailAddress = $sSenderEmailAddress;
+		if($sSenderName !== null) {
+			$this->sSenderName = $sSenderName;
+		} else {
+			$this->sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', "Newsletter Plugin Sender Name");
+		}
+		
 		if($bRequiresUnsubsribeLink) {
 			// unsubscribe page is required, a page that contains a content object NewsletterFrontendModule, ie the subscribe page
 			$this->oUnsubscribePage = PagePeer::getPageByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
@@ -36,6 +54,13 @@ class NewsletterMailer {
 		}
 	}
 	
+ /** send()
+	* description:
+	* this method send is called when NewsletterMailer is instanciated 
+	* and all newsletter, sender and recipient info are ready
+	*
+	* @return boolean has_invalid email addresses
+	*/
 	public function send() {
 		// get newsletter email main template and template body and css by template name
 		$oEmailTemplate = new Template('main', array(DIRNAME_TEMPLATES, 'newsletter'));
@@ -63,8 +88,16 @@ class NewsletterMailer {
 		}
 		
 		return count($this->aInvalidEmails) === 0;
-	}
+		
+	} // send()
 	
+ /** sendNewsletter()
+	* 
+	* @param mixed string/object recipient
+	* @param object oEmailTemplateInstance
+	* 
+	* @return void
+	*/
 	private function sendNewsletter($mRecipient, $oEmailTemplateInstance) {
 		if(is_object($mRecipient)) {
 			$oEmailTemplateInstance->replaceIdentifier('recipient', $mRecipient->getName());
@@ -98,7 +131,8 @@ class NewsletterMailer {
 		} catch (Exception $e) {
 			$this->aInvalidEmails[] = new NewsletterSendFailure($e, $mRecipient);
 		}
-	}
+		
+	} // sendNewsletter()
 	
 	public function setInvalidEmails($aInvalidEmails) {
 		$this->aInvalidEmails = $aInvalidEmails;

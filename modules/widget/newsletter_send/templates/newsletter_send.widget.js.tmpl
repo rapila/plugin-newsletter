@@ -50,8 +50,8 @@ Widget.types.newsletter_send = {
 		send_markup.append(send_progress);
 		
 		var sender_dropdown = send_markup.find('select[name="sender_email"]');
-		jQuery.each(this.getSenderEmails(), function(i, email) {
-			sender_dropdown.append(jQuery('<option/>').val(email).text(email));
+		jQuery.each(this.getSenderEmails(), function(email, name) {
+			sender_dropdown.append(jQuery('<option/>').val(email).text(name));
 		});
 		var mail_groups = send_markup.find("select[name='mail_group_ids[]']");
 		mail_groups.prepareWidget(function(widget) {
@@ -59,7 +59,7 @@ Widget.types.newsletter_send = {
 		}, jQuery.noop);
 	
 		send_markup.bind('submit', function(event) {
-			_this.send_newsletter(mail_groups.val(), sender_dropdown.val(), send_progress, send_markup);
+			_this.send_newsletter(mail_groups.val(), sender_dropdown.val(), sender_dropdown.text(), send_progress, send_markup);
 			return false;
 		});
 		
@@ -103,11 +103,11 @@ Widget.types.newsletter_send = {
 		});
 	},
 	
-	send_newsletter: function(mail_groups, sender, progress, markup) {
+	send_newsletter: function(mail_groups, sender_email, sender_name, progress, markup) {
 		markup.find("select[name='mail_group_ids[]']").prop('disabled', true);
 		markup.find("select[name='sender_email']").prop('disabled', true);
 		progress.progressbar('value', 0).show();
-		this.prepareForSending(mail_groups, sender, function(batch_count) {
+		this.prepareForSending(mail_groups, sender_email, sender_name, function(batch_count) {
 			this.sendNewsletter(0, function(result) {
 				if(arguments[1]) {
 					return false;

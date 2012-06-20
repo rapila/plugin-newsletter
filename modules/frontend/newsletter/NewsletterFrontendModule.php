@@ -14,7 +14,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	public function renderFrontend() {
 		if(isset($_REQUEST['unsubscribe'])) {
-			return $this->newsletterUnsubscribe();
+			return $this->newsletterUnsubscribe(Manager::isPost());
 		}
 		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM]) && self::$B_CONFIRMED === null) {
 			self::$B_CONFIRMED = true;
@@ -52,7 +52,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				// display newsletter options to opt-in or out if there is more then one valid one
 				// otherwise delete the subscriber and inform
 				if(count($aValidSubscriptions) > 1) {
-					$oTemplate = $this->constructTemplate('unsubscribe_optin_confirm');
+					$oTemplate = $this->constructTemplate('unsubscribe_optout_form');
 					foreach($aValidSubscriptions as $oSubscriberGroupMemberships) {
 						$oSubsriberGroupOption = TagWriter::quickTag('input', array('type' => 'checkbox', 'name' => 'subscriber_groups[]'), $oSubscriberGroupMemberships->getSubscriberGroup()->getDisplayName());
 						$oTemplate->replaceIdentifierMultiple('subscriber_group_checkbox', $oSubscriberGroupOption);
@@ -196,4 +196,19 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
 		$oEmail->send();
 	}
+	
+	public function getSaveData($mData) {
+		$oFlash = new Flash($mData);
+		$oFlash->checkForValue('display_mode', 'display_mode_required');
+		if($mData['display_mode'] !== 'newsletter_unsubscribe') {
+			$oFlash->checkForValue('subscriber_group_id', 'subscriber_group_required');
+		}
+		$oFlash->finishReporting();
+		
+		if($oFlash->hasMessages()) {
+			throw new ValidationException($oFlash);
+		}
+		return parent::getSaveData($mData);
+	}
+
 }
