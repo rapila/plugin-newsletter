@@ -27,7 +27,7 @@ class NewsletterMailer {
 	* 
 	* @return void
 	*/
-	public function __construct($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $sSenderEmailAddress, $sSenderName) {
+	public function __construct($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $sSenderEmailAddress, $sSenderName = null) {
 		if($oNewsletter === null) {
 			throw new Exception('Error in'.__METHOD__.': requires a Newsletter object, null given');
 		}
