@@ -1,7 +1,10 @@
 <h3>{{writeString=wns.newsletter.unsubscribe_opt_out.title}}</h3>
-<fieldset>
+<fieldset class="unsubscribe_optout">
   <form action="{{writeLink=to_self;ignore_request=true;position=last}}" method="post">
+		<input type="hidden" name="email" value="{{email}}" />
+		<input type="hidden" name="checksum" value="{{checksum}}" />
 		{{subscriber_group_checkbox}}
+		<p>{{writeString=wns.newsletter.unsubscribe_opt_out.explanation}}</p>
     <label>&nbsp;</label><button type="submit" class="subscribe" id="send" title="" name="newsletter_unsubscribe" value="1">{{writeString=wns.newsletter.unsubscribe_confirm}}</button>
   </form>
 </fieldset>

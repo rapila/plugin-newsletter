@@ -22,7 +22,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$this->iNewsletterId = $iNewsletterId;
 	}
 	
-	public function getNewsletterData() {
+	public function loadNewsletterData() {
 		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		$aResult = $oNewsletter->toArray();
 		unset($aResult['NewsletterBody']);
@@ -38,6 +38,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 			$aNewsletterMailingInfo = array();
 			$aNewsletterMailingInfo['UserInitials'] = $oNewletterMailing->getUserRelatedByCreatedBy() ? $oNewletterMailing->getUserRelatedByCreatedBy()->getInitials() : '';
 			$aNewsletterMailingInfo['DateSent'] = $oNewletterMailing->getDateSentFormatted('h:m');
+			$aNewsletterMailingInfo['RecipientCount'] = $oNewletterMailing->getRecipientCount();
 			if($oNewletterMailing->getSubscriberGroupName()) {
 				$aNewsletterMailingInfo['MailGroupName'] = $oNewletterMailing->getSubscriberGroupName();
 				$aNewsletterMailingInfo['MailGroupType'] = StringPeer::getString('wns.mail_group.subscribers');

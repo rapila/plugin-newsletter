@@ -1,8 +1,13 @@
 Widget.types.newsletter_detail = {
+	
+	prepare: function() {
+		Widget.handle('rapila-mailing_list_changed', this.fill_data.bind(this));
+	},
+	
 	initialize: function() {
 		this.init_content();
 		var _this = this;
-		this.newsletter_mailing_prototype = jQuery.parseHTML("{{includeTemplate=newsletter_mailing}}", true, 'table');
+		this.newsletter_mailing_prototype = jQuery.parseHTML("{{includeTemplate=newsletter_mailing}}", true, 'tbody');
 		this.content.find('.hide_if_not_saved').hide();
 
 		Widget.create('detail', function(widget) {
@@ -80,52 +85,53 @@ Widget.types.newsletter_detail = {
 	
 	fill_data: function() {
 		var _this = this;
-		var newsletter_data = this.getNewsletterData();
-		this.content.find("input[name='subject']").val(newsletter_data.Subject);
-		this.content.find("select[name='language_id']").val(newsletter_data.LanguageId || '');
-		this.content.find("select[name='template_name']").val(newsletter_data.TemplateName || '');
-		this.content.find(".updated_info").text(newsletter_data.UpdatedInfo);
-		this.content.find(".created_info").text(newsletter_data.CreatedInfo);
-		this.content.find("span[class='detail_id']").text(newsletter_data.Id);
+		this.loadNewsletterData(function(newsletter_data) {
+			this.content.find("input[name='subject']").val(newsletter_data.Subject);
+			this.content.find("select[name='language_id']").val(newsletter_data.LanguageId || '');
+			this.content.find("select[name='template_name']").val(newsletter_data.TemplateName || '');
+			this.content.find(".updated_info").text(newsletter_data.UpdatedInfo);
+			this.content.find(".created_info").text(newsletter_data.CreatedInfo);
+			this.content.find("span[class='detail_id']").text(newsletter_data.Id);
 		
-		this.newsletter_send_button = jQuery(this.content.find('.newsletter_send_button')).button().click(function() {
-			_this.send_newsletter('send', newsletter_data.Id);
-		});
+			this.newsletter_send_button = jQuery(this.content.find('.newsletter_send_button')).button().click(function() {
+				_this.send_newsletter('send', newsletter_data.Id);
+			});
 		
-		this.newsletter_test_button = jQuery(this.content.find('.newsletter_send_test_button')).button().click(function() {
-			_this.send_newsletter('test', newsletter_data.Id);
-		});
+			this.newsletter_test_button = jQuery(this.content.find('.newsletter_send_test_button')).button().click(function() {
+				_this.send_newsletter('test', newsletter_data.Id);
+			});
 
-		// is_approved change handler
-		var is_approved = this.content.find("input[name='is_approved']");
-		is_approved.bind('change', function() {
-			var is_approved_checked = jQuery(this).prop('checked');
-			_this.send_info_text(is_approved_checked);
-			_this.newsletter_send_button.prop('disabled', !is_approved_checked);
-		}).prop('checked', newsletter_data.IsApproved).change();
+			// is_approved change handler
+			var is_approved = this.content.find("input[name='is_approved']");
+			is_approved.bind('change', function() {
+				var is_approved_checked = jQuery(this).prop('checked');
+				_this.send_info_text(is_approved_checked);
+				_this.newsletter_send_button.prop('disabled', !is_approved_checked);
+			}).prop('checked', newsletter_data.IsApproved).change();
 		
-		// newsletter mailings
-		var mailing_list = this.content.find(".mailing_list").empty();
-		var has_mailings = false;
-		jQuery.each(newsletter_data.newsletter_mailings, function(i, params) {
-			var newsletter_mailing = _this.newsletter_mailing_prototype.clone();
-			newsletter_mailing.find('.date_sent').text(params.DateSent);
-			newsletter_mailing.find('.mail_group_type').text(params.MailGroupType);
-			newsletter_mailing.find('.mail_group_name').text(params.MailGroupName);
-			newsletter_mailing.find('.user_initials').text(params.UserInitials);
-			mailing_list.append(newsletter_mailing);	
-			has_mailings = true;	
+			// newsletter mailings
+			var mailing_list = this.content.find(".mailing_list").empty();
+			var has_mailings = false;
+			jQuery.each(newsletter_data.newsletter_mailings, function(i, params) {
+				var newsletter_mailing = _this.newsletter_mailing_prototype.clone();
+				newsletter_mailing.find('.date_sent').text(params.DateSent);
+				newsletter_mailing.find('.mail_group_info').text(params.MailGroupType+' : '+params.MailGroupName);
+				newsletter_mailing.find('.user_initials').text(params.UserInitials);
+				newsletter_mailing.find('.recipient_count').text(params.RecipientCount);
+				mailing_list.append(newsletter_mailing);	
+				has_mailings = true;	
+			});
+		
+			if(!has_mailings) {
+				var no_entry_row = jQuery('<tr/>').html(jQuery("<td/>").attr("colspan", 4).text("{{writeString=newsletter_mailing.no_entries}}"));
+				mailing_list.append(no_entry_row);
+			}
+		
+			this.send_info_text(newsletter_data.IsApproved);
+			this.update_newsletter_body();
+			this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.newsletter}} "+newsletter_data.Subject);
+			this.content.find('.hide_if_not_saved').show();
 		});
-		
-		if(!has_mailings) {
-			var no_entry_row = jQuery('<tr/>').html(jQuery("<td/>").attr("colspan", 4).text("{{writeString=newsletter_mailing.no_entries}}"));
-			mailing_list.append(no_entry_row);
-		}
-		
-		this.send_info_text(newsletter_data.IsApproved);
-		this.update_newsletter_body();
-		this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.newsletter}} "+newsletter_data.Subject);
-		this.content.find('.hide_if_not_saved').show();
 	},
 	
 	send_newsletter: function(action, newsletter_id) {
