@@ -9,7 +9,10 @@ require_once 'model/om/BaseSubscriberGroup.php';
 class SubscriberGroup extends BaseSubscriberGroup {
 
 	public function getReadableName() {
-		return StringPeer::getString('subscriber_group_display_name.'.$this->getName(), null, $this->getName());
+		if($this->getDisplayName()) {
+			return $this->getDisplayName();
+		}
+		return $this->getName(). ' (!)';
 	}
 	
 	public function getNameFirstLetter() {
