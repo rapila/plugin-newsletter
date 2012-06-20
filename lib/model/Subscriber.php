@@ -79,9 +79,14 @@ class Subscriber extends BaseSubscriber {
 	/**
 	 * @param integer subscriber_group_id
 	 * @return void
-	 * description: deletes a single subsciption and deletes the subscriber in case there are no subscriptions left
+	 * description: 
+	 * if subscriber_group is numeric, the single subsciption is deleted [and the subscriber in case there are no subscriptions left]
+	 * if subscriber_group is __all then the subscriber and all subscriptions are deleted directly
 	 */
 	public function deleteSubscriberGroupMembership($iSubscriberGroupId) {
+		if($iSubscriberGroupId === CriteriaListWidgetDelegate::SELECT_ALL) {
+			return $this->delete();
+		}
 		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
 			if($iSubscriberGroupId == $oSubscriberGroupMembership->getSubscriberGroupId()) {
 				$oSubscriberGroupMembership->delete();
