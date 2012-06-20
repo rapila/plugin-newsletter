@@ -101,7 +101,7 @@ Widget.types.newsletter_detail = {
 		is_approved.bind('change', function() {
 			var is_approved_checked = jQuery(this).prop('checked');
 			_this.send_info_text(is_approved_checked);
-			_this.newsletter_send_button.attr('disabled', !is_approved_checked);
+			_this.newsletter_send_button.prop('disabled', !is_approved_checked);
 		}).prop('checked', newsletter_data.IsApproved).change();
 		
 		// newsletter mailings
