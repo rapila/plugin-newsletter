@@ -35,7 +35,7 @@ class NewslettersAdminModule extends AdminModule {
 		$aResult = array();
 		switch($sColumnIdentifier) {
 			case 'readable_name':
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.subscriber_group');
+				$aResult['heading'] = StringPeer::getString('wns.newsletter.subscriber_group.sidebar_heading');
 				break;
 			case 'magic_column':
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_CLASSNAME;
