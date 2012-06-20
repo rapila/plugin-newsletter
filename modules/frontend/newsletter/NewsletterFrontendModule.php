@@ -32,53 +32,58 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	}
 	
 	private function newsletterUnsubscribe() {
+		// Process unsubscribe opt_out form if post
 		if(Manager::isPost()) {
 			return $this->processOptOutSuscriptions();
 		}
-		// if subscriber exists and the required checksum is correct
+		
+		// If param unsubscribe is not set return general unsubscribe info
 		if(!isset($_REQUEST['unsubscribe'])) {
 			return $this->constructTemplate('unsubscribe_general_info');
 		}
+		
+		// If subscriber does not exist or the required checksum is not correct, return error message
 		$oSubscriber = SubscriberPeer::getByEmail($_REQUEST['unsubscribe']);
-		if($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_REQUEST['checksum']) {
-
-			SubscriberPeer::ignoreRights(true);
-			if(isset($_REQUEST['subscriber_group_id'])) {
-				$oSubscriber->deleteSubscriberGroupMembership($_REQUEST['subscriber_group_id']);
-			} else {
-				// @todo check change jm, not very elegant
-				$aSubscriberGroupMemberShips =  $oSubscriber->getSubscriberGroupMemberships();
-				$aValidSubscriptions = array();
-				if(count($aSubscriberGroupMemberShips) > 1) {
-					foreach($aSubscriberGroupMemberShips as $oSubscriberGroupMembership) {
-						if($oSubscriberGroupMembership->getSubscriberGroup()->getDisplayName() == null) {
-							continue;
-						}
-						$aValidSubscriptions[] = $oSubscriberGroupMembership;
-					}
-				}
-				// display newsletter options to opt-in or out if there is more then one valid one
-				// otherwise delete the subscriber and inform
-				if(count($aValidSubscriptions) > 1) {
-					$oTemplate = $this->constructTemplate('unsubscribe_optout_form');
-					$oTemplate->replaceIdentifier('checksum', $_REQUEST['checksum']);
-					$oTemplate->replaceIdentifier('email', $oSubscriber->getEmail());
-					foreach($aValidSubscriptions as $oSubscriberGroupMemberships) {
-						$oCheckboxTemplate = $this->constructTemplate('unsubscribe_optout_checkbox');
-						$oCheckboxTemplate->replaceIdentifier('subscriber_group_id', $oSubscriberGroupMemberships->getSubscriberGroupId());
-						$oCheckboxTemplate->replaceIdentifier('subscriber_group_name', $oSubscriberGroupMemberships->getSubscriberGroup()->getDisplayName());
-						$oTemplate->replaceIdentifierMultiple('subscriber_group_checkbox', $oCheckboxTemplate);
-					}
-					return $oTemplate;
-				}
-				// there is one or less subscriptions (without subscriptions without display_name [considered as temp groups])
-				// so all the subscriptions are deleted
-				$oSubscriber->delete();
-			}
-			// display unsubscribe confirmation international
-			return $this->constructTemplate('unsubscribe_confirm');
+		if(!($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_REQUEST['checksum'])) {
+			return $this->constructTemplate('unsubscribe_unknown_error');
 		}
-		return $this->constructTemplate('unsubscribe_unknown_error');
+		
+		SubscriberPeer::ignoreRights(true);
+		// if subscriber_group_id is set, then the subscription is removed immediately, this should not happen anymore
+		if(isset($_REQUEST['subscriber_group_id'])) {
+			$oSubscriber->deleteSubscriberGroupMembership($_REQUEST['subscriber_group_id']);
+		} else {
+			
+			// count valid subscriptions [with display_name, not temp or import groups]
+			$aSubscriberGroupMemberShips =  $oSubscriber->getSubscriberGroupMemberships();
+			$aValidSubscriptions = array();
+			if(count($aSubscriberGroupMemberShips) > 1) {
+				foreach($aSubscriberGroupMemberShips as $oSubscriberGroupMembership) {
+					if($oSubscriberGroupMembership->getSubscriberGroup()->getDisplayName() == null) {
+						continue;
+					}
+					$aValidSubscriptions[] = $oSubscriberGroupMembership;
+				}
+			}
+			// Display view with opt_out options if there is more then one valid subscription
+			if(count($aValidSubscriptions) > 1) {
+				$oTemplate = $this->constructTemplate('unsubscribe_optout_form');
+				$oTemplate->replaceIdentifier('checksum', $_REQUEST['checksum']);
+				$oTemplate->replaceIdentifier('email', $oSubscriber->getEmail());
+				foreach($aValidSubscriptions as $oSubscriberGroupMemberships) {
+					$oCheckboxTemplate = $this->constructTemplate('unsubscribe_optout_checkbox');
+					$oCheckboxTemplate->replaceIdentifier('subscriber_group_id', $oSubscriberGroupMemberships->getSubscriberGroupId());
+					$oCheckboxTemplate->replaceIdentifier('subscriber_group_name', $oSubscriberGroupMemberships->getSubscriberGroup()->getDisplayName());
+					$oTemplate->replaceIdentifierMultiple('subscriber_group_checkbox', $oCheckboxTemplate);
+				}
+				return $oTemplate;
+			}
+			
+			// Delete subscriber because there is not a valid subscription (all temp subscriptions are removed too)
+			$oSubscriber->delete();
+		}
+		// Display unsubscribe confirmation international
+		return $this->constructTemplate('unsubscribe_confirm');
 	}
 	
 	private function processOptOutSuscriptions() {
@@ -115,7 +120,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	private function newsletterOptInConfirm() {
 		$oSubscriberGroupMembership = SubscriberGroupMembershipQuery::create()->filterByOptInHash($_REQUEST[self::PARAM_OPT_IN_CONFIRM])->findOne();
-		// if subscriber exists and the required checksum is correct
+		
+		// If subscriber exists and the required checksum is correct
 		if($oSubscriberGroupMembership) {
 			SubscriberGroupMembershipPeer::ignoreRights(true);
 			$oSubscriberGroupMembership->setOptInHash(null);
@@ -127,7 +133,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	private function displayNewsletterList($aOptions) {
 		$iSubscriberGroupId = @$aOptions['subscriber_group_id'];
-		$oQuery = NewsletterQuery::create()->filterApprovedForLanguage(Session::language())->orderByCreatedAt(Criteria::DESC);
+		// Util::dumpAll($iSubscriberGroupId);
+		$oQuery = NewsletterQuery::create()->distinct()->filterApprovedForLanguage(Session::language())->orderByCreatedAt(Criteria::DESC);
 		if($iSubscriberGroupId) {
 			$oQuery->joinNewsletterMailing()->useQuery('NewsletterMailing')->filterBySubscriberGroupId($iSubscriberGroupId)->endUse();
 		}
@@ -250,7 +257,6 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			$oFlash->checkForValue('subscriber_group_id', 'subscriber_group_required');
 		}
 		$oFlash->finishReporting();
-		
 		if($oFlash->hasMessages()) {
 			throw new ValidationException($oFlash);
 		}
