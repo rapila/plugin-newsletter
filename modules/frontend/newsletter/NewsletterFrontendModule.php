@@ -113,7 +113,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				}
 				$bIsNewSubscription = false;
 				if($aOptions['subscriber_group_id']) {
-					$bIsNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipIfNotExists($aOptions['subscriber_group_id']);
+					$bIsNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipIfNotExists($aOptions['subscriber_group_id'], $bOptInRequired);
 				}
 				SubscriberGroupMembershipPeer::ignoreRights(true);
 				SubscriberPeer::ignoreRights(true);

@@ -26,4 +26,4 @@ newsletter_plugin:
   
   use_subscriber_groups: true
   newsletter_sender_address: info@example.com 
-  subscriber_group_default_id: 1 #anybody
+  default_subscriber_group_id: 1 #anybody
