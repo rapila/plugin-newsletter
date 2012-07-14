@@ -98,7 +98,7 @@ class Subscriber extends BaseSubscriber {
 	 * @return void
 	 * usage: for adding subscriptions without touching the others @see setHasNewsletterBySubscriberGroupIds()
 	 */
-	public function addSubscriberGroupMembershipIfNotExists($iSubscriberGroupId) {
+	public function addSubscriberGroupMembershipIfNotExists($iSubscriberGroupId, $bOptInRequired = false) {
 		$bSubscriberGroupMembershipExists = false;
 		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
 			if($iSubscriberGroupId == $oSubscriberGroupMembership->getSubscriberGroupId()) {
