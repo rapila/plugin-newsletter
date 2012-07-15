@@ -24,6 +24,9 @@ class Subscriber extends BaseSubscriber {
 	}
 	
 	public function hasNewsletterBySubscriberGroupId($iSubscriberGroupId) {
+		if($iSubscriberGroupId instanceof SubscriberGroup) {
+			$iSubscriberGroupId = $iSubscriberGroupId->getId();
+		}
 		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
 			if($oSubscriberGroupMembership->getSubscriberGroupId() == $iSubscriberGroupId) {
 				return true;
