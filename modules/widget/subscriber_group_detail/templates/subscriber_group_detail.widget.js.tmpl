@@ -1,14 +1,26 @@
 Widget.types.subscriber_group_detail = {
 	initialize: function() {
+		var _this = this;
 		this.content = jQuery.parseHTML("{{includeTemplate=edit}}");
 		this.content.find('div.hide_if_not_saved').hide();
-
 		Widget.callStatic('detail', 'create_for_instance', this);
+		this.display_name = this.content.find("input[name='display_name']");
+		var display_name_info = this.content.find('.display_name_info');
+		this.display_name.change(function() {
+			if(_this.display_name.val() === '') {
+				display_name_info.show();
+			} else {
+				display_name_info.hide();
+			}
+		});
+
 	},
 	
 	fill_data: function() {
-		this.getSubscriberGroupData(function(subscriber_group_data) {
+		this.loadData(function(subscriber_group_data) {
 			this.content.find("input[name='name']").val(subscriber_group_data.Name);
+			this.display_name.val(subscriber_group_data.DisplayName);
+			this.display_name.change();
 			this.content.find(".updated_info").text(subscriber_group_data.UpdatedInfo);
 			this.content.find(".created_info").text(subscriber_group_data.CreatedInfo);
 			this.content.find('div.hide_if_not_saved').show();

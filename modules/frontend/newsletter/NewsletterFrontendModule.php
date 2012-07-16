@@ -14,40 +14,114 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	public function renderFrontend() {
 		if(isset($_REQUEST['unsubscribe'])) {
-			return $this->newsletterUnsubscribe();
+			return $this->newsletterUnsubscribe(Manager::isPost());
 		}
 		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM]) && self::$B_CONFIRMED === null) {
 			self::$B_CONFIRMED = true;
 			return $this->newsletterOptInConfirm();
 		}
-
 		$aOptions = @unserialize($this->getData());
+
 		switch($aOptions['display_mode']) {
 			case 'newsletter_subscribe': return $this->newsletterSubscribe($aOptions);
 			case 'newsletter_subscribe_opt_in': return $this->newsletterSubscribe($aOptions, true);
+			case 'newsletter_unsubscribe': return $this->newsletterUnsubscribe();
 			case 'newsletter_display_list': return $this->displayNewsletterList($aOptions);
 			case 'newsletter_display_detail': return $this->displayNewsletterDetail($aOptions);
 		}
 	}
 	
 	private function newsletterUnsubscribe() {
+		// Process unsubscribe opt_out form if post
+		if(Manager::isPost()) {
+			return $this->processOptOutSuscriptions();
+		}
+		
+		// If param unsubscribe is not set return general unsubscribe info
+		if(!isset($_REQUEST['unsubscribe'])) {
+			return $this->constructTemplate('unsubscribe_general_info');
+		}
+		
+		// If subscriber does not exist or the required checksum is not correct, return error message
 		$oSubscriber = SubscriberPeer::getByEmail($_REQUEST['unsubscribe']);
-		// if subscriber exists and the required checksum is correct
-		if($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_REQUEST['checksum']) {
-			if(isset($_REQUEST['subscriber_group_id'])) {
-				$oSubscriber->deleteSubscriberGroupMembership($_REQUEST['subscriber_group_id']);
-			} else {
-				SubscriberPeer::ignoreRights(true);
-				$oSubscriber->delete();
+		if(!($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_REQUEST['checksum'])) {
+			return $this->constructTemplate('unsubscribe_unknown_error');
+		}
+		
+		SubscriberPeer::ignoreRights(true);
+		// if subscriber_group_id is set, then the subscription is removed immediately, this should not happen anymore
+		if(isset($_REQUEST['subscriber_group_id'])) {
+			$oSubscriber->deleteSubscriberGroupMembership($_REQUEST['subscriber_group_id']);
+		} else {
+			
+			// count valid subscriptions [with display_name, not temp or import groups]
+			$aSubscriberGroupMemberShips =  $oSubscriber->getSubscriberGroupMemberships();
+			$aValidSubscriptions = array();
+			if(count($aSubscriberGroupMemberShips) > 1) {
+				foreach($aSubscriberGroupMemberShips as $oSubscriberGroupMembership) {
+					if($oSubscriberGroupMembership->getSubscriberGroup()->getDisplayName() == null) {
+						continue;
+					}
+					$aValidSubscriptions[] = $oSubscriberGroupMembership;
+				}
+			}
+			// Display view with opt_out options if there is more then one valid subscription
+			if(count($aValidSubscriptions) > 1) {
+				$oTemplate = $this->constructTemplate('unsubscribe_optout_form');
+				$oTemplate->replaceIdentifier('checksum', $_REQUEST['checksum']);
+				$oTemplate->replaceIdentifier('email', $oSubscriber->getEmail());
+				foreach($aValidSubscriptions as $oSubscriberGroupMemberships) {
+					$oCheckboxTemplate = $this->constructTemplate('unsubscribe_optout_checkbox');
+					$oCheckboxTemplate->replaceIdentifier('subscriber_group_id', $oSubscriberGroupMemberships->getSubscriberGroupId());
+					$oCheckboxTemplate->replaceIdentifier('subscriber_group_name', $oSubscriberGroupMemberships->getSubscriberGroup()->getDisplayName());
+					$oTemplate->replaceIdentifierMultiple('subscriber_group_checkbox', $oCheckboxTemplate);
+				}
+				return $oTemplate;
+			}
+			
+			// Delete subscriber because there is not a valid subscription (all temp subscriptions are removed too)
+			$oSubscriber->delete();
+		}
+		// Display unsubscribe confirmation international
+		return $this->constructTemplate('unsubscribe_confirm');
+	}
+	
+	private function processOptOutSuscriptions() {
+		$oSubscriber = SubscriberPeer::getByEmail($_POST['email']);
+		if($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_POST['checksum']) {
+			foreach($_POST['subscriber_group_id'] as $iSubscriberGroupId) {
+				$oSubscriber->deleteSubscriberGroupMembership($iSubscriberGroupId);
 			}
 		}
-		// display unsubscribe confirmation international
-		return $this->constructTemplate('unsubscribe_confirm');
+		$oTemplate = $this->constructTemplate('unsubscribe_optout_confirm');
+		$sConfirmMessageKey = 'wns.unsubscribe_optout.subsriber_removed';
+		if($oSubscriber) {
+			$bRemoveSubscriber = true;
+			$iCountRemoved = 0;
+			foreach($oSubscriber->getSubscriberGroupMemberships() as $oMembership) {
+				$iCountRemoved++;
+				if($oMembership->getSubscriberGroup()->getDisplayName() != null) {
+					$bRemoveSubscriber = false;
+				}
+			}
+			if($bRemoveSubscriber) {
+				$oSubscriber->delete();
+				$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriber', StringPeer::getString('wns.unsubscribe_optout.subsriber_removed'));
+			} 
+			if($iCountRemoved > 1) {
+				$sConfirmMessageKey = 'wns.unsubscribe_optout.subscriptions_removed';
+			} else {
+				$sConfirmMessageKey = 'wns.unsubscribe_optout.subscription_removed';
+			}
+		}
+		$oTemplate->replaceIdentifier('unsubscribe_optout_message', StringPeer::getString($sConfirmMessageKey));
+		return $oTemplate;
 	}
 	
 	private function newsletterOptInConfirm() {
 		$oSubscriberGroupMembership = SubscriberGroupMembershipQuery::create()->filterByOptInHash($_REQUEST[self::PARAM_OPT_IN_CONFIRM])->findOne();
-		// if subscriber exists and the required checksum is correct
+		
+		// If subscriber exists and the required checksum is correct
 		if($oSubscriberGroupMembership) {
 			SubscriberGroupMembershipPeer::ignoreRights(true);
 			$oSubscriberGroupMembership->setOptInHash(null);
@@ -59,7 +133,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	private function displayNewsletterList($aOptions) {
 		$iSubscriberGroupId = @$aOptions['subscriber_group_id'];
-		$oQuery = NewsletterQuery::create()->filterApprovedForLanguage(Session::language())->orderByCreatedAt(Criteria::DESC);
+		// Util::dumpAll($iSubscriberGroupId);
+		$oQuery = NewsletterQuery::create()->distinct()->filterApprovedForLanguage(Session::language())->orderByCreatedAt(Criteria::DESC);
 		if($iSubscriberGroupId) {
 			$oQuery->joinNewsletterMailing()->useQuery('NewsletterMailing')->filterBySubscriberGroupId($iSubscriberGroupId)->endUse();
 		}
@@ -91,7 +166,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			if(is_array($aOptions['subscriber_group_id']) && count($aOptions['subscriber_group_id']) > 0) {
 				$aOptions['subscriber_group_id'] = $aOptions['subscriber_group_id'][0];
 			}
-			if(!SubscriberGroupPeer::retrieveByPK($aOptions['subscriber_group_id'])) {
+			if(!SubscriberGroupQuery::create()->findPk($aOptions['subscriber_group_id'])) {
 				throw new Exception(__CLASS__.': configured subscriber_group_id '.$aOptions['subscriber_group_id'].' does not exist!');
 			}
 		}
@@ -174,4 +249,18 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
 		$oEmail->send();
 	}
+	
+	public function getSaveData($mData) {
+		$oFlash = new Flash($mData);
+		$oFlash->checkForValue('display_mode', 'display_mode_required');
+		if($mData['display_mode'] !== 'newsletter_unsubscribe') {
+			$oFlash->checkForValue('subscriber_group_id', 'subscriber_group_required');
+		}
+		$oFlash->finishReporting();
+		if($oFlash->hasMessages()) {
+			throw new ValidationException($oFlash);
+		}
+		return parent::getSaveData($mData);
+	}
+
 }

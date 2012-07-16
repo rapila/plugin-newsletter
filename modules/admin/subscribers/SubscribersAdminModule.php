@@ -27,7 +27,7 @@ class SubscribersAdminModule extends AdminModule {
 	}
 	
 	public function getColumnIdentifiers() {
-		return array('subscriber_group_id', 'name', 'magic_column');
+		return array('subscriber_group_id', 'readable_name', 'magic_column');
 	}
 	
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -37,9 +37,8 @@ class SubscribersAdminModule extends AdminModule {
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_DATA;
 				$aResult['field_name'] = 'id';
 				break;
-			case 'name':
+			case 'readable_name':
 				$aResult['heading'] = StringPeer::getString('subscriber_group.sidebar_heading');
-				$aResult['field_name'] = 'name';
 				break;
 			case 'magic_column':
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_CLASSNAME;
@@ -50,13 +49,13 @@ class SubscribersAdminModule extends AdminModule {
 	}
 
 	public function getCustomListElements() {
-		if(SubscriberGroupPeer::doCount(new Criteria()) > 0) {
+		if(SubscriberGroupQuery::create()->count() > 0) {
 			return array(
 				array('subscriber_group_id' => CriteriaListWidgetDelegate::SELECT_ALL,
-							'name' => StringPeer::getString('wns.users.select_all_title'),
+							'readable_name' => StringPeer::getString('wns.users.select_all_title'),
 							'magic_column' => 'all'),
 				array('subscriber_group_id' => CriteriaListWidgetDelegate::SELECT_WITHOUT,
-							'name' => StringPeer::getString('wns.users.select_without_title'),
+							'readable_name' => StringPeer::getString('wns.users.select_without_title'),
 							'magic_column' => 'without'));
 		}
 		return array();

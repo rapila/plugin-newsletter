@@ -2,7 +2,7 @@ Widget.types.newsletter_frontend_config = {
 	prepare: function() {
 		this.content = jQuery.parseHTML("{{includeTemplate=edit}}");
 		this._element.append(this.content);
-		
+
 		var mode_dropdown = this._element.find("select[name='display_mode']");
 		var subscriber_group_dropdown = this._element.find("select[name='subscriber_group_id[]']");
 		var subscriber_group_elements = this._element.find(".subscriber_group_elements");
@@ -18,7 +18,7 @@ Widget.types.newsletter_frontend_config = {
 				subscriber_group_elements.slideUp();
 			}
 		});
-		
+
 		var option_prototype = jQuery('<option/>');
 		jQuery.each(this.getDisplayOptions(), function(value, text) {
 			mode_dropdown.append(option_prototype.clone().attr('value', value).text(text));
@@ -26,14 +26,15 @@ Widget.types.newsletter_frontend_config = {
 		option_prototype.clone().text("{{writeString=wns.choose}}").val('').prependTo(mode_dropdown);
 		mode_dropdown.val(config.display_mode);		
 		if(!mode_dropdown.val()) {
-			mode_dropdown.find("option:first-child").attr('selected', true);
+			mode_dropdown.find("option:first-child").prop('selected', true);
 		}
+		mode_dropdown.change();
 		jQuery.each(this.getSubscriberGroups(), function(value, text) {
 			subscriber_group_dropdown.append(option_prototype.clone().attr('value', value).text(text));
 		});
 		subscriber_group_dropdown.val(config.subscriber_group_id);
 	},
-	
+
 	save: function() {
 		return this._element.serializeArrayKV();
 	}

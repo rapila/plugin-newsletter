@@ -21,7 +21,7 @@ class SubscriberListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'name', 'email', 'preferred_language_id', 'delete');
+		return array('id', 'email', 'name', 'preferred_language_id', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -79,19 +79,25 @@ class SubscriberListWidgetModule extends WidgetModule {
 	public function getSubscriberGroupHasSubscriptions($iSubscriberGroupId) {
 		return SubscriberGroupMembershipQuery::create()->filterBySubscriberGroupId($iSubscriberGroupId)->count() > 0;
 	}
-
-	public function getCriteria() {
-		$oCriteria = new Criteria();
-		if($this->oDelegateProxy->getSubscriberGroupId() !== CriteriaListWidgetDelegate::SELECT_ALL) {
-			if($this->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
-				$oCriteria->addJoin(SubscriberPeer::ID, SubscriberGroupMembershipPeer::SUBSCRIBER_ID, Criteria::LEFT_JOIN);
-				$oCriteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_ID, null, Criteria::ISNULL);
-			} else {
-				$oCriteria->addJoin(SubscriberPeer::ID, SubscriberGroupMembershipPeer::SUBSCRIBER_ID, Criteria::INNER_JOIN);
-				$oCriteria->add(SubscriberGroupMembershipPeer::SUBSCRIBER_GROUP_ID, $this->oDelegateProxy->getSubscriberGroupId());
-			}
-		}
-		return $oCriteria;
+	
+	public function deleteRow($aRowData, $oCriteria) {
+		$oSubscriber = SubscriberQuery::create()->findPk($aRowData['id']);
+		return $oSubscriber->deleteSubscriberGroupMembership($this->oDelegateProxy->getSubscriberGroupId());
 	}
 
+
+	public function getCriteria() {
+		$oQuery = SubscriberQuery::create();
+		$sJoinType = is_numeric($this->oDelegateProxy->getSubscriberGroupId()) ? Criteria::INNER_JOIN : Criteria::LEFT_JOIN;
+		$oSubscriberGroupMembershipQuery = $oQuery->joinSubscriberGroupMembership(null, $sJoinType)->useQuery('SubscriberGroupMembership');
+		if(is_numeric($this->oDelegateProxy->getSubscriberGroupId())) {
+			$oSubscriberGroupMembershipQuery->filterBySubscriberGroupId($this->oDelegateProxy->getSubscriberGroupId());
+		} else {
+			if($this->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
+				$oSubscriberGroupMembershipQuery->filterBySubscriberGroupId(null, Criteria::ISNULL);
+			}
+		}
+		$oSubscriberGroupMembershipQuery->endUse();
+		return $oQuery->distinct();
+	}
 }

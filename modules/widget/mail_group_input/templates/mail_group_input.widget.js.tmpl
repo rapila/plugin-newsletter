@@ -1,15 +1,37 @@
 Widget.types.mail_group_input = {
 	prepare: function() {
+		this.reload();
+		Widget.handle('newsletter-mail_groups_changed', this.reload.bind(this));
+	},
+	
+	reload: function() {
+		var _this = this;
+		var current = this.val();
+		this._element.empty();
 		var option = jQuery('<option/>');
-		var mail_groups = this.getMailGroups();
-		if(mail_groups.length == 0) {
-			// this._element.append(jQuery('<div/>').text("text"));
-			// this._element.hide()
-			// console.log();
-			// return;
+		var mail_groups = this.getMailGroups(this.settings.include_temporary_mail_groups, this.settings.include_generated_mail_groups);
+		if(this.settings.default_option !== null) {
+			option.clone().text(this.settings.default_option).attr('value', '').appendTo(this._element);
 		}
 		jQuery.each(mail_groups, function(group_id, group_name) {
 			option.clone().text(group_name).attr('value', group_id).appendTo(this._element);
 		}.bind(this));
+		if(current) {
+			this.val(current);
+		}
+	},
+	
+	val: function(value) {
+		if(value) {
+			this._element.val(value);
+			return;
+		}
+		return this._element.val();
+	},
+	
+	settings: {
+		include_temporary_mail_groups: true,
+		include_generated_mail_groups: true,
+		default_option: null
 	}
 };

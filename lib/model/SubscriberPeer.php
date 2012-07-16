@@ -39,7 +39,7 @@ class SubscriberPeer extends BaseSubscriberPeer {
 		return self::getByEmail($sEmail) !== null;
 	}
 	
-	public static function getSubscribersBySubscriberGroupMembership($mSubscriberGroupMemberShip = null, $iStart = null, $iLimit = null) {
+	public static function getSubscribersBySubscriberGroupMembership($mSubscriberGroupMemberShip=null, $iStart=null, $iLimit=null) {
 		$oCriteria = self::getSubscribersBySubscriberGroupMembershipCriteria($mSubscriberGroupMemberShip);
 		if($iStart !== null) {
 			$oCriteria->setOffset($iStart);
@@ -50,11 +50,11 @@ class SubscriberPeer extends BaseSubscriberPeer {
 		return self::doSelect($oCriteria);
 	}
 	
-	public static function countSubscribersBySubscriberGroupMembership($mSubscriberGroupMemberShip = null) {
+	public static function countSubscribersBySubscriberGroupMembership($mSubscriberGroupMemberShip=null) {
 		return self::doCount(self::getSubscribersBySubscriberGroupMembershipCriteria($mSubscriberGroupMemberShip));
 	}
 	
-	public static function getSubscribersBySubscriberGroupMembershipCriteria($mSubscriberGroupMemberShip = null) {
+	public static function getSubscribersBySubscriberGroupMembershipCriteria($mSubscriberGroupMemberShip=null) {
 		$oCriteria = new Criteria();
 		$oCriteria->setDistinct();
 		if($mSubscriberGroupMemberShip !== null) {

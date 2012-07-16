@@ -1,12 +1,13 @@
 <form>
 	<div class="accordion">
-		<h3><a href="#">Newsletter Info</a></h3>
+		<h3><a href="#">{{writeString=wns.newsletter_detail.accordion_general}}</a></h3>
 		<div class="general_info">
 			<div class="status_section">
 				<div class="hide_if_not_saved">
 					<input type="checkbox" name="is_approved" /><label for="is_approved" style="display:inline-block;white-space:nowrap;">{{writeString=wns.newsletter.is_approved}} <span class="status_send_info"></span></label><br /><br />
 					<label>{{writeString=wns.created_info}}:</label><span class="created_info status"></span><br />
 					<label>{{writeString=wns.updated.info}}:</label><span class="updated_info status"></span><br />
+					<label>ID:</label><span class="detail_id">{{id}}</span>
 				</div>
 			</div>
 			<div>
@@ -21,16 +22,26 @@
 				<label for="language_id">{{writeString=wns.language}}</label>
 				<select name="language_id" class="ui-widget-content input_short" style="width:auto;" data-widget-type="language_input"></select><br />
 			</div><br style="clear:both;" /><br />
-			<fieldset class="option_groups hide_if_not_saved"><legend>{{writeString=wns.newsletter_mailings}}</legend>
-				<table class="mailing_list ui-list">
+			<fieldset class="option_groups hide_if_not_saved">
+				<table class="ui-list">
+					<thead>
+						<tr>
+							<th>{{writeString=wns.newsletter_mailings}}</th>
+							<th>{{writeString=wns.newsletter_mailing.sent_to}}</th>
+							<th>{{writeString=wns.newsletter_mailing.recipient_count}}</th>
+							<th>{{writeString=wns.newsletter_mailing.sent_by}}</th>
+						</tr>
+					<thead>
+					<tbody class="mailing_list">
+					</tbody>
 				</table>
-				<div style="padding: .5em 0;">
-					<button type="button" data-button-widget-type="newsletter_send" class="newsletter_send_test_button ui-state-default">Newsletter testen</button>
-					<button type="button" data-button-widget-type="newsletter_send" class="newsletter_send_button ui-state-default">Newsletter versenden</button>
+				<div style="padding: 1em 0 0.5em;">
+					<button type="button" data-button-widget-type="newsletter_send" class="newsletter_send_test_button ui-state-default" title="{{writeString=wns.newsletter_detail.send_test_title}}">{{writeString=wns.newsletter_detail.send_test}}</button>
+					<button type="button" data-button-widget-type="newsletter_send" class="newsletter_send_button ui-state-default" title="{{writeString=wns.newsletter_detail.send_title}}">{{writeString=wns.newsletter_detail.send}}</button>
 				</div>
 			</fieldset>
 		</div>
-		<h3><a href="#">Newsletter Text</a></h3>
+		<h3><a href="#">{{writeString=wns.newsletter_detail.accordion_content}}</a></h3>
 		<div class="accordion_content"	style="display:none;">
 			<div class="newsletter_body">
 				<textarea name="newsletter_body" class="ui-widget-content" rows="20"></textarea>

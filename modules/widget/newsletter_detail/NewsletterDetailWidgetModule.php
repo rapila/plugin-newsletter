@@ -22,7 +22,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$this->iNewsletterId = $iNewsletterId;
 	}
 	
-	public function getNewsletterData() {
+	public function loadNewsletterData() {
 		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		$aResult = $oNewsletter->toArray();
 		unset($aResult['NewsletterBody']);
@@ -33,11 +33,12 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$aResult['HasBeedSent'] = $oNewsletter->countNewsletterMailings() > 0;
 		$aNewsletterMailings = array();
 		$oCriteria = new Criteria();
-		$oCriteria->addDescendingOrderByColumn(NewsletterMailingPeer::DATE_SENT);
+		$oCriteria->addAscendingOrderByColumn(NewsletterMailingPeer::DATE_SENT);
 		foreach($oNewsletter->getNewsletterMailings($oCriteria) as $oNewletterMailing) {
 			$aNewsletterMailingInfo = array();
 			$aNewsletterMailingInfo['UserInitials'] = $oNewletterMailing->getUserRelatedByCreatedBy() ? $oNewletterMailing->getUserRelatedByCreatedBy()->getInitials() : '';
 			$aNewsletterMailingInfo['DateSent'] = $oNewletterMailing->getDateSentFormatted('h:m');
+			$aNewsletterMailingInfo['RecipientCount'] = $oNewletterMailing->getRecipientCount();
 			if($oNewletterMailing->getSubscriberGroupName()) {
 				$aNewsletterMailingInfo['MailGroupName'] = $oNewletterMailing->getSubscriberGroupName();
 				$aNewsletterMailingInfo['MailGroupType'] = StringPeer::getString('wns.mail_group.subscribers');

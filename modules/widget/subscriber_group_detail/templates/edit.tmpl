@@ -5,6 +5,9 @@
 			<label>{{writeString=wns.updated.info}}:</label><span class="updated_info status"></span>
 		</div>
 	</div>
-	<label for="name" class="validate-name_required">{{writeString=wns.name}}</label>
+	<label for="name" class="validate-name_required">{{writeString=wns.name}}*</label>
 	<input type="text" name="name" class="ui-widget-content" /><br />	
+	<label for="display_name">{{writeString=wns.subscriber_group.display_name}}</label>
+	<input type="text" name="display_name" class="ui-widget-content" /><br />	
+	<div class="display_name_info error_display">{{writeString=wns.subscriber_group.display_name_info}}</div>
 </form>

@@ -1,0 +1,7 @@
+allowed_roles: [subscribers]
+name: "Subscriber Import"
+description: "Import of email addresses"
+enabled: true
+aspects:
+  - persistent
+  - dashboard

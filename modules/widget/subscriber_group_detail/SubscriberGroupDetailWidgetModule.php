@@ -9,7 +9,7 @@ class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 		$this->iSubscriberGroupId = $iSubscriberGroupId;
 	}
 	
-	public function getSubscriberGroupData() {
+	public function loadData() {
 		$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->iSubscriberGroupId);
 		$aResult = $oSubscriberGroup->toArray();
 		$aResult['CreatedInfo'] = Util::formatCreatedInfo($oSubscriberGroup);
@@ -32,6 +32,7 @@ class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 			$oSubscriberGroup->setCreatedAt(date('c'));
 		}
 		$oSubscriberGroup->setName($aSubscriberGroupData['name']);
+		$oSubscriberGroup->setDisplayName($aSubscriberGroupData['display_name'] == null ? null : $aSubscriberGroupData['display_name']);
 
 		$this->validate($aSubscriberGroupData);
     if(!Flash::noErrors()) {

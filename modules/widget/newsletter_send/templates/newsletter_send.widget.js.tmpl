@@ -50,14 +50,17 @@ Widget.types.newsletter_send = {
 		send_markup.append(send_progress);
 		
 		var sender_dropdown = send_markup.find('select[name="sender_email"]');
-		jQuery.each(this.getSenderEmails(), function(i, email) {
-			sender_dropdown.append(jQuery('<option/>').val(email).text(email));
+		jQuery.each(this.getSenderEmails(), function(email, name) {
+			sender_dropdown.append(jQuery('<option/>').val(email).text(name));
 		});
 		var mail_groups = send_markup.find("select[name='mail_group_ids[]']");
-		mail_groups.prepareWidget();
+		mail_groups.prepareWidget(function(widget) {
+
+		}, jQuery.noop);
 	
 		send_markup.bind('submit', function(event) {
-			_this.send_newsletter(mail_groups.val(), sender_dropdown.val(), send_progress, send_markup);
+			var sender_name= jQuery(".sender_list option:selected").text();
+			_this.send_newsletter(mail_groups.val(), sender_dropdown.val(), sender_name, send_progress, send_markup);
 			return false;
 		});
 		
@@ -101,11 +104,11 @@ Widget.types.newsletter_send = {
 		});
 	},
 	
-	send_newsletter: function(mail_groups, sender, progress, markup) {
+	send_newsletter: function(mail_groups, sender_email, sender_name, progress, markup) {
 		markup.find("select[name='mail_group_ids[]']").prop('disabled', true);
 		markup.find("select[name='sender_email']").prop('disabled', true);
 		progress.progressbar('value', 0).show();
-		this.prepareForSending(mail_groups, sender, function(batch_count) {
+		this.prepareForSending(mail_groups, sender_email, sender_name, function(batch_count) {
 			this.sendNewsletter(0, function(result) {
 				if(arguments[1]) {
 					return false;
@@ -113,6 +116,7 @@ Widget.types.newsletter_send = {
 				if(result === true || result === false) {
 					progress.progressbar('value', 100);
 					this.handle_send_response(result, markup);
+					Widget.fire('rapila-mailing_list_changed');
 				} else {
 					progress.progressbar('value', (100/batch_count)*result);
 					this.sendNewsletter(result, arguments.callee);
