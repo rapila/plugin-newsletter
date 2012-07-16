@@ -17,3 +17,5 @@ ADD `updated_by` INT UNSIGNED NOT NULL ,
 ADD `created_at` DATETIME NOT NULL ,
 ADD `updated_at` DATETIME NOT NULL;
 
+#20120716.1332
+ALTER TABLE `subscriber_groups` ADD `display_name` VARCHAR( 40 ) NULL DEFAULT NULL AFTER `name` ;
