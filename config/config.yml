@@ -28,4 +28,3 @@ newsletter_plugin:
   
   #how to convert to plain-text alternative set to null or false to send only html emails
   plain_text_alternative_method: markdown
-  
