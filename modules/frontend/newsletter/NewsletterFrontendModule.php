@@ -14,7 +14,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	public function renderFrontend() {
 		if(isset($_REQUEST['unsubscribe'])) {
-			return $this->newsletterUnsubscribe(Manager::isPost());
+			return $this->newsletterUnsubscribe();
 		}
 		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM]) && self::$B_CONFIRMED === null) {
 			self::$B_CONFIRMED = true;
@@ -48,39 +48,34 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		}
 		
 		SubscriberPeer::ignoreRights(true);
-		// if subscriber_group_id is set, then the subscription is removed immediately, this should not happen anymore
-		if(isset($_REQUEST['subscriber_group_id'])) {
-			$oSubscriber->deleteSubscriberGroupMembership($_REQUEST['subscriber_group_id']);
-		} else {
-			
-			// count valid subscriptions [with display_name, not temp or import groups]
-			$aSubscriberGroupMemberShips =	$oSubscriber->getSubscriberGroupMemberships();
-			$aValidSubscriptions = array();
-			if(count($aSubscriberGroupMemberShips) > 1) {
-				foreach($aSubscriberGroupMemberShips as $oSubscriberGroupMembership) {
-					if($oSubscriberGroupMembership->getSubscriberGroup()->getDisplayName() == null) {
-						continue;
-					}
-					$aValidSubscriptions[] = $oSubscriberGroupMembership;
+		
+		// count valid subscriptions [with display_name, not temp or import groups]
+		$aSubscriberGroupMemberShips =	$oSubscriber->getSubscriberGroupMemberships();
+		$aValidSubscriptions = array();
+		if(count($aSubscriberGroupMemberShips) > 1) {
+			foreach($aSubscriberGroupMemberShips as $oSubscriberGroupMembership) {
+				if($oSubscriberGroupMembership->getSubscriberGroup()->getDisplayName() == null) {
+					continue;
 				}
+				$aValidSubscriptions[] = $oSubscriberGroupMembership;
 			}
-			// Display view with opt_out options if there is more then one valid subscription
-			if(count($aValidSubscriptions) > 1) {
-				$oTemplate = $this->constructTemplate('unsubscribe_optout_form');
-				$oTemplate->replaceIdentifier('checksum', $_REQUEST['checksum']);
-				$oTemplate->replaceIdentifier('email', $oSubscriber->getEmail());
-				foreach($aValidSubscriptions as $oSubscriberGroupMemberships) {
-					$oCheckboxTemplate = $this->constructTemplate('unsubscribe_optout_checkbox');
-					$oCheckboxTemplate->replaceIdentifier('subscriber_group_id', $oSubscriberGroupMemberships->getSubscriberGroupId());
-					$oCheckboxTemplate->replaceIdentifier('subscriber_group_name', $oSubscriberGroupMemberships->getSubscriberGroup()->getDisplayName());
-					$oTemplate->replaceIdentifierMultiple('subscriber_group_checkbox', $oCheckboxTemplate);
-				}
-				return $oTemplate;
-			}
-			
-			// Delete subscriber because there is not a valid subscription (all temp subscriptions are removed too)
-			$oSubscriber->delete();
 		}
+		// Display view with opt_out options if there is more then one valid subscription
+		if(count($aValidSubscriptions) > 1) {
+			$oTemplate = $this->constructTemplate('unsubscribe_optout_form');
+			$oTemplate->replaceIdentifier('checksum', $_REQUEST['checksum']);
+			$oTemplate->replaceIdentifier('email', $oSubscriber->getEmail());
+			foreach($aValidSubscriptions as $oSubscriberGroupMemberships) {
+				$oCheckboxTemplate = $this->constructTemplate('unsubscribe_optout_checkbox');
+				$oCheckboxTemplate->replaceIdentifier('subscriber_group_id', $oSubscriberGroupMemberships->getSubscriberGroupId());
+				$oCheckboxTemplate->replaceIdentifier('subscriber_group_name', $oSubscriberGroupMemberships->getSubscriberGroup()->getDisplayName());
+				$oTemplate->replaceIdentifierMultiple('subscriber_group_checkbox', $oCheckboxTemplate);
+			}
+			return $oTemplate;
+		}
+		
+		// Delete subscriber because there is not a valid subscription (all temp subscriptions are removed too)
+		$oSubscriber->delete();
 		// Display unsubscribe confirmation international
 		return $this->constructTemplate('unsubscribe_confirm');
 	}

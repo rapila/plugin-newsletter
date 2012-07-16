@@ -138,12 +138,9 @@ class Subscriber extends BaseSubscriber {
 		return md5($sEmail.$iSubscriberGroupId);
 	}
 	
-	public function getUnsubscribeQueryParams($iSubscriberGroupId = null) {
+	public function getUnsubscribeQueryParams() {
 		$aParameters = array();
 		$aParameters['unsubscribe'] = $this->getEmail();
-		if($iSubscriberGroupId !== null) {
-			$aParameters['subscriber_group_id'] = $iSubscriberGroupId;
-		}
 		$aParameters['checksum'] = $this->getUnsubscribeChecksum();
 		return $aParameters;
 	}
