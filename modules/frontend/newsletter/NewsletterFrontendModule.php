@@ -2,7 +2,7 @@
 
 class NewsletterFrontendModule extends DynamicFrontendModule {
 	
-	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_subscribe_opt_in', 'newsletter_unsubscribe', 'newsletter_display_list', 'newsletter_display_detail');
+	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display_list', 'newsletter_display_detail');
 	private $oSubscriber;
 	private static $B_CONFIRMED;
 	const PARAM_OPT_IN_CONFIRM = 'opt_in_confirm';
@@ -24,7 +24,6 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 
 		switch($aOptions['display_mode']) {
 			case 'newsletter_subscribe': return $this->newsletterSubscribe($aOptions);
-			case 'newsletter_subscribe_opt_in': return $this->newsletterSubscribe($aOptions, true);
 			case 'newsletter_unsubscribe': return $this->newsletterUnsubscribe();
 			case 'newsletter_display_list': return $this->displayNewsletterList($aOptions);
 			case 'newsletter_display_detail': return $this->displayNewsletterDetail($aOptions);
@@ -55,7 +54,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		} else {
 			
 			// count valid subscriptions [with display_name, not temp or import groups]
-			$aSubscriberGroupMemberShips =  $oSubscriber->getSubscriberGroupMemberships();
+			$aSubscriberGroupMemberShips =	$oSubscriber->getSubscriberGroupMemberships();
 			$aValidSubscriptions = array();
 			if(count($aSubscriberGroupMemberShips) > 1) {
 				foreach($aSubscriberGroupMemberShips as $oSubscriberGroupMembership) {
@@ -161,7 +160,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		
 	}
 	
-	private function newsletterSubscribe($aOptions, $bOptInRequired=false) {
+	private function newsletterSubscribe($aOptions) {
+		$bIsOptingConfirmationRequired = Settings::getSetting('newsletter_plugin', 'opting_confirmation_required', true);
 		if(isset($aOptions['subscriber_group_id']) && $aOptions['subscriber_group_id'] !== null) {
 			if(is_array($aOptions['subscriber_group_id']) && count($aOptions['subscriber_group_id']) > 0) {
 				$aOptions['subscriber_group_id'] = $aOptions['subscriber_group_id'][0];
@@ -188,7 +188,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				}
 				$bIsNewSubscription = false;
 				if($aOptions['subscriber_group_id']) {
-					$bIsNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipIfNotExists($aOptions['subscriber_group_id'], $bOptInRequired);
+					$bIsNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipIfNotExists($aOptions['subscriber_group_id']);
 				}
 				SubscriberGroupMembershipPeer::ignoreRights(true);
 				SubscriberPeer::ignoreRights(true);
@@ -196,15 +196,13 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				
 				// notifiy only if a new subscription has been added
 				if($bIsNewSubscription) {
-					if($bOptInRequired) {
+					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
+					if($bIsOptingConfirmationRequired) {
 						$this->notifySubscriberOptIn($aOptions['subscriber_group_id'], $bIsNewSubscription);
 					} else {
 						$this->notifySubscriber($bIsNewSubscription);
 					}
-				}
-				// unset($_REQUEST['subscriber_email']);
-				$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
-				if($bOptInRequired === false) {
+				} else {
 					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success');
 				}
 				$oTemplate->replaceIdentifier('message', $sConfirmMessage);

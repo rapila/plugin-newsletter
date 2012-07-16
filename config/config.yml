@@ -15,7 +15,6 @@ newsletter_plugin:
   sender_name: rapila
   
   # Use this in your config.yml file to choose from different email addresses when sending
-  
   sender_email_addresses:
     # 'noreply@example.com' : "Sender Name"
     # 'sender@example.com' : "Sender Name2"
@@ -25,6 +24,8 @@ newsletter_plugin:
   #requires_authentication options true, user_role rolekey, default: false
   unsubscribe_page: subscribe #a page identifier
   # comment > unsubscribe pages show all pages with NewsletterFrontendModule, check display_type
+  
+  opting_confirmation_required: true
   
   #how to convert to plain-text alternative set to null or false to send only html emails
   plain_text_alternative_method: markdown
