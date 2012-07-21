@@ -13,9 +13,6 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	}
 	
 	public function renderFrontend() {
-		if(isset($_REQUEST['unsubscribe'])) {
-			return $this->newsletterUnsubscribe();
-		}
 		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM]) && self::$B_CONFIRMED === null) {
 			self::$B_CONFIRMED = true;
 			return $this->newsletterOptInConfirm();
@@ -31,19 +28,19 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	}
 	
 	private function newsletterUnsubscribe() {
+		// If param unsubscribe is not set return general unsubscribe info
+		if(!isset($_REQUEST['unsubscribe'])) {
+			return null;
+		}
+		
 		// Process unsubscribe opt_out form if post
 		if(Manager::isPost()) {
 			return $this->processOptOutSuscriptions();
 		}
 		
-		// If param unsubscribe is not set return general unsubscribe info
-		if(!isset($_REQUEST['unsubscribe'])) {
-			return $this->constructTemplate('unsubscribe_general_info');
-		}
-		
 		// If subscriber does not exist or the required checksum is not correct, return error message
 		$oSubscriber = SubscriberPeer::getByEmail($_REQUEST['unsubscribe']);
-		if(!($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_REQUEST['checksum'])) {
+		if(!($oSubscriber && $oSubscriber->getUnsubscribeChecksum() === $_REQUEST['checksum'])) {
 			return $this->constructTemplate('unsubscribe_unknown_error');
 		}
 		
@@ -81,7 +78,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	}
 	
 	private function processOptOutSuscriptions() {
-		$oSubscriber = SubscriberPeer::getByEmail($_POST['email']);
+		$oSubscriber = SubscriberPeer::getByEmail($_POST['unsubscribe']);
 		if($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_POST['checksum']) {
 			foreach($_POST['subscriber_group_id'] as $iSubscriberGroupId) {
 				$oSubscriber->deleteSubscriberGroupMembership($iSubscriberGroupId);
