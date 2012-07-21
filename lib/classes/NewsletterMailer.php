@@ -122,7 +122,7 @@ class NewsletterMailer {
 				$oEMail = new EMail($this->oNewsletter->getSubject(), MIMEMultipart::alternativeMultipartForTemplate($oEmailTemplateInstance, null, null, $sPlainTextMethod), true);
 			}
 			if(is_object($mRecipient)) {
-				$oEMail->addRecipient($mRecipient->getEmail(), $mRecipient->getName());
+				$oEMail->addRecipient($mRecipient->getEmail(), $mRecipient->getName() === $mRecipient->getEmail() ? null : $mRecipient->getName());
 			} else {
 				$oEMail->addRecipient($mRecipient);
 			}
