@@ -16,6 +16,7 @@ Widget.types.subscriber_detail = {
 		this.getSubscriberData(function(subscriber_data) {
 			this.content.find("input[name='name']").val(subscriber_data.Name);
 			this.content.find("input[name='email']").val(subscriber_data.Email);
+			this.content.find("select[name='preferred_language_id']").val(subscriber_data.PreferredLanguageId);
 			this.content.find("select[name='subscriber_group_ids']").val(subscriber_data.SubscribedGroupIds);
 			
 			this.content.find(".updated_info").text(subscriber_data.UpdatedInfo);
