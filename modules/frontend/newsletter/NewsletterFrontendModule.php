@@ -206,8 +206,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	public function notifySubscriber($bIsNewSubscription = true) {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_notification');
 		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
-		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila Newsletter on '.$_SERVER['HTTP_HOST']);
-		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email', 'rapila@'.$_SERVER['HTTP_HOST']);
+		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila');
+		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
 		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
 		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());
 		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate);
@@ -219,8 +219,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	public function notifySubscriberOptIn($iSubscriberGroupId, $bIsNewSubscription=true) {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
 		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
-		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila Newsletter on '.$_SERVER['HTTP_HOST']);
-		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email', 'rapila@'.$_SERVER['HTTP_HOST']);
+		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila');
+		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
 		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
 		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());
 		$oSubscribePage = PagePeer::getPageByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));

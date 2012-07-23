@@ -15,7 +15,7 @@ newsletter_plugin:
   sender_name: rapila
   
   # used for confirmation e-mail, not to confuse with sender_email_addresses
-  sender_email: 'newsletter@rapi.la'
+  # sender_email: 'newsletter@rapi.la'
   
   # Use this in your config.yml file to choose from different email addresses when sending
   sender_email_addresses:
