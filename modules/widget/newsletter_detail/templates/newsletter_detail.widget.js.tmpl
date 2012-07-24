@@ -1,7 +1,7 @@
 Widget.types.newsletter_detail = {
-	
 	prepare: function() {
-		Widget.handle('rapila-mailing_list_changed', this.fill_data.bind(this));
+		this.mailing_list_changed_handler = this.fill_data.bind(this);
+		Widget.handle('rapila-mailing_list_changed', this.mailing_list_changed_handler);
 	},
 	
 	initialize: function() {
@@ -72,6 +72,10 @@ Widget.types.newsletter_detail = {
 		this.content.find("select[name='language_id']").prepareWidget(function(widget) {
 			widget.settings.international_option = false;
 		}, jQuery.noop);
+		this.newsletter_send_button = this.content.find('.newsletter_send_button').button().click(this.send_newsletter.bind(this, 'send'));
+
+		this.content.find('.newsletter_send_test_button').button().click(this.send_newsletter.bind(this, 'test'));
+
 	},
 	
 	send_info_text: function(is_hot) {
@@ -86,6 +90,10 @@ Widget.types.newsletter_detail = {
 	fill_data: function() {
 		var _this = this;
 		this.loadNewsletterData(function(newsletter_data) {
+			if(!newsletter_data) {
+				return;
+			}
+			this.current_detail_id = newsletter_data.Id;
 			this.content.find("input[name='subject']").val(newsletter_data.Subject);
 			this.content.find("select[name='language_id']").val(newsletter_data.LanguageId || '');
 			this.content.find("select[name='template_name']").val(newsletter_data.TemplateName || '');
@@ -93,13 +101,6 @@ Widget.types.newsletter_detail = {
 			this.content.find(".created_info").text(newsletter_data.CreatedInfo);
 			this.content.find("span[class='detail_id']").text(newsletter_data.Id);
 		
-			this.newsletter_send_button = jQuery(this.content.find('.newsletter_send_button')).button().click(function() {
-				_this.send_newsletter('send', newsletter_data.Id);
-			});
-		
-			this.newsletter_test_button = jQuery(this.content.find('.newsletter_send_test_button')).button().click(function() {
-				_this.send_newsletter('test', newsletter_data.Id);
-			});
 
 			// is_approved change handler
 			var is_approved = this.content.find("input[name='is_approved']");
@@ -137,7 +138,8 @@ Widget.types.newsletter_detail = {
 		});
 	},
 	
-	send_newsletter: function(action, newsletter_id) {
+	send_newsletter: function(action) {
+		var newsletter_id = this.current_detail_id;
 		Widget.create('newsletter_send', function(send_widget) {
 			send_widget.setNewsletterId(newsletter_id);
 			if(action === 'send') {

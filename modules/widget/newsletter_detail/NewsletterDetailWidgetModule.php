@@ -23,6 +23,9 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function loadNewsletterData() {
+		if(!$this->iNewsletterId) {
+			return null;
+		}
 		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		$aResult = $oNewsletter->toArray();
 		unset($aResult['NewsletterBody']);
@@ -149,10 +152,10 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 			throw new ValidationException();
 		}
 		if(isset($aNewsletterData['is_approved'])) {
-		  $oNewsletter->setIsApproved($aNewsletterData['is_approved']);
+			$oNewsletter->setIsApproved($aNewsletterData['is_approved']);
 		}
 		if(isset($aNewsletterData['template_name'])) {
-		  $oNewsletter->setTemplateName($aNewsletterData['template_name']);
+			$oNewsletter->setTemplateName($aNewsletterData['template_name']);
 		}
 		return $oNewsletter->save();
 	}
