@@ -9,6 +9,11 @@ Widget.types.newsletter_detail = {
 		var _this = this;
 		this.newsletter_mailing_prototype = jQuery.parseHTML("{{includeTemplate=newsletter_mailing}}", true, 'tbody');
 		this.content.find('.hide_if_not_saved').hide();
+			// is_approved change handler
+		this.is_approved = this.content.find("input[name='is_approved']");
+		this.is_approved.change(function() {
+			_this.save(true);
+		});
 
 		Widget.create('detail', function(widget) {
 			_this.detail_widget = widget.set_instance(_this);
@@ -100,19 +105,10 @@ Widget.types.newsletter_detail = {
 			this.content.find(".updated_info").text(newsletter_data.UpdatedInfo);
 			this.content.find(".created_info").text(newsletter_data.CreatedInfo);
 			this.content.find("span[class='detail_id']").text(newsletter_data.Id);
-		
+			this.is_approved.prop('checked', newsletter_data.IsApproved);
+			this.send_info_text(newsletter_data.IsApproved);
+			this.newsletter_send_button.prop('disabled', !newsletter_data.IsApproved);
 
-			// is_approved change handler
-			var is_approved = this.content.find("input[name='is_approved']");
-			is_approved.bind('change', function() {
-				var is_approved_checked = jQuery(this).prop('checked');
-				if(is_approved_checked) {
-					// _this.save(true);
-				}
-				_this.send_info_text(is_approved_checked);
-				_this.newsletter_send_button.prop('disabled', !is_approved_checked);
-			}).prop('checked', newsletter_data.IsApproved).change();
-		
 			// newsletter mailings
 			var mailing_list = this.content.find(".mailing_list").empty();
 			var has_mailings = false;
