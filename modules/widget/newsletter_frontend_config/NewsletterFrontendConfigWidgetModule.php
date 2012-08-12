@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package modules.widget
+ * @subpackage rapila-plugin-newsletter
+ */
 class NewsletterFrontendConfigWidgetModule extends FrontendConfigWidgetModule {
 	
 	public function getDisplayOptions() {

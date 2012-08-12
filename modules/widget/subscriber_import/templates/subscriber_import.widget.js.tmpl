@@ -27,6 +27,6 @@ Widget.types.subscriber_import = {
 			_this.import_message.text(import_message);
 			_this.import_emails.val(result.text);
 			result.added && Widget.fire('newsletter-mail_groups_changed');
-	});
+		});
 	}
 };

@@ -1,6 +1,7 @@
 <?php
 /**
  * @package modules.widget
+ * @subpackage rapila-plugin-newsletter
  */
 class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 	private $sLanguageId = null;
@@ -138,7 +139,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 			$oNewsletter->setCreatedBy(Session::getSession()->getUserId());
 			$oNewsletter->setCreatedAt(date('c'));
 		}
-		// if language is not set (not multilingual), write session language, since it is default language, i guess
+		// If language is not set (not multilingual), write session language, since it is default language
 		$sLanguageId = isset($aNewsletterData['language_id']) ? $aNewsletterData['language_id'] : Session::language();
 		$oNewsletter->setLanguageId($sLanguageId);
 		$oNewsletter->setTemplateName($aNewsletterData['template_name']);

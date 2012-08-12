@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package modules.frontend
+ * @subpackage rapila-plugin-newsletter
+ */
 class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display_list', 'newsletter_display_detail');
@@ -46,7 +49,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		
 		SubscriberPeer::ignoreRights(true);
 		
-		// count valid subscriptions [with display_name, not temp or import groups]
+		// Count valid subscriptions [with display_name, not temp or import groups]
 		$aSubscriberGroupMemberShips =	$oSubscriber->getSubscriberGroupMemberships();
 		$aValidSubscriptions = array();
 		if(count($aSubscriberGroupMemberShips) > 1) {
@@ -73,6 +76,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		
 		// Delete subscriber because there is not a valid subscription (all temp subscriptions are removed too)
 		$oSubscriber->delete();
+		
 		// Display unsubscribe confirmation international
 		return $this->constructTemplate('unsubscribe_confirm');
 	}
@@ -124,7 +128,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	private function displayNewsletterList($aOptions) {
 		$iSubscriberGroupId = @$aOptions['subscriber_group_id'];
-		// Util::dumpAll($iSubscriberGroupId);
+
 		$oQuery = NewsletterQuery::create()->distinct()->filterApprovedForLanguage(Session::language())->orderByCreatedAt(Criteria::DESC);
 		if($iSubscriberGroupId) {
 			$oQuery->joinNewsletterMailing()->useQuery('NewsletterMailing')->filterBySubscriberGroupId($iSubscriberGroupId)->endUse();
@@ -149,7 +153,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	}
 	
 	private function displayNewsletterDetail() {
-		
+		// @todo to be implemented
 	}
 	
 	private function newsletterSubscribe($aOptions) {
@@ -186,7 +190,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				SubscriberPeer::ignoreRights(true);
 				$this->oSubscriber->save();
 				
-				// notifiy only if a new subscription has been added
+				// Notifiy only if a new subscription has been added
 				if($bIsNewSubscription) {
 					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
 					if($bIsOptingConfirmationRequired) {

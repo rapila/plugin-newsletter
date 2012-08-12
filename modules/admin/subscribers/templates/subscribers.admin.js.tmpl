@@ -18,7 +18,7 @@ jQuery(document).ready(function() {
 	
 	jQuery.when.apply(jQuery, handlers).then(function() {
 		
-		// add buttons and search_input
+		// Add new item buttons, search_input and list count
 		info_bar.add_button('add-new-item', function() {
 			Widget.create('subscriber_detail', function(widget) {
 				widget.open();
@@ -38,7 +38,7 @@ jQuery(document).ready(function() {
 			}
 		}).add_row_count_info_for_list(content_list);		
 
-		// sidebar items edit and delete buttons
+		// Sidebar items edit and delete buttons
 		var remove_item = info_bar.add_button('remove-item', function() {
 			var rowData = sidebar.collect_row_data(sidebar.active_row());
 			if(rowData.subscriber_group_id) {
@@ -67,7 +67,7 @@ jQuery(document).ready(function() {
 			});
 		}).disable();
 		
-		// sidebar selection change handler
+		// Sidebar selection change handler
 		sidebar.settings.row_click_active_mode = 'activate';
 		sidebar.handle('list-selection_changed', function(event, selection) {
 			var subscriber_group_id = selection[0] && selection[0].subscriber_group_id;

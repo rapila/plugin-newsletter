@@ -1,6 +1,7 @@
 <?php
 /**
  * @package modules.file
+ * @subpackage rapila-plugin-newsletter
  */
 class DisplayNewsletterFileModule extends FileModule {
 	

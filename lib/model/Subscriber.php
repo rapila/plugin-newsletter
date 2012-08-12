@@ -71,7 +71,7 @@ class Subscriber extends BaseSubscriber {
 		$this->save();	
 	}
 	
-	// display the name even if it does not exist
+	// Display the name even if it does not exist
 	public function getName() {
 		if(parent::getName() != null) {
 			return parent::getName();

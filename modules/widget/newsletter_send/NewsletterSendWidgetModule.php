@@ -1,25 +1,29 @@
 <?php
+/**
+ * @package modules.widget
+ * @subpackage rapila-plugin-newsletter
+ */
 class NewsletterSendWidgetModule extends PersistentWidgetModule {
 	
 	// Id of newsletter that is sent
 	private $iNewsletterId;
 	
-	// batch size number for smooth handling of batches of recipients sent in one request
+	// Batch size number for smooth handling of batches of recipients sent in one request
 	private $iBatchSize = 50;
 	
-	// all distinct recipient of the newsletter
+	// All distinct recipient of the newsletter
 	private $aRecipients = null;
 	
 	// sender email
 	private $sSenderEmail = null;
 	
-	// optional sender name
+	// Optional sender name
 	private $sSenderName = null;
 	
-	// mail groups [subscriber_groups, external_mail_groups]
+	// Mail groups [subscriber_groups, external_mail_groups]
 	private $aMailGroups = null;
 
-	// unsuccessful or failed recipients
+	// Unsuccessful or failed recipients
 	private $aUnsuccessfulAttempts;
 	
 	public function setNewsletterId($iNewsletterId) {
@@ -59,7 +63,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		$aConfig = Settings::getSetting('newsletter_plugin', 'sender_email_addresses', array(LinkUtil::getDomainHolderEmail('newsletter')));
 		$aResult = array();
 		foreach($aConfig as $mIndex => $mConfig) {
-			// numeric key are indexes of old email lists
+			// Numeric key are indexes of old email lists
 			if(is_numeric($mIndex)) {
 				$aResult[$mConfig] = $mConfig;
 			} else {
@@ -126,7 +130,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 			throw new Exception("Error in sendNewsletter: prepare not called");
 		}
 		
-		// send newsletter if newsletter is chosen and there are recipients
+		// Send newsletter if newsletter is chosen and there are recipients
 		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		if($oNewsletter === null) {
 			throw new LocalizedException("newsletter.mailing.newsletter_missing");
@@ -147,7 +151,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		if(count($aRecipients) === $this->iBatchSize) {
 			return $iBatchNumber+1;
 		} else {
-			// return batch count/boolean and register Mailings per group
+			// Return batch count/boolean and register Mailings per group
 			$bOneGroupOnly = count($this->aMailGroups) === 1;
 			foreach($this->aMailGroups as $mMailGroupId) {
 				$oNewsletterMailing = new NewsletterMailing();

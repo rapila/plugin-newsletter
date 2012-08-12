@@ -1,6 +1,7 @@
 <?php
 /**
  * @package modules.admin
+ * @subpackage rapila-plugin-newsletter
  */
 class SubscribersAdminModule extends AdminModule {
 

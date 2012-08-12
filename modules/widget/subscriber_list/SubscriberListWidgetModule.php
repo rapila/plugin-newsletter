@@ -1,6 +1,7 @@
 <?php
 /**
  * @package modules.widget
+ * @subpackage rapila-plugin-newsletter
  */
 class SubscriberListWidgetModule extends WidgetModule {
 	
@@ -84,7 +85,6 @@ class SubscriberListWidgetModule extends WidgetModule {
 		$oSubscriber = SubscriberQuery::create()->findPk($aRowData['id']);
 		return $oSubscriber->deleteSubscriberGroupMembership($this->oDelegateProxy->getSubscriberGroupId());
 	}
-
 
 	public function getCriteria() {
 		$oQuery = SubscriberQuery::create();

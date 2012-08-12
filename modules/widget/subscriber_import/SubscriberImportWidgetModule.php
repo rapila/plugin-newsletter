@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package modules.widget
+ * @subpackage rapila-plugin-newsletter
+ */
 class SubscriberImportWidgetModule extends PersistentWidgetModule {
 	
 	const GENERATED_PREFIX = 'Imported-';
@@ -19,10 +23,11 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 		$sSubscribers = '';
 		$aTargetSubscriberGroups = is_array($mTargetSubscriberGroup) ? $mTargetSubscriberGroup : array($mTargetSubscriberGroup);
 		
-		// if is string it has not been processed and validated by js
+		// If is string the addresses have not been processed and validated by js
 		if(is_string($aSubscribers)) {
 			// preg_match_all, use
-			$sSubscribers = trim($aSubscribers);$aSubscribers = array();
+			$sSubscribers = trim($aSubscribers);
+			$aSubscribers = array();
 			$sSubscribers = preg_replace_callback('/'.Flash::$EMAIL_CHECK_PATTERN.'/', function($aMatches) use (&$aSubscribers) {
 				$aSubscribers[] = $aMatches[0];
 				return '';
@@ -33,7 +38,7 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 		$iMembershipsAdded = 0;
 		
 		// @todo check change jm
-		// always add temporary groups with all importet subscribers
+		// Always create temporary groups with all imported subscribers
 		$oSubscriberGroup = new SubscriberGroup();
 		$oSubscriberGroup->setName(self::GENERATED_PREFIX.date('Ymd-Hs'));
 		$oSubscriberGroup->save();
@@ -42,17 +47,17 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 		foreach($aSubscribers as $sEmail) {
 			$oSubscriber = SubscriberQuery::create()->filterByEmail($sEmail)->findOne();
 			
-			// create new if subscriber does not exist and email is correct
+			// Create new if subscriber does not exist and email is correct
 			if($oSubscriber === null) {
 				$oSubscriber = new Subscriber();
 				$oSubscriber->setEmail($sEmail);
 				$oSubscriber->setName($sEmail);
 			}
-			// add subscriber_group_membership if a subscriber exists and no subscriber_group_membership exists
+			// Add subscriber_group_membership if a subscriber exists and no subscriber_group_membership exists
 			if($oSubscriber !== null) {
 				$bHasMemberShip = false;
 				// @todo check change jm > handle multiple groups including generated one
-				// please check meaning and function of counting new subscriptions, only one is counted per subsriber $iMembershipsAdded
+				// Please check meaning and function of counting new subscriptions, only one is counted per subsriber $iMembershipsAdded
 				foreach($aTargetSubscriberGroups as $iSubscriberGroupId) {
 					if(!$oSubscriber->hasNewsletterBySubscriberGroupId((int) $iSubscriberGroupId)) {
 						$bHasMemberShip = true;

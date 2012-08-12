@@ -15,5 +15,13 @@ Widget.types.subscriber_group_input = {
 		if(current) {
 			this._element.val(current);
 		}
+	}, 
+	
+	val: function(value) {
+		if(value) {
+			this._element.val(value);
+			return;
+		}
+		return this._element.val();
 	}
 };

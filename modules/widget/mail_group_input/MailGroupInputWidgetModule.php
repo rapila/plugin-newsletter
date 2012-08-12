@@ -1,7 +1,8 @@
 <?php
 /**
-* @package modules.widget
-*/
+ * @package modules.widget
+ * @subpackage rapila-plugin-newsletter
+ */
 class MailGroupInputWidgetModule extends WidgetModule {
 	
 	public function getMailGroups($bIncludeTemporaryMailGroups=true, $bIncludeGeneratedMailGroups=true) {

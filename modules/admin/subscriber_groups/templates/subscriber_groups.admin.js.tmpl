@@ -1,7 +1,9 @@
 jQuery(document).ready(function() {
-	// init main content
+	
+	// Init main content
 	AdminInterface.content.find('table.subscriber_group_list').prepareWidget(function(subscriber_group_list) {
-		// init infobar
+		
+		// Init infobar
 		AdminInterface.info_bar.prepareWidget(function(info_bar) {
 		  info_bar.add_button('add-new-item', function() {
 				Widget.create('subscriber_group_detail', function(widget) {
@@ -15,7 +17,7 @@ jQuery(document).ready(function() {
 					subscriber_group_list.reload();
 				}
 			});
-			// add row_count_info
+			// Add row_count_info
 			info_bar.add_row_count_info_for_list(subscriber_group_list);
 		});
 

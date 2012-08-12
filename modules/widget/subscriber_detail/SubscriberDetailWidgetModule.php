@@ -1,6 +1,7 @@
 <?php
 /**
  * @package modules.widget
+ * @subpackage rapila-plugin-newsletter
  */
 class SubscriberDetailWidgetModule extends PersistentWidgetModule {
 	private $iSubscriberId;
@@ -45,7 +46,7 @@ class SubscriberDetailWidgetModule extends PersistentWidgetModule {
     if(!Flash::noErrors()) {
 			throw new ValidationException();
 		}
-    // subscriptions
+    // Subscriptions
 		foreach($oSubscriber->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
 			$oSubscriberGroupMembership->delete();
 		}

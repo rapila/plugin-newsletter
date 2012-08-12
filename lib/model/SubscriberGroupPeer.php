@@ -33,7 +33,7 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 		}
 		// @todo check change jm
 		if($bIncludeGeneratedMailGroups === false) {
-			$oQuery->filterbyDisplayName(null, Criteria::ISNOTNULL);
+			$oQuery->filterByDisplayName(null, Criteria::ISNOTNULL);
 		}
 		return $oQuery->find();
 	}
@@ -72,7 +72,7 @@ class SubscriberGroupPeer extends BaseSubscriberGroupPeer {
 			$iGroupId = (string) $oSubscriberGroup->getId();
 			$iCountMembershipsAddon = '';
 			
-			// add membership count info if required
+			// Add membership count info if required
 			if($bAddMemberShipCount) {
 				$iCountMembershipsAddon = ' ('.$oSubscriberGroup->countSubscriberGroupMemberships().')';
 			}

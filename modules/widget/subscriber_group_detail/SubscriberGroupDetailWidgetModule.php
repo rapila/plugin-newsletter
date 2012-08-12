@@ -1,6 +1,7 @@
 <?php
 /**
  * @package modules.widget
+ * @subpackage rapila-plugin-newsletter
  */
 class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 	private $iSubscriberGroupId;
