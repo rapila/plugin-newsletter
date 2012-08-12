@@ -7,7 +7,7 @@ require_once 'model/om/BaseNewsletter.php';
  */
 class Newsletter extends BaseNewsletter {
 	
-	// alias for automatic parseTree nameForObject
+	// Alias for automatic parseTree nameForObject
 	public function getName($iLength=35) {
 		return StringUtil::truncate($this->getSubject(), $iLength);
 	}
@@ -41,24 +41,27 @@ class Newsletter extends BaseNewsletter {
 		return $aResult[0]. ' (+'.($iCount-1).')';
 	}
 	
-	public function getLastSent($oMailing = null) {
-		if($oMailing === null) {
-			$oMailing = $this->getFirstMailing();
-		}
-		if($oMailing !== null) {
+	public function getLastSent() {
+		if($oMailing = $this->getLastMailing()) {
 			return $oMailing->getDateSent(null)->getTimestamp();
 		}
-		return $this->getCreatedAt(null)->getTimestamp();
+		return null;
 	}
 	
 	public function getLastSentLocalized($sFormat = 'x') {
-		return LocaleUtil::localizeDate($this->getLastSent(), null, $sFormat);
+		if($this->getLastSent() != null) {
+			return LocaleUtil::localizeDate($this->getLastSent(), null, $sFormat);
+		}
+		return null;
 	}
 	
-	public function getFirstMailing() {
-		return NewsletterMailingQuery::create()->filterByNewsletter($this)->orderByCreatedAt()->findOne();
+	public function getLastMailing() {
+		return NewsletterMailingQuery::create()->filterByNewsletter($this)->orderByCreatedAt(Criteria::DESC)->findOne();
 	}
 	
+	/**
+	* dummy method for placeholder column for test widget link
+	*/
 	public function getSendTest() {
 		return true;
 	}

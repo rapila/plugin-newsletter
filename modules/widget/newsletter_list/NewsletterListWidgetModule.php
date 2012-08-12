@@ -1,6 +1,7 @@
 <?php
 /**
  * @package modules.widget
+ * @subpackage rapila-plugin-newsletter
  */
 class NewsletterListWidgetModule extends WidgetModule {
 	
@@ -23,7 +24,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'subject', 'language_id', 'is_approved', 'send_test', 'group_sent_to', 'updated_at_formatted', 'template_name', 'duplicate', 'delete');
+		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'group_sent_to', 'last_sent_localized', 'send_test', 'duplicate', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -54,8 +55,9 @@ class NewsletterListWidgetModule extends WidgetModule {
 			case 'group_sent_to':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.subscriber_groups_sent_to');
 				break;
-			case 'updated_at_formatted':
+			case 'last_sent_localized':
 				$aResult['heading'] = StringPeer::getString('wns.newsletter.last_sent');
+				$aResult['is_sortable'] = false;
 				break;
 			case 'send_test':
 				$aResult['field_name'] = 'play';
@@ -84,9 +86,6 @@ class NewsletterListWidgetModule extends WidgetModule {
 			return NewsletterMailingPeer::SUBSCRIBER_GROUP_ID;
 		}
 		if($sColumnIdentifier === 'last_sent_localized') {
-			return NewsletterPeer::UPDATED_AT;
-		}
-		if($sColumnIdentifier === 'updated_at_formatted') {
 			return NewsletterPeer::UPDATED_AT;
 		}
 		if($sColumnIdentifier === 'subscriber_group_id') {
