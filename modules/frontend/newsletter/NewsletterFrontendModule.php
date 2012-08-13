@@ -183,8 +183,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 					$this->oSubscriber->setCreatedAt(date('c'));
 				}
 				$bIsNewSubscription = false;
-				if($aOptions['subscriber_group_id']) {
-					$bIsNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipIfNotExists($aOptions['subscriber_group_id']);
+				if($aOptions['subscriber_group_id'] && !$this->oSubscriber->hasSubscriberGroupMembership($aOptions['subscriber_group_id'])) {
+					$bIsNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipBySubscriberGroupId($aOptions['subscriber_group_id']);
 				}
 				SubscriberGroupMembershipPeer::ignoreRights(true);
 				SubscriberPeer::ignoreRights(true);
