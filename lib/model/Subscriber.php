@@ -22,19 +22,7 @@ class Subscriber extends BaseSubscriber {
 	public function getHasNewsletter() {
 		return !$this->isNew();
 	}
-	
-	public function hasNewsletterBySubscriberGroupId($iSubscriberGroupId) {
-		if($iSubscriberGroupId instanceof SubscriberGroup) {
-			$iSubscriberGroupId = $iSubscriberGroupId->getId();
-		}
-		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
-			if($oSubscriberGroupMembership->getSubscriberGroupId() == $iSubscriberGroupId) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
+		
 	public function setHasNewsletter($bHasNewsletter) {
 		if($bHasNewsletter) {
 			// only needs to be saved if is news
@@ -46,29 +34,6 @@ class Subscriber extends BaseSubscriber {
 				$this->delete();
 			}
 		}
-	}
-	
-	/**
-	 * @param array of subscriber_group_ids
-	 * @return void
-	 * usage: only for requests that are supposed to handle all the subscriptions
-	 *				if you just want to add a subscription from a simple newsletter subscribe form, use addSubscriberGroupMembershipIfNotExists()
-	 */
-	public function setHasNewsletterBySubscriberGroupIds($aSubscriberGroupIds) {
-		// in case there are no subscriptions
-		if(count($aSubscriberGroupIds) === 0 && !$this->isNew()) {
-			$this->delete();
-			return;
-		}
-		// remove all
-		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
-			$oSubscriberGroupMembership->delete();
-		}
-		// create new
-		foreach($aSubscriberGroupIds as $iSubscriberGroupId) {
-			$this->addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId);
-		}
-		$this->save();	
 	}
 	
 	// Display the name even if it does not exist
@@ -100,24 +65,11 @@ class Subscriber extends BaseSubscriber {
 		}
 	}
 	
-	/**
-	 * @param integer subscriber_group_id
-	 * @return void
-	 * usage: for adding subscriptions without touching the others @see setHasNewsletterBySubscriberGroupIds()
-	 */
-	public function addSubscriberGroupMembershipIfNotExists($iSubscriberGroupId) {
-		$bSubscriberGroupMembershipExists = false;
-		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
-			if($iSubscriberGroupId == $oSubscriberGroupMembership->getSubscriberGroupId()) {
-				$bSubscriberGroupMembershipExists = true;
-			}
-		} 
-		if($bSubscriberGroupMembershipExists === false) {
-			return $this->addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId);
-		}
+	public function hasSubscriberGroupMembership($iSubscriberGroup) {
+		return SubscriberGroupMembershipQuery::create()->findPk(array($this->getId(), $iSubscriberGroup)) !== null;
 	}
 	
-	private function addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId) {
+	public function addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId) {
 		$oSubscriberGroupMembership = new SubscriberGroupMembership();
 		$oSubscriberGroupMembership->setSubscriberGroupId($iSubscriberGroupId);
 		if(Settings::getSetting('newsletter_plugin', 'opting_confirmation_required', true)) {

@@ -36,8 +36,7 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 		$aSubscribers = array_unique($aSubscribers);
 		$iCountAll = count($aSubscribers);
 		$iMembershipsAdded = 0;
-		
-		// @todo check change jm
+
 		// Always create temporary groups with all imported subscribers
 		$oSubscriberGroup = new SubscriberGroup();
 		$oSubscriberGroup->setName(self::GENERATED_PREFIX.date('Ymd-Hs'));
@@ -53,24 +52,22 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 				$oSubscriber->setEmail($sEmail);
 				$oSubscriber->setName($sEmail);
 			}
-			// Add subscriber_group_membership if a subscriber exists and no subscriber_group_membership exists
-			if($oSubscriber !== null) {
-				$bHasMemberShip = false;
-				// @todo check change jm > handle multiple groups including generated one
-				// Please check meaning and function of counting new subscriptions, only one is counted per subsriber $iMembershipsAdded
-				foreach($aTargetSubscriberGroups as $iSubscriberGroupId) {
-					if(!$oSubscriber->hasNewsletterBySubscriberGroupId((int) $iSubscriberGroupId)) {
-						$bHasMemberShip = true;
-						$oSubscriberGroupMembership = new SubscriberGroupMembership();
-						$oSubscriberGroupMembership->setSubscriberGroupId($iSubscriberGroupId);
-						$oSubscriber->addSubscriberGroupMembership($oSubscriberGroupMembership);
-					}
+			// Add subscriber_group_membership if it does not exists
+			// @todo check change jm > handle multiple groups including generated one
+			// Please check meaning and function of counting new subscriptions, only one is counted per subsriber $iMembershipsAdded
+			$bHasMemberShip = false;
+			foreach($aTargetSubscriberGroups as $iSubscriberGroupId) {
+				if(!$oSubscriber->hasSubscriberGroupMembership((int) $iSubscriberGroupId)) {
+					$bHasMemberShip = true;
+					$oSubscriberGroupMembership = new SubscriberGroupMembership();
+					$oSubscriberGroupMembership->setSubscriberGroupId($iSubscriberGroupId);
+					$oSubscriber->addSubscriberGroupMembership($oSubscriberGroupMembership);
 				}
-				if($bHasMemberShip) {
-					$iMembershipsAdded++;
-				}
-				$oSubscriber->save();
 			}
+			if($bHasMemberShip) {
+				$iMembershipsAdded++;
+			}
+			$oSubscriber->save();
 		}
 		return array('all' => $iCountAll, 'added' => $iMembershipsAdded, 'text' => $sSubscribers);
 	}
