@@ -58,6 +58,9 @@ class Subscriber extends BaseSubscriber {
 	}
 	
 	public function hasSubscriberGroupMembership($iSubscriberGroup) {
+		if($iSubscriberGroup instanceof SubscriberGroup) {
+			$iSubscriberGroup = $iSubscriberGroup->getId();
+		}
 		return SubscriberGroupMembershipQuery::create()->findPk(array($this->getId(), $iSubscriberGroup)) !== null;
 	}
 	
