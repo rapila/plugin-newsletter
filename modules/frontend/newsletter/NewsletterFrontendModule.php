@@ -233,7 +233,6 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
 		$oSubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
 		if ($oSubscribePage === null) {
-			
 			// Fallback: try searching the page by name
 			$oSubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
 			if ($oSubscribePage === null) {
@@ -242,10 +241,10 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		}
 		$oOptinConfirmLink = LinkUtil::absoluteLink(LinkUtil::link($oSubscribePage->getLink(), null, array(self::PARAM_OPT_IN_CONFIRM => Subscriber::getOptInChecksumByEmailAndSubscriberGroupId($this->oSubscriber->getEmail(), $iSubscriberGroupId))));
 		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), StringPeer::getString('newsletter_subscription.optin_link_text')));
-		$this->sendMail($oEmailTemplate);
+		$this->sendMail($oEmailTemplate, true);
 	}
 	
-	private function sendMail($oEmailTemplate, $bSendHtml = true) {
+	private function sendMail($oEmailTemplate, $bSendHtml = false) {
 		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
 		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila');
 		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
