@@ -31,7 +31,7 @@ class NewsletterMailer {
 		if($oNewsletter === null) {
 			throw new Exception('Error in'.__METHOD__.': requires a Newsletter object, null given');
 		}
-		// prepare sender email and name
+		// Prepare sender email and name
 		$this->aRecipients = $aRecipients;
 		$this->oNewsletter = $oNewsletter;
 		$this->sSenderEmailAddress = $sSenderEmailAddress;
@@ -42,11 +42,12 @@ class NewsletterMailer {
 		}
 		
 		if($bRequiresUnsubsribeLink) {
-			// unsubscribe page is required, a page that contains a content object NewsletterFrontendModule, ie the subscribe page
-			$this->oUnsubscribePage = PagePeer::getPageByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
+			// Unsubscribe page is required, a page that contains a content object NewsletterFrontendModule
+			$this->oUnsubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
 			if ($this->oUnsubscribePage === null) {
+				
 				// Fallback: try searching the page by name
-				$this->oUnsubscribePage = PagePeer::getPageByName(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
+				$this->oUnsubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
 				if ($this->oUnsubscribePage === null) {
 					throw new Exception('Error in'.__METHOD__.': a public and hidden unsubscribe page is required for unsubscribe to function');
 				}
@@ -89,7 +90,7 @@ class NewsletterMailer {
 		
 		return count($this->aInvalidEmails) === 0;
 		
-	} // send()
+	}
 	
  /** sendNewsletter()
 	* 
@@ -132,7 +133,7 @@ class NewsletterMailer {
 			$this->aInvalidEmails[] = new NewsletterSendFailure($e, $mRecipient);
 		}
 		
-	} // sendNewsletter()
+	}
 	
 	public function setInvalidEmails($aInvalidEmails) {
 		$this->aInvalidEmails = $aInvalidEmails;
