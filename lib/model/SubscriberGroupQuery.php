@@ -15,7 +15,7 @@ class SubscriberGroupQuery extends BaseSubscriberGroupQuery {
 	
 	public function excludeTemporary($bExclude = true) {
 		if($bExclude) {
-			return $this->filterByDisplayName(null, Criteria::ISNULL);
+			return $this->filterByDisplayName(null, Criteria::ISNOTNULL);
 		}
 		return $this;
 	}
