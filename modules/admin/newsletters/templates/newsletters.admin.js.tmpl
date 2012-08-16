@@ -1,8 +1,8 @@
 jQuery(document).ready(function() {
-	// init main content
+	// Init main content
 	AdminInterface.content.find('table.newsletter_list').prepareWidget(function(newsletter_list) {
 		
-		// init sidebar
+		// Init sidebar
 		var sidebar;
 
 		AdminInterface.sidebar.find('.ui-list').prepareWidget(function(widget) {
@@ -21,7 +21,7 @@ jQuery(document).ready(function() {
 			});
 		});
 		
-		// init infobar
+		// Init infobar
 		AdminInterface.info_bar.prepareWidget(function(info_bar) {
 			info_bar.add_button('add-new-item', function() {
 				Widget.create('newsletter_detail', function(widget) {
@@ -39,9 +39,7 @@ jQuery(document).ready(function() {
 				if(newsletter_list.setSearch(search)) {
 					newsletter_list.reload();
 				}
-			});
-			// add row_count_info
-			info_bar.add_row_count_info_for_list(newsletter_list);
+			}).add_row_count_info_for_list(newsletter_list);
 		});
 	});
 });
