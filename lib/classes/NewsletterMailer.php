@@ -6,18 +6,25 @@
 */
 class NewsletterMailer {
 	
+	// Array of newsletter recipients
 	private $aRecipients;
 	
+	// Newsletter object
 	private $oNewsletter;
 	
+	// Unsubsribe page required for optOut form, see {@link NewsletterFrontendModule::newsletterUnsubscribe()}
 	private $oUnsubscribePage;
 	
+	// Sender name
 	private $sSenderName;
 	
+	// Sender e-mail
 	private $sSenderEmailAddress;
 
+	// Array of invalid e-mail addresses
 	private $aInvalidEmails = array();
 	
+
  /** __construct()
 	* @param object Newsletter
 	* @param array recipients mixed string email / object 
@@ -56,18 +63,18 @@ class NewsletterMailer {
 	}
 	
  /** send()
-	* description:
-	* this method send is called when NewsletterMailer is instanciated 
-	* and all newsletter, sender and recipient info are ready
+	* Description:
+	* • This method is called when NewsletterMailer is instanciated 
+	* • All newsletter, sender and recipient info are ready
 	*
 	* @return boolean has_invalid email addresses
 	*/
 	public function send() {
-		// get newsletter email main template and template body and css by template name
+		// Get newsletter email main template and template body and css by template name
 		$oEmailTemplate = new Template('main', array(DIRNAME_TEMPLATES, 'newsletter'));
 		$oEmailTemplate->replaceIdentifier('newsletter_template_css', new Template("{$this->oNewsletter->getTemplateName()}.css", array(DIRNAME_TEMPLATES, 'newsletter')));
 		
-		// parse links differently in text
+		// Parse links differently in text
 		RichtextUtil::$USE_ABSOLUTE_LINKS = true;
 		$oEMailContent = RichtextUtil::parseStorageForFrontendOutput(stream_get_contents($this->oNewsletter->getNewsletterBody()));
 		RichtextUtil::$USE_ABSOLUTE_LINKS = false;
@@ -83,7 +90,7 @@ class NewsletterMailer {
 		$oEmailTemplate->replaceIdentifier('newsletter_date', LocaleUtil::localizeDate(null, $this->oNewsletter->getLanguageId()));
 		$oEmailTemplate->replaceIdentifier('newsletter_timestamp', time());
 
-		// process templates with each recipient, depending on whether recipient is object and object of Subscriber or string
+		// Process templates with each recipient, depending on whether recipient is object and object of Subscriber or string
 		foreach($this->aRecipients as $mRecipient) {
 			$this->sendNewsletter($mRecipient, clone $oEmailTemplate);
 		}
@@ -113,7 +120,7 @@ class NewsletterMailer {
 		else {
 			$oEmailTemplateInstance->replaceIdentifier('recipient', $mRecipient);
 		}
-		// send newsletter and store invalid emails
+		// Send newsletter and store invalid emails
 		try {
 			$sPlainTextMethod = Settings::getSetting('newsletter_plugin', 'plain_text_alternative_method', 'markdown');
 			$oEMail = null;

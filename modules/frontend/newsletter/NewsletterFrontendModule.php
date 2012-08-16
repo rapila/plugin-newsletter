@@ -5,7 +5,10 @@
  */
 class NewsletterFrontendModule extends DynamicFrontendModule {
 	
+	// Array of display options used in {@link NewsletterFrontendConfigWidgetModule::getDisplayOptions()} 
 	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display_list', 'newsletter_display_detail');
+	
+	// Subscriber
 	private $oSubscriber;
 	private static $B_CONFIRMED;
 	const PARAM_OPT_IN_CONFIRM = 'opt_in_confirm';
@@ -82,13 +85,15 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	}
 	
 	private function processOptOutSuscriptions($oSubscriber) {
+		// If optOut subscriber is identified then delete all checked subscriber group memberships
 		if($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_POST['checksum']) {
 			foreach($_POST['subscriber_group_id'] as $iSubscriberGroupId) {
 				$oSubscriber->deleteSubscriberGroupMembership($iSubscriberGroupId);
 			}
 		}
+		
+		// Check remaining subscriber group memberships and inform accordingly
 		$oTemplate = $this->constructTemplate('unsubscribe_optout_confirm');
-		$sConfirmMessageKey = 'wns.unsubscribe_optout.subsriber_removed';
 		if($oSubscriber) {
 			$bRemoveSubscriber = true;
 			$iCountRemoved = 0;
@@ -98,10 +103,13 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 					$bRemoveSubscriber = false;
 				}
 			}
+			// Delete subscriber if no subscriber group memberships remain
 			if($bRemoveSubscriber) {
 				$oSubscriber->delete();
 				$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriber', StringPeer::getString('wns.unsubscribe_optout.subsriber_removed'));
 			} 
+			
+			// Inform about delete action
 			if($iCountRemoved > 1) {
 				$sConfirmMessageKey = 'wns.unsubscribe_optout.subscriptions_removed';
 			} else {
@@ -157,7 +165,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	}
 	
 	private function newsletterSubscribe($aOptions) {
-		$bIsOptingConfirmationRequired = Settings::getSetting('newsletter_plugin', 'opting_confirmation_required', true);
+		$bOptinIsRequired = Settings::getSetting('newsletter_plugin', 'opting_confirmation_required', true);
 		if(isset($aOptions['subscriber_group_id']) && $aOptions['subscriber_group_id'] !== null) {
 			if(is_array($aOptions['subscriber_group_id']) && count($aOptions['subscriber_group_id']) > 0) {
 				$aOptions['subscriber_group_id'] = $aOptions['subscriber_group_id'][0];
@@ -167,69 +175,65 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			}
 		}
 		$oTemplate = $this->constructTemplate("newsletter_subscribe");
-
+		
+		// Process form
 		if(Manager::isPost() && isset($_POST['newsletter_subscribe'])) {
-			$oFlash = Flash::getFlash();
-			$oFlash->checkForEmail('subscriber_email', 'email_required_for_subscription');
-
-			$oFlash->finishReporting();
-			if(Flash::noErrors()) {
- 				$this->oSubscriber = SubscriberQuery::create()->filterByEmail($_POST['unsubscribe'])->findOne();
-
-				if($this->oSubscriber === null) {
-					$this->oSubscriber = new Subscriber();
-					$this->oSubscriber->setEmail($_POST['subscriber_email']);
-					$this->oSubscriber->setPreferredLanguageId(isset($_REQUEST['preferred_language_id']) ? $_REQUEST['preferred_language_id'] : Session::language());
-					$this->oSubscriber->setName(isset($_POST['name']) ? $_POST['name'] : $this->oSubscriber->getEmail());
-					$this->oSubscriber->setCreatedAt(date('c'));
-				}
-				$bIsNewSubscription = false;
-				if($aOptions['subscriber_group_id'] && !$this->oSubscriber->hasSubscriberGroupMembership($aOptions['subscriber_group_id'])) {
-					$bIsNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipBySubscriberGroupId($aOptions['subscriber_group_id']);
-				}
-				SubscriberGroupMembershipPeer::ignoreRights(true);
-				SubscriberPeer::ignoreRights(true);
-				$this->oSubscriber->save();
-				
-				// Notifiy only if a new subscription has been added
-				if($bIsNewSubscription) {
-					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
-					if($bIsOptingConfirmationRequired) {
-						$this->notifySubscriberOptIn($aOptions['subscriber_group_id'], $bIsNewSubscription);
-					} else {
-						$this->notifySubscriber($bIsNewSubscription);
-					}
-				} else {
-					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success');
-				}
-				$oTemplate->replaceIdentifier('message', $sConfirmMessage);
-			}
+			$this->processUnsubscribe($oTemplate);
 		}		
 		return $oTemplate;	
 	}
 	
-	public function notifySubscriber($bIsNewSubscription = true) {
-		$oEmailTemplate = $this->constructTemplate('email_subscription_notification');
-		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
-		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila');
-		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
-		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
-		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());
-		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate);
-		$oEmail->setSender($sSenderName, $sSenderEmail);
-		$oEmail->addRecipient($this->oSubscriber->getEmail());
-		$oEmail->send();
+	private function processUnsubscribe($oTemplate) {
+		$oFlash = Flash::getFlash();
+		$oFlash->checkForEmail('subscriber_email', 'email_required_for_subscription');
+
+		$oFlash->finishReporting();
+		if(Flash::noErrors()) {
+			$this->oSubscriber = SubscriberQuery::create()->filterByEmail($_POST['unsubscribe'])->findOne();
+			
+			// Create new subscriber if it does not exist yet
+			if($this->oSubscriber === null) {
+				$this->oSubscriber = new Subscriber();
+				$this->oSubscriber->setEmail($_POST['subscriber_email']);
+				$this->oSubscriber->setPreferredLanguageId(isset($_REQUEST['preferred_language_id']) ? $_REQUEST['preferred_language_id'] : Session::language());
+				$this->oSubscriber->setName(isset($_POST['name']) ? $_POST['name'] : $this->oSubscriber->getEmail());
+				$this->oSubscriber->setCreatedAt(date('c'));
+			}
+			
+			// Add newsletter subscription if it does not exist yet
+			$bIsNewSubscription = false;
+			if($aOptions['subscriber_group_id'] && !$this->oSubscriber->hasSubscriberGroupMembership($aOptions['subscriber_group_id'])) {
+				$bIsNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipBySubscriberGroupId($aOptions['subscriber_group_id']);
+			}
+			SubscriberGroupMembershipPeer::ignoreRights(true);
+			SubscriberPeer::ignoreRights(true);
+			$this->oSubscriber->save();
+			
+			// Notifiy only if a new subscription has been added, otherwise ignore
+			if($bIsNewSubscription) {
+				$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
+				if($bOptinIsRequired) {
+					$this->notifySubscriberOptIn($aOptions['subscriber_group_id'], $bIsNewSubscription);
+				} else {
+					$this->notifySubscriber($bIsNewSubscription);
+				}
+			} else {
+				$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success');
+			}
+			$oTemplate->replaceIdentifier('message', $sConfirmMessage);
+		}
 	}
 	
-	public function notifySubscriberOptIn($iSubscriberGroupId, $bIsNewSubscription=true) {
+	public function notifySubscriber() {
+		$oEmailTemplate = $this->constructTemplate('email_subscription_notification');
+		$this->sendMail($oEmailTemplate);
+	}
+	
+	public function notifySubscriberOptIn($iSubscriberGroupId) {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
-		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
-		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila');
-		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
-		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
-		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());
 		$oSubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
 		if ($oSubscribePage === null) {
+			
 			// Fallback: try searching the page by name
 			$oSubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
 			if ($oSubscribePage === null) {
@@ -237,14 +241,26 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			}
 		}
 		$oOptinConfirmLink = LinkUtil::absoluteLink(LinkUtil::link($oSubscribePage->getLink(), null, array(self::PARAM_OPT_IN_CONFIRM => Subscriber::getOptInChecksumByEmailAndSubscriberGroupId($this->oSubscriber->getEmail(), $iSubscriberGroupId))));
-		
 		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), StringPeer::getString('newsletter_subscription.optin_link_text')));
-		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate, true);
+		$this->sendMail($oEmailTemplate);
+	}
+	
+	private function sendMail($oEmailTemplate, $bSendHtml = true) {
+		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
+		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila');
+		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
+		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
+		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());
+		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate, $bSendHtml);
 		$oEmail->setSender($sSenderName, $sSenderEmail);
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
 		$oEmail->send();
 	}
 	
+	/**
+	* getSaveData()
+	* overwrite FrontendModule::getSaveData
+	*/
 	public function getSaveData($mData) {
 		$oFlash = new Flash($mData);
 		$oFlash->checkForValue('display_mode', 'display_mode_required');
