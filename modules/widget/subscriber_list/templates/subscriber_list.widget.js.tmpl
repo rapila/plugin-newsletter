@@ -1,8 +1,6 @@
 jQuery(document).ready(function() {
 	
-	var subscriber_list = jQuery('table.subscriber_list');
-	
-	subscriber_list.each(function() {
+	jQuery('table.subscriber_list').each(function() {
 		jQuery(this).prepareWidget(function(widget) {
 			Widget.callStatic('detail', 'connect_detail_with_list', 'subscriber', widget, 'setSubscriberId');
 			

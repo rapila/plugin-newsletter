@@ -1,7 +1,6 @@
 jQuery(document).ready(function() {
 	
-	var subscriber_group_list = jQuery('table.subscriber_group_list');
-	subscriber_group_list.each(function() {
+	jQuery('table.subscriber_group_list').each(function() {
 		jQuery(this).prepareWidget(function(widget) {
 			Widget.callStatic('detail', 'connect_detail_with_list', 'subscriber_group', widget, 'setSubscriberGroupId');
 			widget.handle('list-cell_click', function(event, rowIndex, col, row, cell) {
