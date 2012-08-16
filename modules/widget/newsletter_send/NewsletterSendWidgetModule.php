@@ -60,7 +60,10 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 	* @return array of key email and value name [email if name is not set]
 	*/
 	public function getSenderEmails() {
-		$aConfig = Settings::getSetting('newsletter_plugin', 'sender_email_addresses', array(LinkUtil::getDomainHolderEmail('newsletter')));
+		$aConfig = Settings::getSetting('newsletter_plugin', 'sender_email_addresses', array());
+		if(!is_array($aConfig)) {
+			$aConfig = array(LinkUtil::getDomainHolderEmail('newsletter'));
+		}
 		$aResult = array();
 		foreach($aConfig as $mIndex => $mConfig) {
 			// Numeric key are indexes of old email lists
@@ -96,7 +99,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		if($sSenderName !== $sSenderEmail) {
 			$this->sSenderName = $sSenderName;
 		}
-		$this->aRecipients = SubscriberPeer::getSubscribersBySubscriberGroupMembership($aMailGroups);
+		$this->aRecipients = self::getSubscribersBySubscriberGroupMembership($aMailGroups);
 		FilterModule::getFilters()->handleMailGroupsRecipients($aMailGroups, array(&$this->aRecipients));
 		
 		// Validate prepareForSending
@@ -117,6 +120,15 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 
 		$this->aMailGroups = is_array($aMailGroups) ? $aMailGroups : array($aMailGroups);
 		return ceil(count($this->aRecipients)/$this->iBatchSize);
+	}
+	
+	private static function getSubscribersBySubscriberGroupMembership($aSubscriberGroupIds) {
+		$oQuery = SubscriberQuery::create()->distinct();
+		if($aSubscriberGroupIds !== null) {
+			$aSubscriberGroupIds = is_array($aSubscriberGroupIds) ? $aSubscriberGroupIds : array($aSubscriberGroupIds);
+			$oQuery->joinSubscriberGroupMembership()->useSubscriberGroupMembershipQuery()->filterBySubscriberGroupId($aSubscriberGroupIds)->filterByOptInHash(null, Criteria::ISNULL)->endUse();
+		}
+		return $oQuery->find();
 	}
 
  /** sendNewsletter()

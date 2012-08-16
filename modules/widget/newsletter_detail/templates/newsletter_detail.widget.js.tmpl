@@ -13,6 +13,7 @@ Widget.types.newsletter_detail = {
 		this.is_approved = this.content.find("input[name='is_approved']");
 		this.is_approved.change(function() {
 			_this.save(true);
+			_this.newsletter_send_button.prop('disabled', jQuery(this).prop('checked'));
 		});
 
 		Widget.create('detail', function(widget) {
@@ -80,7 +81,6 @@ Widget.types.newsletter_detail = {
 		this.newsletter_send_button = this.content.find('.newsletter_send_button').button().click(this.send_newsletter.bind(this, 'send'));
 
 		this.content.find('.newsletter_send_test_button').button().click(this.send_newsletter.bind(this, 'test'));
-
 	},
 	
 	send_info_text: function(is_hot) {

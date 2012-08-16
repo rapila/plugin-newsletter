@@ -14,14 +14,12 @@ class NewsletterFrontendConfigWidgetModule extends FrontendConfigWidgetModule {
 	}
 	
 	public function getSubscriberGroups() {
-		$aSubscriberGroups = SubscriberGroupPeer::getAllAssoc();
-		if(count($aSubscriberGroups) === 0) {
+		if(SubscriberGroupQuery::create()->count() === 0) {
 			$oSubscriberGroup = new SubscriberGroup();
 			$oSubscriberGroup->setName(StringPeer::getString('wns.subscriber_group.default.name'));
 			$oSubscriberGroup->setDisplayName(StringPeer::getString('wns.subscriber_group.default.display_name'));
 			$oSubscriberGroup->save();
-			$aSubscriberGroups = SubscriberGroupPeer::getAllAssoc();
 		}
-		return $aSubscriberGroups;
+		return SubscriberGroupQuery::create()->select(array('Id', 'Name'))->orderByName()->find()->toKeyValue('Id', 'Name');
 	}	
 }

@@ -2,16 +2,22 @@
 
 
 /**
- * Skeleton subclass for performing query and update operations on the 'subscriber_groups' table.
- *
- * 
- *
- * You should add additional methods to this class to meet the
- * application requirements.  This class will only be generated as
- * long as it does not already exist in the output directory.
- *
  * @package    propel.generator.model
  */
 class SubscriberGroupQuery extends BaseSubscriberGroupQuery {
+	
+	public function withMembershipsOnly($bWithMemberShipOnly = true) {
+		if($bWithMemberShipOnly) {
+			return $this->joinSubscriberGroupMembership();
+		}
+		return $this;
+	}
+	
+	public function excludeTemporary($bExclude = true) {
+		if($bExclude) {
+			return $this->filterByDisplayName(null, Criteria::ISNULL);
+		}
+		return $this;
+	}
+}
 
-} // SubscriberGroupQuery

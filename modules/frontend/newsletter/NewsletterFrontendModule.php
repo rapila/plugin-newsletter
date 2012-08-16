@@ -37,12 +37,12 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		}
 		
 		// Process unsubscribe opt_out form if post
+		$oSubscriber = SubscriberQuery::create()->filterByEmail($_REQUEST['unsubscribe'])->findOne();
 		if(Manager::isPost()) {
-			return $this->processOptOutSuscriptions();
+			return $this->processOptOutSuscriptions($oSubscriber);
 		}
 		
 		// If subscriber does not exist or the required checksum is not correct, return error message
-		$oSubscriber = SubscriberPeer::getByEmail($_REQUEST['unsubscribe']);
 		if(!($oSubscriber && $oSubscriber->getUnsubscribeChecksum() === $_REQUEST['checksum'])) {
 			return $this->constructTemplate('unsubscribe_unknown_error');
 		}
@@ -81,8 +81,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		return $this->constructTemplate('unsubscribe_confirm');
 	}
 	
-	private function processOptOutSuscriptions() {
-		$oSubscriber = SubscriberPeer::getByEmail($_POST['unsubscribe']);
+	private function processOptOutSuscriptions($oSubscriber) {
 		if($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_POST['checksum']) {
 			foreach($_POST['subscriber_group_id'] as $iSubscriberGroupId) {
 				$oSubscriber->deleteSubscriberGroupMembership($iSubscriberGroupId);
@@ -174,7 +173,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 
 			$oFlash->finishReporting();
 			if(Flash::noErrors()) {
-				$this->oSubscriber = SubscriberPeer::getByEmail($_POST['subscriber_email']);
+ 				$this->oSubscriber = SubscriberQuery::create()->filterByEmail($_POST['unsubscribe'])->findOne();
+
 				if($this->oSubscriber === null) {
 					$this->oSubscriber = new Subscriber();
 					$this->oSubscriber->setEmail($_POST['subscriber_email']);

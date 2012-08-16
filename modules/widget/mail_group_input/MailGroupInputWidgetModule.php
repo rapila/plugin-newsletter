@@ -5,10 +5,20 @@
  */
 class MailGroupInputWidgetModule extends WidgetModule {
 	
-	public function getMailGroups($bIncludeTemporaryMailGroups=true, $bIncludeGeneratedMailGroups=true) {
+	public function getMailGroups($bIncludeTemporaryMailGroups = true, $bIncludeGeneratedMailGroups = true) {
 		
-		// Get subscriber groups, add membership count if external mailgroups are not include, i.e. called from subscriber_import widget
-		$aMailGroups = self::getSubscriberGroups(true, $bIncludeGeneratedMailGroups);
+		// Get subscriber groups with membership count in not used for subscriber import
+		$bUsedForSubscriberImport = $bIncludeTemporaryMailGroups === false && $bIncludeGeneratedMailGroups = false;
+		$oQuery = SubscriberGroupQuery::create()->excludeTemporary($bIncludeGeneratedMailGroups)->orderByName();
+		$aMailGroups = array();
+		$sMembershipCount = ''
+		foreach($oQuery->find() as $oSubscriberGroup) {
+			if($bUsedForSubscriberImport === false) {
+				$sMembershipCount = ' ('.$oSubscriberGroup->countSubscriberGroupMemberships().')';
+			}
+			$sId = (string) $oSubscriberGroup->getId();
+			$aMailGroups[$sId] = $oSubscriberGroup->getName().$sMembershipCount;
+		}
 		
 		// If filter is implemented in project this allows to add on-the-fly mail groups
 		// E.g. a group of recipients that have registered for an event and there for create a temporary mail group
@@ -17,13 +27,4 @@ class MailGroupInputWidgetModule extends WidgetModule {
 		}
 		return $aMailGroups;
 	}
-	
-	public static function getSubscriberGroups($bAddMembershipCount=true, $bIncludeGeneratedMailGroups=true) {
-		return SubscriberGroupPeer::getAllAssoc(false, $bAddMembershipCount, $bIncludeGeneratedMailGroups);
-	}
-	
-	public static function hasSubscriberGroups() {
-		return count(self::getSubscriberGroups(false)) > 0;
-	}
-
 }
