@@ -122,7 +122,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			$oSubscriberGroupMembership->save();
 			return $this->constructTemplate('newsletter_optin_confirm');
 		}
-		return $this->constructTemplate('newsletter_optin_error');
+		// @todo check in context of ResourcesFrontendModule::renderRecentResource()
+		// return $this->constructTemplate('newsletter_optin_error');
 	}
 	
 	private function displayNewsletterList($aOptions) {

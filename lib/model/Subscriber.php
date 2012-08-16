@@ -22,19 +22,6 @@ class Subscriber extends BaseSubscriber {
 	public function getHasNewsletter() {
 		return !$this->isNew();
 	}
-		
-	public function setHasNewsletter($bHasNewsletter) {
-		if($bHasNewsletter) {
-			// only needs to be saved if is news
-			if($this->isNew()) {
-				$this->save();
-			}
-		} else {
-			if(!$this->isNew()) {
-				$this->delete();
-			}
-		}
-	}
 	
 	// Display the name even if it does not exist
 	public function getName() {
@@ -65,7 +52,15 @@ class Subscriber extends BaseSubscriber {
 		}
 	}
 	
+	// Alias of hasSubscriberGroupMembership
+	public function hasNewsletterBySubscriberGroupId($iSubscriberGroup) {
+		return $this->hasSubscriberGroupMembership($iSubscriberGroup);
+	}
+	
 	public function hasSubscriberGroupMembership($iSubscriberGroup) {
+		if($iSubscriberGroup instanceof SubscriberGroup) {
+			$iSubscriberGroup = $iSubscriberGroup->getId();
+		}
 		return SubscriberGroupMembershipQuery::create()->findPk(array($this->getId(), $iSubscriberGroup)) !== null;
 	}
 	
