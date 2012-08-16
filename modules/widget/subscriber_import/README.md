@@ -22,7 +22,7 @@ THIS NOTE IS DEPRECATED, old, delete after revision and refactoring of newslette
 
 ## Modules affected by this widget
 ### MailGroupInput
-* a new setting *include_temporary_mail_groups* (default: true) has been added. All the temporary (external mail groups like registrees of events, *backend_created* subscribers) are displayed
+* a new setting *include_external_mail_groups* (default: true) has been added. All the temporary (external mail groups like registrees of events, *backend_created* subscribers) are displayed
 * only the main subscriber groups are displayed if set to false. usage: e.g. for displaying target subscriber group options in this widget
 * reload when mail_groups_changed is fired, if a backend_created group has been mailed. I.e. the mail groups change because temporary subscriptions become permanent ones
 
