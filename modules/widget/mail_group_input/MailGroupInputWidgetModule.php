@@ -5,24 +5,20 @@
  */
 class MailGroupInputWidgetModule extends WidgetModule {
 	
-	public function getMailGroups($bIncludeTemporaryMailGroups = true, $bIncludeGeneratedMailGroups = true) {
+	public function getMailGroups($bIncludeExternalMailGroups = true, $bIncludeGeneratedMailGroups = true) {
 		
 		// Get subscriber groups with membership count in not used for subscriber import
-		$bUsedForSubscriberImport = $bIncludeTemporaryMailGroups === false && $bIncludeGeneratedMailGroups = false;
+		$bUsedForSubscriberImport = $bIncludeExternalMailGroups === false && $bIncludeGeneratedMailGroups = false;
 		$oQuery = SubscriberGroupQuery::create()->excludeTemporary($bIncludeGeneratedMailGroups)->orderByName();
 		$aMailGroups = array();
-		$sMembershipCount = ''
 		foreach($oQuery->find() as $oSubscriberGroup) {
-			if($bUsedForSubscriberImport === false) {
-				$sMembershipCount = ' ('.$oSubscriberGroup->countSubscriberGroupMemberships().')';
-			}
 			$sId = (string) $oSubscriberGroup->getId();
-			$aMailGroups[$sId] = $oSubscriberGroup->getName().$sMembershipCount;
+			$aMailGroups[$sId] = $oSubscriberGroup->getName().(!$bUsedForSubscriberImport ? ' ('.$oSubscriberGroup->countSubscriberGroupMemberships().')' : '');
 		}
 		
 		// If filter is implemented in project this allows to add on-the-fly mail groups
 		// E.g. a group of recipients that have registered for an event and there for create a temporary mail group
-		if($bIncludeTemporaryMailGroups) {
+		if($bIncludeExternalMailGroups) {
 			FilterModule::getFilters()->handleMailGroups(array(&$aMailGroups));
 		}
 		return $aMailGroups;

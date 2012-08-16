@@ -9,7 +9,7 @@ Widget.types.mail_group_input = {
 		var current = this.val();
 		this._element.empty();
 		var option = jQuery('<option/>');
-		var mail_groups = this.getMailGroups(this.settings.include_temporary_mail_groups, this.settings.include_generated_mail_groups);
+		var mail_groups = this.getMailGroups(this.settings.include_external_mail_groups, this.settings.include_generated_mail_groups);
 		if(this.settings.default_option !== null) {
 			option.clone().text(this.settings.default_option).attr('value', '').appendTo(this._element);
 		}
@@ -30,7 +30,7 @@ Widget.types.mail_group_input = {
 	},
 	
 	settings: {
-		include_temporary_mail_groups: true,
+		include_external_mail_groups: true,
 		include_generated_mail_groups: true,
 		default_option: null
 	}
