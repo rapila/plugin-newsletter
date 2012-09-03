@@ -23,6 +23,7 @@ Widget.types.subscriber_group_detail = {
 			this.display_name.change();
 			this.content.find(".updated_info").text(subscriber_group_data.UpdatedInfo);
 			this.content.find(".created_info").text(subscriber_group_data.CreatedInfo);
+			this.content.find("span[class='detail_id']").text(subscriber_group_data.Id);
 			this.content.find('div.hide_if_not_saved').show();
 			this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.subscriber_group}} "+subscriber_group_data.Name);
 		});
