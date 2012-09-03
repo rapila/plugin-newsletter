@@ -386,6 +386,9 @@ abstract class BaseSubscriberGroupPeer {
 	 */
 	public static function clearRelatedInstancePool()
 	{
+		// Invalidate objects in NewsletterMailingPeer instance pool,
+		// since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+		NewsletterMailingPeer::clearInstancePool();
 		// Invalidate objects in SubscriberGroupMembershipPeer instance pool,
 		// since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
 		SubscriberGroupMembershipPeer::clearInstancePool();
@@ -1290,6 +1293,12 @@ abstract class BaseSubscriberGroupPeer {
 		$objects = SubscriberGroupPeer::doSelect($criteria, $con);
 		foreach ($objects as $obj) {
 
+
+			// delete related NewsletterMailing objects
+			$criteria = new Criteria(NewsletterMailingPeer::DATABASE_NAME);
+			
+			$criteria->add(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, $obj->getId());
+			$affectedRows += NewsletterMailingPeer::doDelete($criteria, $con);
 
 			// delete related SubscriberGroupMembership objects
 			$criteria = new Criteria(SubscriberGroupMembershipPeer::DATABASE_NAME);

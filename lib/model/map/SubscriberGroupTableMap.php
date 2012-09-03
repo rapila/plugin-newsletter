@@ -57,7 +57,7 @@ class SubscriberGroupTableMap extends TableMap
 	{
 		$this->addRelation('UserRelatedByCreatedBy', 'User', RelationMap::MANY_TO_ONE, array('created_by' => 'id', ), 'SET NULL', null);
 		$this->addRelation('UserRelatedByUpdatedBy', 'User', RelationMap::MANY_TO_ONE, array('updated_by' => 'id', ), 'SET NULL', null);
-		$this->addRelation('NewsletterMailing', 'NewsletterMailing', RelationMap::ONE_TO_MANY, array('id' => 'subscriber_group_id', ), null, null, 'NewsletterMailings');
+		$this->addRelation('NewsletterMailing', 'NewsletterMailing', RelationMap::ONE_TO_MANY, array('id' => 'subscriber_group_id', ), 'CASCADE', null, 'NewsletterMailings');
 		$this->addRelation('SubscriberGroupMembership', 'SubscriberGroupMembership', RelationMap::ONE_TO_MANY, array('id' => 'subscriber_group_id', ), 'CASCADE', null, 'SubscriberGroupMemberships');
 	} // buildRelations()
 
