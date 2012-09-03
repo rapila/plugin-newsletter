@@ -246,7 +246,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	private function sendMail($oEmailTemplate, $bSendHtml = false) {
 		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
-		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila');
+		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila Newsletter Plugin');
 		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
 		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
 		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());

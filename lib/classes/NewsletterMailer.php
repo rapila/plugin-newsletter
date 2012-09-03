@@ -45,7 +45,7 @@ class NewsletterMailer {
 		if($sSenderName !== null) {
 			$this->sSenderName = $sSenderName;
 		} else {
-			$this->sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', "Newsletter Plugin Sender Name");
+			$this->sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', "Rapila Newsletter Plugin");
 		}
 		
 		if($bRequiresUnsubsribeLink) {
