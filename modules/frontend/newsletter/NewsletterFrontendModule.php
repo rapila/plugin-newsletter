@@ -165,7 +165,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	}
 	
 	private function newsletterSubscribe($aOptions) {
-		$bOptinIsRequired = Settings::getSetting('newsletter_plugin', 'opting_confirmation_required', true);
+		$bOptinIsRequired = Settings::getSetting('newsletter_plugin', 'optin_confirmation_required', true);
 		if(isset($aOptions['subscriber_group_id']) && $aOptions['subscriber_group_id'] !== null) {
 			if(is_array($aOptions['subscriber_group_id']) && count($aOptions['subscriber_group_id']) > 0) {
 				$aOptions['subscriber_group_id'] = $aOptions['subscriber_group_id'][0];

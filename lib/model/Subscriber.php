@@ -67,7 +67,7 @@ class Subscriber extends BaseSubscriber {
 	public function addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId) {
 		$oSubscriberGroupMembership = new SubscriberGroupMembership();
 		$oSubscriberGroupMembership->setSubscriberGroupId($iSubscriberGroupId);
-		if(Settings::getSetting('newsletter_plugin', 'opting_confirmation_required', true)) {
+		if(Settings::getSetting('newsletter_plugin', 'optin_confirmation_required', true)) {
 			$oSubscriberGroupMembership->setOptInHash($this->getOptInChecksum($iSubscriberGroupId));
 		}
 		return $this->addSubscriberGroupMembership($oSubscriberGroupMembership);

@@ -28,7 +28,7 @@ newsletter_plugin:
   unsubscribe_page: subscribe #a page identifier
   # comment > unsubscribe pages show all pages with NewsletterFrontendModule, check display_type
   
-  opting_confirmation_required: true
+  optin_confirmation_required: true
   
   #how to convert to plain-text alternative set to null or false to send only html emails
   plain_text_alternative_method: markdown
