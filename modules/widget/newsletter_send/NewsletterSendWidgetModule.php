@@ -152,6 +152,9 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 			$this->aUnsuccessfulAttempts = array();
 		}
 		
+		if($this->aRecipients instanceof PropelObjectCollection) {
+			$this->aRecipients = $this->aRecipients->getData();
+		}
 		$aRecipients = array_slice($this->aRecipients, $iBatchNumber*($this->iBatchSize), $this->iBatchSize);
 		
 		$bRequiresUnsubsribeLink = true;
