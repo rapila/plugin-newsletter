@@ -34,7 +34,6 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	// Subscribe methods
 	private function newsletterSubscribe($aOptions) {
-		$bOptinIsRequired = Settings::getSetting('newsletter_plugin', 'optin_confirmation_required', true);
 		if(isset($aOptions['subscriber_group_id']) && $aOptions['subscriber_group_id'] !== null) {
 			if(is_array($aOptions['subscriber_group_id']) && count($aOptions['subscriber_group_id']) > 0) {
 				$aOptions['subscriber_group_id'] = $aOptions['subscriber_group_id'][0];
@@ -70,24 +69,24 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			}
 			
 			// Add newsletter subscription if it does not exist yet
-			$bIsNewSubscription = false;
+			$bHasNewSubscription = false;
 			if($sSubscriberGroup && !$this->oSubscriber->hasSubscriberGroupMembership($sSubscriberGroup)) {
-				$bIsNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipBySubscriberGroupId($sSubscriberGroup);
+				$bHasNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipBySubscriberGroupId($sSubscriberGroup) !== null;
 			}
 			SubscriberGroupMembershipPeer::ignoreRights(true);
 			SubscriberPeer::ignoreRights(true);
 			$this->oSubscriber->save();
 			
+			$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success');
 			// Notifiy only if a new subscription has been added, otherwise ignore
-			if($bIsNewSubscription) {
-				$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
-				if($bOptinIsRequired) {
-					$this->notifySubscriberOptIn($sSubscriberGroup, $bIsNewSubscription);
+			
+			if($bHasNewSubscription) {
+				if(Settings::getSetting('newsletter_plugin', 'optin_confirmation_required', true)) {
+					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
+					$this->notifySubscriberOptIn($sSubscriberGroup);
 				} else {
-					$this->notifySubscriber($bIsNewSubscription);
+					$this->notifySubscriber();
 				}
-			} else {
-				$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success');
 			}
 			$oTemplate->replaceIdentifier('message', $sConfirmMessage);
 		}
