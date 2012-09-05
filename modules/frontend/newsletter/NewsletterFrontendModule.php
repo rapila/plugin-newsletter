@@ -51,7 +51,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		return $oTemplate;	
 	}
 	
-	private function processSubscribe($sSubscriberGroup, $oTemplate) {
+	private function processSubscribe($iSubscriberGroupId, $oTemplate) {
 		$oFlash = Flash::getFlash();
 		$oFlash->checkForEmail('subscriber_email', 'email_required_for_subscription');
 
@@ -70,8 +70,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			
 			// Add newsletter subscription if it does not exist yet
 			$bHasNewSubscription = false;
-			if($sSubscriberGroup && !$this->oSubscriber->hasSubscriberGroupMembership($sSubscriberGroup)) {
-				$bHasNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipBySubscriberGroupId($sSubscriberGroup) !== null;
+			if($iSubscriberGroupId && !$this->oSubscriber->hasSubscriberGroupMembership($iSubscriberGroupId)) {
+				$bHasNewSubscription = $this->oSubscriber->addSubscriberGroupMembershipBySubscriberGroupId($iSubscriberGroupId) !== null;
 			}
 			SubscriberGroupMembershipPeer::ignoreRights(true);
 			SubscriberPeer::ignoreRights(true);
@@ -83,7 +83,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			if($bHasNewSubscription) {
 				if(Settings::getSetting('newsletter_plugin', 'optin_confirmation_required', true)) {
 					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
-					$this->notifySubscriberOptIn($sSubscriberGroup);
+					$this->notifySubscriberOptIn($iSubscriberGroupId);
 				} else {
 					$this->notifySubscriber();
 				}

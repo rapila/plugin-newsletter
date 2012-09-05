@@ -52,11 +52,6 @@ class Subscriber extends BaseSubscriber {
 		}
 	}
 	
-	// Alias of hasSubscriberGroupMembership
-	public function hasNewsletterBySubscriberGroupId($iSubscriberGroup) {
-		return $this->hasSubscriberGroupMembership($iSubscriberGroup);
-	}
-	
 	public function hasSubscriberGroupMembership($iSubscriberGroup) {
 		if($iSubscriberGroup instanceof SubscriberGroup) {
 			$iSubscriberGroup = $iSubscriberGroup->getId();
