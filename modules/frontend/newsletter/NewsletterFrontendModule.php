@@ -165,7 +165,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	}
 	
 	private function newsletterSubscribe($aOptions) {
-		$bOptinIsRequired = Settings::getSetting('newsletter_plugin', 'optin_confirmation_required', true);
+		$bOptinIsRequired = Settings::getSetting('newsletter', 'optin_confirmation_required', true);
 		if(isset($aOptions['subscriber_group_id']) && $aOptions['subscriber_group_id'] !== null) {
 			if(is_array($aOptions['subscriber_group_id']) && count($aOptions['subscriber_group_id']) > 0) {
 				$aOptions['subscriber_group_id'] = $aOptions['subscriber_group_id'][0];
@@ -231,10 +231,10 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	public function notifySubscriberOptIn($iSubscriberGroupId) {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
-		$oSubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
+		$oSubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter', 'unsubscribe_page', 'subscribe'));
 		if ($oSubscribePage === null) {
 			// Fallback: try searching the page by name
-			$oSubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
+			$oSubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter', 'unsubscribe_page', 'subscribe'));
 			if ($oSubscribePage === null) {
 				throw new Exception('Error in'.__METHOD__.': a public and hidden page is required for optin subscribe action');
 			}
@@ -246,8 +246,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	private function sendMail($oEmailTemplate, $bSendHtml = false) {
 		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
-		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila Newsletter Plugin');
-		$sSenderEmail = Settings::getSetting('newsletter_plugin', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
+		$sSenderName = Settings::getSetting('newsletter', 'sender_name', 'Rapila Newsletter Plugin');
+		$sSenderEmail = Settings::getSetting('newsletter', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
 		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
 		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());
 		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate, $bSendHtml);

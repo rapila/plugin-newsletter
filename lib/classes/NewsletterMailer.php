@@ -45,16 +45,16 @@ class NewsletterMailer {
 		if($sSenderName !== null) {
 			$this->sSenderName = $sSenderName;
 		} else {
-			$this->sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', "Rapila Newsletter Plugin");
+			$this->sSenderName = Settings::getSetting('newsletter', 'sender_name', "Rapila Newsletter Plugin");
 		}
 		
 		if($bRequiresUnsubsribeLink) {
 			// Unsubscribe page is required, a page that contains a content object NewsletterFrontendModule
-			$this->oUnsubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
+			$this->oUnsubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter', 'unsubscribe_page', 'subscribe'));
 			if ($this->oUnsubscribePage === null) {
 				
 				// Fallback: try searching the page by name
-				$this->oUnsubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
+				$this->oUnsubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter', 'unsubscribe_page', 'subscribe'));
 				if ($this->oUnsubscribePage === null) {
 					throw new Exception('Error in'.__METHOD__.': a public and hidden unsubscribe page is required for unsubscribe to function');
 				}
@@ -75,9 +75,9 @@ class NewsletterMailer {
 		$oEmailTemplate->replaceIdentifier('newsletter_template_css', new Template("{$this->oNewsletter->getTemplateName()}.css", array(DIRNAME_TEMPLATES, 'newsletter')));
 		
 		// Parse links differently in text
-		RichtextUtil::$USE_ABSOLUTE_LINKS = true;
+		RichtextUtil::$USE_ABSOLUTE_LINKS = LinkUtil::isSSL();
 		$oEMailContent = RichtextUtil::parseStorageForFrontendOutput(stream_get_contents($this->oNewsletter->getNewsletterBody()));
-		RichtextUtil::$USE_ABSOLUTE_LINKS = false;
+		RichtextUtil::$USE_ABSOLUTE_LINKS = null;
 		
 		// Replace add surrounding (body.tmpl) before content if exists. Template needs to contain a newsletter_content identifier
 		if(ResourceFinder::findResource(array(DIRNAME_TEMPLATES, NewsletterDetailWidgetModule::NEWSLETTER_DIRNAME, "{$this->oNewsletter->getTemplateName()}.body.tmpl")) !== null) {
@@ -122,7 +122,7 @@ class NewsletterMailer {
 		}
 		// Send newsletter and store invalid emails
 		try {
-			$sPlainTextMethod = Settings::getSetting('newsletter_plugin', 'plain_text_alternative_method', 'markdown');
+			$sPlainTextMethod = Settings::getSetting('newsletter', 'plain_text_alternative_method', 'markdown');
 			$oEMail = null;
 			if($sPlainTextMethod === null || $sPlainTextMethod === false) {
 				$oEMail = new EMail($this->oNewsletter->getSubject(), $oEmailTemplateInstance, true);

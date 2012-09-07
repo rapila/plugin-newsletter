@@ -60,7 +60,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 	* @return array of key email and value name [email if name is not set]
 	*/
 	public function getSenderEmails() {
-		$aConfig = Settings::getSetting('newsletter_plugin', 'sender_email_addresses', array());
+		$aConfig = Settings::getSetting('newsletter', 'sender_email_addresses', array());
 		if(!is_array($aConfig)) {
 			$aConfig = array(LinkUtil::getDomainHolderEmail('newsletter'));
 		}

@@ -1,7 +1,7 @@
 # default values for newsletter plugin
 # please overwrite values in site/config/config.yml
 
-newsletter_plugin:
+newsletter:
   text_module:
     toolbar: 
       - 
@@ -24,8 +24,6 @@ newsletter_plugin:
     # 'sender@example.com' : "Sender Name2"
     
     # - 'noreply@example.com' @deprecated, still works but is not recommended
-  
-  # requires_authentication options true, user_role rolekey, default: false
   
   # unsubscribe page identifier: defaults to unsubscribe (page handles all unsubscribe actions)
   unsubscribe_page: unsubscribe

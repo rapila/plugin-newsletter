@@ -15,7 +15,8 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 
 	public function __construct($sSessionKey = null) {
 		parent::__construct($sSessionKey);
-		$oRichtextWidget = WidgetModule::getWidget('rich_text', null, '', 'newsletter_plugin');
+		// @todo verify argument newsletter that has been change with the change of name space section newsletter instead of newsletter_plugin
+		$oRichtextWidget = WidgetModule::getWidget('rich_text', null, '', 'newsletter');
 		$this->setSetting('rich_text_session', $oRichtextWidget->getSessionKey());
 	}
 	
