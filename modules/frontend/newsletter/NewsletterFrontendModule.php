@@ -35,7 +35,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	// Subscribe methods
 	private function newsletterSubscribe($mSubscriberGroupId) {
 		/**
-		* @todo: cosider array to become scalar as there is no need for multiple values, or is there?
+		* @todo: consider array to become scalar as there is no need for multiple values, or is there?
 		*/
 		if(is_array($mSubscriberGroupId) && count($mSubscriberGroupId) > 0) {
 			$mSubscriberGroupId = $mSubscriberGroupId[0];
