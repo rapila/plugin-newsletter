@@ -4,20 +4,20 @@
  * @subpackage rapila-plugin-newsletter
  */
 class NewsletterFrontendModule extends DynamicFrontendModule {
-	
-	// Array of display options used in {@link NewsletterFrontendConfigWidgetModule::getDisplayOptions()} 
+
+	// Array of display options used in {@link NewsletterFrontendConfigWidgetModule::getDisplayOptions()}
 	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display_list', 'newsletter_display_detail');
-	
+
 	// Subscriber
 	private $oSubscriber;
 	private static $B_CONFIRMED;
 	const PARAM_OPT_IN_CONFIRM = 'opt_in_confirm';
-	
-	
+
+
 	public function __construct($oLanguageObject = null, $aRequestPath = null, $iId = 1) {
 		parent::__construct($oLanguageObject, $aRequestPath, $iId);
 	}
-	
+
 	public function renderFrontend() {
 		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM]) && self::$B_CONFIRMED === null) {
 			self::$B_CONFIRMED = true;
@@ -25,32 +25,33 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		}
 		$aOptions = @unserialize($this->getData());
 		switch($aOptions['display_mode']) {
-			case 'newsletter_subscribe': return $this->newsletterSubscribe($aOptions);
+			case 'newsletter_subscribe': return $this->newsletterSubscribe($aOptions['subscriber_group_id']);
 			case 'newsletter_unsubscribe': return $this->newsletterUnsubscribe();
-			case 'newsletter_display_list': return $this->displayNewsletterList($aOptions);
+			case 'newsletter_display_list': return $this->displayNewsletterList($aOptions['subscriber_group_id']);
 			case 'newsletter_display_detail': return $this->displayNewsletterDetail($aOptions);
 		}
 	}
-	
+
 	// Subscribe methods
-	private function newsletterSubscribe($aOptions) {
-		if(isset($aOptions['subscriber_group_id']) && $aOptions['subscriber_group_id'] !== null) {
-			if(is_array($aOptions['subscriber_group_id']) && count($aOptions['subscriber_group_id']) > 0) {
-				$aOptions['subscriber_group_id'] = $aOptions['subscriber_group_id'][0];
-			}
-			if(!SubscriberGroupQuery::create()->findPk($aOptions['subscriber_group_id'])) {
-				throw new Exception(__CLASS__.': configured subscriber_group_id '.$aOptions['subscriber_group_id'].' does not exist!');
-			}
+	private function newsletterSubscribe($mSubscriberGroupId) {
+		/**
+		* @todo: cosider array to become scalar as there is no need for multiple values, or is there?
+		*/
+		if(is_array($mSubscriberGroupId) && count($mSubscriberGroupId) > 0) {
+			$mSubscriberGroupId = $mSubscriberGroupId[0];
+		}
+		if(!SubscriberGroupQuery::create()->findPk($mSubscriberGroupId)) {
+			throw new Exception(__CLASS__.': configured subscriber_group_id '.$mSubscriberGroupId.' does not exist!');
 		}
 		$oTemplate = $this->constructTemplate("newsletter_subscribe");
-		
+
 		// Process form
 		if(Manager::isPost() && isset($_POST['newsletter_subscribe'])) {
-			$this->processSubscribe($aOptions['subscriber_group_id'], $oTemplate);
-		}		
-		return $oTemplate;	
+			$this->processSubscribe($mSubscriberGroupId, $oTemplate);
+		}
+		return $oTemplate;
 	}
-	
+
 	private function processSubscribe($iSubscriberGroupId, $oTemplate) {
 		$oFlash = Flash::getFlash();
 		$oFlash->checkForEmail('subscriber_email', 'email_required_for_subscription');
@@ -58,7 +59,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oFlash->finishReporting();
 		if(Flash::noErrors()) {
 			$this->oSubscriber = SubscriberQuery::create()->filterByEmail($_POST['subscriber_email'])->findOne();
-			
+
 			// Create new subscriber if it does not exist yet
 			if($this->oSubscriber === null) {
 				$this->oSubscriber = new Subscriber();
@@ -67,7 +68,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				$this->oSubscriber->setName(isset($_POST['name']) ? $_POST['name'] : $this->oSubscriber->getEmail());
 				$this->oSubscriber->setCreatedAt(date('c'));
 			}
-			
+
 			// Add newsletter subscription if it does not exist yet
 			$bHasNewSubscription = false;
 			if($iSubscriberGroupId && !$this->oSubscriber->hasSubscriberGroupMembership($iSubscriberGroupId)) {
@@ -76,10 +77,10 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			SubscriberGroupMembershipPeer::ignoreRights(true);
 			SubscriberPeer::ignoreRights(true);
 			$this->oSubscriber->save();
-			
+
 			$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success');
 			// Notifiy only if a new subscription has been added, otherwise ignore
-			
+
 			if($bHasNewSubscription) {
 				if(Settings::getSetting('newsletter_plugin', 'optin_confirmation_required', true)) {
 					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
@@ -91,12 +92,12 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			$oTemplate->replaceIdentifier('message', $sConfirmMessage);
 		}
 	}
-	
+
 	public function notifySubscriber() {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_notification');
 		$this->sendMail($oEmailTemplate);
 	}
-	
+
 	public function notifySubscriberOptIn($iSubscriberGroupId) {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
 		$oSubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
@@ -111,7 +112,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), StringPeer::getString('newsletter_subscription.optin_link_text')));
 		$this->sendMail($oEmailTemplate, true);
 	}
-	
+
 	private function sendMail($oEmailTemplate, $bSendHtml = false) {
 		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
 		$sSenderName = Settings::getSetting('newsletter_plugin', 'sender_name', 'Rapila Newsletter Plugin');
@@ -123,27 +124,27 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
 		$oEmail->send();
 	}
-	
+
 	// Unsubscribe methods
 	private function newsletterUnsubscribe() {
 		// If param unsubscribe is not set return general unsubscribe info
 		if(!isset($_REQUEST['unsubscribe'])) {
 			return null;
 		}
-		
+
 		// Process unsubscribe opt_out form if post
 		$oSubscriber = SubscriberQuery::create()->filterByEmail($_REQUEST['unsubscribe'])->findOne();
 		if(Manager::isPost()) {
 			return $this->processOptOutSuscriptions($oSubscriber);
 		}
-		
+
 		// If subscriber does not exist or the required checksum is not correct, return error message
 		if(!($oSubscriber && $oSubscriber->getUnsubscribeChecksum() === $_REQUEST['checksum'])) {
 			return $this->constructTemplate('unsubscribe_unknown_error');
 		}
-		
+
 		SubscriberPeer::ignoreRights(true);
-		
+
 		// Count valid subscriptions [with display_name, not temp or import groups]
 		$aSubscriberGroupMemberShips =	$oSubscriber->getSubscriberGroupMemberships();
 		$aValidSubscriptions = array();
@@ -168,14 +169,14 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			}
 			return $oTemplate;
 		}
-		
+
 		// Delete subscriber because there is not a valid subscription (all temp subscriptions are removed too)
 		$oSubscriber->delete();
-		
+
 		// Display unsubscribe confirmation international
 		return $this->constructTemplate('unsubscribe_confirm');
 	}
-	
+
 	private function processOptOutSuscriptions($oSubscriber) {
 		// If optOut subscriber is identified then delete all checked subscriber group memberships
 		if($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_POST['checksum']) {
@@ -183,7 +184,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				$oSubscriber->deleteSubscriberGroupMembership($iSubscriberGroupId);
 			}
 		}
-		
+
 		// Check remaining subscriber group memberships and inform accordingly
 		$oTemplate = $this->constructTemplate('unsubscribe_optout_confirm');
 		if($oSubscriber) {
@@ -199,8 +200,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			if($bRemoveSubscriber) {
 				$oSubscriber->delete();
 				$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriber', StringPeer::getString('wns.unsubscribe_optout.subsriber_removed'));
-			} 
-			
+			}
+
 			// Inform about delete action
 			if($iCountRemoved > 1) {
 				$sConfirmMessageKey = 'wns.unsubscribe_optout.subscriptions_removed';
@@ -211,10 +212,10 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oTemplate->replaceIdentifier('unsubscribe_optout_message', StringPeer::getString($sConfirmMessageKey));
 		return $oTemplate;
 	}
-	
+
 	private function newsletterOptInConfirm() {
 		$oSubscriberGroupMembership = SubscriberGroupMembershipQuery::create()->filterByOptInHash($_REQUEST[self::PARAM_OPT_IN_CONFIRM])->findOne();
-		
+
 		// If subscriber exists and the required checksum is correct
 		if($oSubscriberGroupMembership) {
 			SubscriberGroupMembershipPeer::ignoreRights(true);
@@ -225,14 +226,11 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		// @todo check in context of ResourcesFrontendModule::renderRecentResource()
 		// return $this->constructTemplate('newsletter_optin_error');
 	}
-	
-	// Display methods
-	private function displayNewsletterList($aOptions) {
-		$iSubscriberGroupId = @$aOptions['subscriber_group_id'];
 
+	private function displayNewsletterList($mSubscriberGroupId) {
 		$oQuery = NewsletterQuery::create()->distinct()->filterApprovedForLanguage(Session::language())->orderByCreatedAt(Criteria::DESC);
-		if($iSubscriberGroupId) {
-			$oQuery->joinNewsletterMailing()->useQuery('NewsletterMailing')->filterBySubscriberGroupId($iSubscriberGroupId)->endUse();
+		if($mSubscriberGroupId) {
+			$oQuery->joinNewsletterMailing()->useQuery('NewsletterMailing')->filterBySubscriberGroupId($mSubscriberGroupId)->endUse();
 		}
 		$aRecentNewsletters = $oQuery->limit(10)->find();
 		$bHasNewsletters = count($aRecentNewsletters) > 0;
@@ -252,7 +250,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		}
 		return $oTemplate;
 	}
-	
+
 	private function displayNewsletterDetail() {
 		// @todo to be implemented
 	}
