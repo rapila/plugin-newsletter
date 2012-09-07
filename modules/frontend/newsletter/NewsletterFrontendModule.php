@@ -131,11 +131,9 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmail->send();
 	}
 
-	// Unsubscribe methods
 	private function newsletterUnsubscribe() {
-		// If param unsubscribe is not set return general unsubscribe info
 		if(!isset($_REQUEST['unsubscribe'])) {
-			return null;
+			return $this->constructTemplate('unsubscribe_unknown_error');
 		}
 
 		// Process unsubscribe opt_out form if post
@@ -215,7 +213,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				$sConfirmMessageKey = 'wns.unsubscribe_optout.subscription_removed';
 			}
 		}
-		$oTemplate->replaceIdentifier('unsubscribe_optout_message', StringPeer::getString($sConfirmMessageKey));
+		$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriptions', StringPeer::getString($sConfirmMessageKey));
 		return $oTemplate;
 	}
 
