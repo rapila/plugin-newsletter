@@ -100,15 +100,21 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 
 	public function notifySubscriberOptIn($iSubscriberGroupId) {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
-		$oSubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
-		if ($oSubscribePage === null) {
+		/**
+		* note: unsubscribe_page is just the main communication page where forms like 
+		* • optin confirm or 
+		* • unsubscribe optout 
+		* can be easily displayed and safely managed
+		*/
+		$oUnsubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'unsubscribe'));
+		if ($oUnsubscribePage === null) {
 			// Fallback: try searching the page by name
-			$oSubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'subscribe'));
-			if ($oSubscribePage === null) {
+			$oUnsubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter_plugin', 'unsubscribe_page', 'unsubscribe'));
+			if ($oUnsubscribePage === null) {
 				throw new Exception('Error in'.__METHOD__.': a public and hidden page is required for optin subscribe action');
 			}
 		}
-		$oOptinConfirmLink = LinkUtil::absoluteLink(LinkUtil::link($oSubscribePage->getLink(), null, array(self::PARAM_OPT_IN_CONFIRM => Subscriber::getOptInChecksumByEmailAndSubscriberGroupId($this->oSubscriber->getEmail(), $iSubscriberGroupId))));
+		$oOptinConfirmLink = LinkUtil::absoluteLink(LinkUtil::link($oUnsubscribePage->getLink(), null, array(self::PARAM_OPT_IN_CONFIRM => Subscriber::getOptInChecksumByEmailAndSubscriberGroupId($this->oSubscriber->getEmail(), $iSubscriberGroupId))), null, LinkUtil::isSSL());
 		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), StringPeer::getString('newsletter_subscription.optin_link_text')));
 		$this->sendMail($oEmailTemplate, true);
 	}
