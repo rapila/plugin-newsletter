@@ -4,8 +4,8 @@
  * @subpackage rapila-plugin-newsletter
  */
 class NewsletterFrontendModule extends DynamicFrontendModule {
-
-	// Array of display options used in {@link NewsletterFrontendConfigWidgetModule::getDisplayOptions()}
+	
+	// Display options used in {@link NewsletterFrontendConfigWidgetModule::getDisplayOptions()} 
 	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display_list', 'newsletter_display_detail');
 
 	// Subscriber
