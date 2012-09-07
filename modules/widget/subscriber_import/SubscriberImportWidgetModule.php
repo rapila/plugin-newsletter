@@ -57,7 +57,7 @@ class SubscriberImportWidgetModule extends PersistentWidgetModule {
 			// Please check meaning and function of counting new subscriptions, only one is counted per subsriber $iMembershipsAdded
 			$bHasMemberShip = false;
 			foreach($aTargetSubscriberGroups as $iSubscriberGroupId) {
-				if(!$oSubscriber->hasSubscriberGroupMembership((int) $iSubscriberGroupId)) {
+				if(!$oSubscriber->hasSubscriberGroupMembership($iSubscriberGroupId)) {
 					$bHasMemberShip = true;
 					$oSubscriberGroupMembership = new SubscriberGroupMembership();
 					$oSubscriberGroupMembership->setSubscriberGroupId($iSubscriberGroupId);
