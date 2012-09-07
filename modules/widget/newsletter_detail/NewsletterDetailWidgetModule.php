@@ -4,6 +4,7 @@
  * @subpackage rapila-plugin-newsletter
  */
 class NewsletterDetailWidgetModule extends PersistentWidgetModule {
+	
 	private $sLanguageId = null;
 	private $iNewsletterId;
 	private $iBatchSize = 50;
@@ -15,7 +16,6 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 
 	public function __construct($sSessionKey = null) {
 		parent::__construct($sSessionKey);
-		// @todo verify argument newsletter that has been change with the change of name space section newsletter instead of newsletter_plugin
 		$oRichtextWidget = WidgetModule::getWidget('rich_text', null, '', 'newsletter');
 		$this->setSetting('rich_text_session', $oRichtextWidget->getSessionKey());
 	}
