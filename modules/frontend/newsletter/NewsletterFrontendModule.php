@@ -153,7 +153,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		SubscriberPeer::ignoreRights(true);
 
 		// Count valid subscriptions [with display_name, not temp or import groups]
-		$aSubscriberGroupMemberShips =	$oSubscriber->getSubscriberGroupMemberships();
+		$aSubscriberGroupMemberShips = $oSubscriber->getSubscriberGroupMemberships();
 		$aValidSubscriptions = array();
 		if(count($aSubscriberGroupMemberShips) > 1) {
 			foreach($aSubscriberGroupMemberShips as $oSubscriberGroupMembership) {
@@ -192,36 +192,19 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			if (!isset($_POST['subscriber_group_id'])) {
 				return false;
 			}
-			foreach($_POST['subscriber_group_id'] as $iSubscriberGroupId) {
-				$oSubscriber->deleteSubscriberGroupMembership($iSubscriberGroupId);
+			SubscriberGroupMembershipQuery::create()->filterBySubscriber($oSubscriber)->filterBySubscriberGroupId($_POST['subscriber_group_id'])->delete();
+			if($oSubscriber->countSubscriberGroupMemberships() === 0) {
+				$oSubscriber->delete();
+				$oSubscriber = null;
 			}
 		}
-
 		// Check remaining subscriber group memberships and inform accordingly
 		$oTemplate = $this->constructTemplate('unsubscribe_optout_confirm');
-		if($oSubscriber) {
-			$bRemoveSubscriber = true;
-			$iCountRemoved = 0;
-			foreach($oSubscriber->getSubscriberGroupMemberships() as $oMembership) {
-				$iCountRemoved++;
-				if($oMembership->getSubscriberGroup()->getDisplayName() != null) {
-					$bRemoveSubscriber = false;
-				}
-			}
-			// Delete subscriber if no subscriber group memberships remain
-			if($bRemoveSubscriber) {
-				$oSubscriber->delete();
-				$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriber', StringPeer::getString('wns.unsubscribe_optout.subsriber_removed'));
-			}
-
-			// Inform about delete action
-			if($iCountRemoved > 1) {
-				$sConfirmMessageKey = 'wns.unsubscribe_optout.subscriptions_removed';
-			} else {
-				$sConfirmMessageKey = 'wns.unsubscribe_optout.subscription_removed';
-			}
+		if(!$oSubscriber) {
+			$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriber', StringPeer::getString('wns.unsubscribe_optout.subscriber_removed'));
 		}
-		$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriptions', StringPeer::getString($sConfirmMessageKey));
+		$sSubscriptionsRemovedKey = count($_POST['subscriber_group_id']) > 1 ? 'wns.unsubscribe_optout.subscriptions_removed' : 'wns.unsubscribe_optout.subscription_removed';
+		$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriptions', StringPeer::getString($sSubscriptionsRemovedKey));
 		return $oTemplate;
 	}
 

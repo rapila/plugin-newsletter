@@ -22,7 +22,7 @@ class SubscriberListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'email', 'name', 'preferred_language_id', 'delete');
+		return array('id', 'email', 'name', 'is_unconfirmed', 'preferred_language_id', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -33,6 +33,9 @@ class SubscriberListWidgetModule extends WidgetModule {
 				break;
 			case 'name':
 				$aResult['heading'] = StringPeer::getString('wns.subscriber.name');
+				break;
+			case 'is_unconfirmed':
+				$aResult['heading'] = StringPeer::getString('wns.subscriber.is_unconfirmed');
 				break;
 			case 'preferred_language_id':
 				$aResult['heading'] = StringPeer::getString('wns.preferred_language_id');

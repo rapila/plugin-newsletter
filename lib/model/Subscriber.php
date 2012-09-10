@@ -31,6 +31,10 @@ class Subscriber extends BaseSubscriber {
 		return $this->getEmail();
 	}
 	
+	public function getIsUnconfirmed() {
+		return SubscriberGroupMembershipQuery::create()->filterBySubscriberId($this->getId())->filterByOptInHash(null, Criteria::ISNOTNULL)->count() > 0;
+	}
+	
 	/**
 	 * @param integer subscriber_group_id
 	 * @return void
@@ -42,11 +46,7 @@ class Subscriber extends BaseSubscriber {
 		if($iSubscriberGroupId === CriteriaListWidgetDelegate::SELECT_ALL) {
 			return $this->delete();
 		}
-		foreach($this->getSubscriberGroupMemberships() as $oSubscriberGroupMembership) {
-			if($iSubscriberGroupId == $oSubscriberGroupMembership->getSubscriberGroupId()) {
-				$oSubscriberGroupMembership->delete();
-			}
-		}
+		SubscriberGroupMembershipQuery::create()->filterBySubscriberId($this->getId())->filterBySubscriberGroupId($iSubscriberGroupId)->delete();
 		if($this->countSubscriberGroupMemberships() === 0) {
 			$this->delete();
 		}
