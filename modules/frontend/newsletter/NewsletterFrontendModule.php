@@ -139,7 +139,10 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		// Process unsubscribe opt_out form if post
 		$oSubscriber = SubscriberQuery::create()->filterByEmail($_REQUEST['unsubscribe'])->findOne();
 		if(Manager::isPost()) {
-			return $this->processOptOutSuscriptions($oSubscriber);
+			$mOutput = $this->processOptOutSuscriptions($oSubscriber);
+			if($mOutput) {
+				return $mOutput;
+			}
 		}
 
 		// If subscriber does not exist or the required checksum is not correct, return error message
@@ -165,10 +168,12 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			$oTemplate = $this->constructTemplate('unsubscribe_optout_form');
 			$oTemplate->replaceIdentifier('checksum', $_REQUEST['checksum']);
 			$oTemplate->replaceIdentifier('email', $oSubscriber->getEmail());
+			$bIsPostAndAllUnchecked = Manager::isPost() && !isset($_POST['subscriber_group_id']);
 			foreach($aValidSubscriptions as $oSubscriberGroupMemberships) {
 				$oCheckboxTemplate = $this->constructTemplate('unsubscribe_optout_checkbox');
 				$oCheckboxTemplate->replaceIdentifier('subscriber_group_id', $oSubscriberGroupMemberships->getSubscriberGroupId());
 				$oCheckboxTemplate->replaceIdentifier('subscriber_group_name', $oSubscriberGroupMemberships->getSubscriberGroup()->getDisplayName());
+				$oCheckboxTemplate->replaceIdentifier('checked', !$bIsPostAndAllUnchecked ? ' checked="checked"' : '', null, Template::NO_HTML_ESCAPE);
 				$oTemplate->replaceIdentifierMultiple('subscriber_group_checkbox', $oCheckboxTemplate);
 			}
 			return $oTemplate;
@@ -184,6 +189,9 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	private function processOptOutSuscriptions($oSubscriber) {
 		// If optOut subscriber is identified then delete all checked subscriber group memberships
 		if($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_POST['checksum']) {
+			if (!isset($_POST['subscriber_group_id'])) {
+				return false;
+			}
 			foreach($_POST['subscriber_group_id'] as $iSubscriberGroupId) {
 				$oSubscriber->deleteSubscriberGroupMembership($iSubscriberGroupId);
 			}
