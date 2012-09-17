@@ -37,9 +37,8 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$aResult['SessionUserEmail'] = Session::getSession()->getUser()->getEmail();
 		$aResult['HasBeedSent'] = $oNewsletter->countNewsletterMailings() > 0;
 		$aNewsletterMailings = array();
-		$oCriteria = new Criteria();
-		$oCriteria->addAscendingOrderByColumn(NewsletterMailingPeer::DATE_SENT);
-		foreach($oNewsletter->getNewsletterMailings($oCriteria) as $oNewletterMailing) {
+		$oQuery = NewsletterMailingQuery::create()->orderByDateSent();
+		foreach($oNewsletter->getNewsletterMailings($oQuery) as $oNewletterMailing) {
 			$aNewsletterMailingInfo = array();
 			$aNewsletterMailingInfo['UserInitials'] = $oNewletterMailing->getUserRelatedByCreatedBy() ? $oNewletterMailing->getUserRelatedByCreatedBy()->getInitials() : '';
 			$aNewsletterMailingInfo['DateSent'] = $oNewletterMailing->getDateSentFormatted('h:m');
