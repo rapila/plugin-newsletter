@@ -2,15 +2,19 @@
 /**
  * @package modules.frontend
  * @subpackage rapila-plugin-newsletter
+ * 
  */
 class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	// Display options used in {@link NewsletterFrontendConfigWidgetModule::getDisplayOptions()} 
-	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display_list', 'newsletter_display_detail');
+	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display_list_file_link', 'newsletter_display_list', 'newsletter_display_detail');
 
 	// Subscriber
 	private $oSubscriber;
+	
+	// Prevent double display of action as result of careless page configuration
 	private static $B_CONFIRMED;
+	
 	const PARAM_OPT_IN_CONFIRM = 'opt_in_confirm';
 	const IDENTIFIER_DETAIL = 'detail';
 	const DISPLAY_MODE = 'display_mode';
@@ -24,7 +28,6 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		return array(self::IDENTIFIER_DETAIL);
 	}
 
-
 	public function renderFrontend() {
 		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM]) && self::$B_CONFIRMED === null) {
 			self::$B_CONFIRMED = true;
@@ -34,12 +37,23 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		switch($aOptions[self::DISPLAY_MODE]) {
 			case 'newsletter_subscribe': return $this->newsletterSubscribe($aOptions['subscriber_group_id']);
 			case 'newsletter_unsubscribe': return $this->newsletterUnsubscribe();
-			case 'newsletter_display_list': return $this->displayNewsletterList($aOptions['subscriber_group_id']);
+			case 'newsletter_display_list': return $this->displayNewsletterList($aOptions['subscriber_group_id'], false);
+			case 'newsletter_display_list_file_link': return $this->displayNewsletterList($aOptions['subscriber_group_id'], true);
 			case 'newsletter_display_detail': return $this->displayNewsletterDetail($aOptions['subscriber_group_id']);
 		}
 	}
 
-	// Subscribe methods
+ /**
+	* newsletterSubscribe()
+	* 
+	* @param int/array subscriber group
+	* 
+	* Description
+	* • validate post
+	* • process post and display confirm message
+	* 
+	* @return Template object
+	*/
 	private function newsletterSubscribe($mSubscriberGroupId) {
 		/**
 		* @todo: consider array to become scalar as there is no need for multiple values, or is there?
@@ -59,6 +73,19 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		return $oTemplate;
 	}
 
+ /**
+	* processSubscribe()
+	* 
+	* @param int/array subscriber group
+	* @param Template object
+	* 
+	* Description
+	* • validate subscriber
+	* • create/update subscriber and subscriptions
+	* • notify subscriber in case it is a new subscription
+	* • display confirm message independent the success of the action (previous existence of subscriber is not disclosed)
+	* @return void
+	*/
 	private function processSubscribe($iSubscriberGroupId, $oTemplate) {
 		$oFlash = Flash::getFlash();
 		$oFlash->checkForEmail('subscriber_email', 'email_required_for_subscription');
@@ -99,12 +126,24 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			$oTemplate->replaceIdentifier('message', $sConfirmMessage);
 		}
 	}
-
+	
+ /**
+	* notifySubscriber()
+	* 
+	* @param int/array subscriber group
+	* @return void
+	*/
 	public function notifySubscriber() {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_notification');
 		$this->sendMail($oEmailTemplate);
 	}
-
+	
+ /**
+	* notifySubscriberOptIn()
+	* 
+	* @param int/array subscriber group
+	* @return void
+	*/
 	public function notifySubscriberOptIn($iSubscriberGroupId) {
 		$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
 		/**
@@ -125,7 +164,10 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), StringPeer::getString('newsletter_subscription.optin_link_text')));
 		$this->sendMail($oEmailTemplate, true);
 	}
-
+	
+ /**
+	* sendMail()
+	*/
 	private function sendMail($oEmailTemplate, $bSendHtml = false) {
 		$oEmailTemplate->replaceIdentifier('name', $this->oSubscriber->getName());
 		$sSenderName = Settings::getSetting('newsletter', 'sender_name', 'Rapila Newsletter Plugin');
@@ -138,6 +180,17 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmail->send();
 	}
 
+ /**
+	* newsletterUnsubscribe()
+	* 
+	* Description
+	* • check if requested url is valid
+	* • display opt-out options if request method is get or post is invalid
+	* • process unsubscribe action if the request method is post
+	* • cleanup subscriber membership and subscriber as fallback
+	* 
+	* @return Template
+	*/
 	private function newsletterUnsubscribe() {
 		if(!isset($_REQUEST['unsubscribe'])) {
 			return $this->constructTemplate('unsubscribe_unknown_error');
@@ -193,6 +246,18 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		return $this->constructTemplate('unsubscribe_confirm');
 	}
 
+ /**
+	* processOptOutSuscriptions()
+	* 
+	* @param Subscriber object
+	* 
+	* Description
+	* • check whether subscriber is valid
+	* • fallback delete subscriber if subscriber_group_memberships have been deleted in the opt-out process
+	* • display opt-out submit response
+	* 
+	* @return Template
+	*/
 	private function processOptOutSuscriptions($oSubscriber) {
 		// If optOut subscriber is identified then delete all checked subscriber group memberships
 		if($oSubscriber && $oSubscriber->getUnsubscribeChecksum() == $_POST['checksum']) {
@@ -226,8 +291,19 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			return $this->constructTemplate('newsletter_optin_confirm');
 		}
 	}
-
-	private function displayNewsletterList($mSubscriberGroupId) {
+	
+ /**
+	* displayNewsletterList()
+	* @param int/array subscriber group ids
+	* @param boolean detail view link type
+	* 
+	* Description $bDisplayFileLink 
+	* • true > render link to original newsletter view of get_file/display_newsletter/ analog to alternative view linked in newsletter
+	* • false: display database "newsletter_body" only in normal page view
+	* 
+	* @return Template
+	*/
+	private function displayNewsletterList($mSubscriberGroupId, $bDisplayFileLink = true) {
 		$oQuery = NewsletterQuery::create()->distinct()->filterApprovedForLanguage(Session::language())->orderByCreatedAt(Criteria::DESC);
 		if($mSubscriberGroupId) {
 			$oQuery->joinNewsletterMailing()->useQuery('NewsletterMailing')->filterBySubscriberGroupId($mSubscriberGroupId)->endUse();
@@ -235,25 +311,37 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$aRecentNewsletters = $oQuery->limit(10)->find();
 		$bHasNewsletters = count($aRecentNewsletters) > 0;
 		$oTemplate = $this->constructTemplate('newsletter_display_list');
+		
 		if($bHasNewsletters === false) {
 			$oTemplate->replaceIdentifier('newsletter_item', TagWriter::quickTag('p', array('class' => 'no_result_message'), StringPeer::getString('wns.newsletter.no_newsletter_available')));
 		}
 		$oPage = FrontendManager::$CURRENT_PAGE;
+		$oItemPrototype = $this->constructTemplate($bDisplayFileLink ? 'newsletter_list_item_file_module' : 'newsletter_list_item');
 		foreach($aRecentNewsletters as $oNewsletter) {
-			$oItemTemplate = $this->constructTemplate('newsletter_list_item');
+			$oItemTemplate = clone $oItemPrototype;
 			$oItemTemplate->replaceIdentifier('subject', $oNewsletter->getSubject());
-			$oItemTemplate->replaceIdentifier('newsletter_link', LinkUtil::link($oPage->getFullPathArray(array(self::IDENTIFIER_DETAIL, $oNewsletter->getId()))));
+			$oItemTemplate->replaceIdentifier('newsletter_link', $bDisplayFileLink ? $oNewsletter->getDisplayLink() : LinkUtil::link($oPage->getFullPathArray(array(self::IDENTIFIER_DETAIL, $oNewsletter->getId()))));
 			$oItemTemplate->replaceIdentifier('date', $oNewsletter->getLastSent());
 			$oItemTemplate->replaceIdentifier('template_name', $oNewsletter->getTemplateName());
 			$oItemTemplate->replaceIdentifier('language_id', $oNewsletter->getLanguageId());
-
 			$oTemplate->replaceIdentifierMultiple('newsletter_item', $oItemTemplate);
 		}
 		return $oTemplate;
 	}
 
+ /**
+	* displayNewsletterDetail()
+	* 
+	* @param int/array subscriber group ids
+	* 
+	* Usage:
+	* • alternative view of newsletter_body content only (instead of FileManager view '/get_file/display_newsletter)
+	* • directly called by clicking a link in the newsletter_display_list
+	* • configured as detail view in case the list view and detail view are displayed in different container
+	* 
+	* @return Template
+	*/
 	private function displayNewsletterDetail($aSubscriberGroupId) {
-		
 		if(isset($_REQUEST[self::IDENTIFIER_DETAIL])) {
 			$oNewsletter = NewsletterQuery::create()->findPk($_REQUEST[self::IDENTIFIER_DETAIL]);
 		} else {
@@ -262,13 +350,9 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		if($oNewsletter) {
 			return RichtextUtil::parseStorageForOutput($oNewsletter->getNewsletterBody(), false);
 		}
-		// $oTemplate = $this->constructTemplate('newsletter_detail');
-		// $oTemplate->replaceIdentifier('detail_url', LinkUtil::link(array('display_newsletter', 'newsletter', $oNewsletter->getId()), 'FileManager'));
-		// return $oTemplate;
-		// @todo to be implemented
 	}
 
-	/**
+ /**
 	* getSaveData()
 	* overwrite FrontendModule::getSaveData
 	*/
