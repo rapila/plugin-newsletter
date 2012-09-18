@@ -13,6 +13,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	private static $B_CONFIRMED;
 	const PARAM_OPT_IN_CONFIRM = 'opt_in_confirm';
 	const IDENTIFIER_DETAIL = 'detail';
+	const DISPLAY_MODE = 'display_mode';
 
 
 	public function __construct($oLanguageObject = null, $aRequestPath = null, $iId = 1) {
@@ -30,7 +31,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			return $this->newsletterOptInConfirm();
 		}
 		$aOptions = @unserialize($this->getData());
-		switch($aOptions['display_mode']) {
+		switch($aOptions[self::DISPLAY_MODE]) {
 			case 'newsletter_subscribe': return $this->newsletterSubscribe($aOptions['subscriber_group_id']);
 			case 'newsletter_unsubscribe': return $this->newsletterUnsubscribe();
 			case 'newsletter_display_list': return $this->displayNewsletterList($aOptions['subscriber_group_id']);
@@ -273,7 +274,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	*/
 	public function getSaveData($mData) {
 		$oFlash = new Flash($mData);
-		$oFlash->checkForValue('display_mode', 'display_mode_required');
+		$oFlash->checkForValue(self::DISPLAY_MODE, 'display_mode_required');
 		if($mData['display_mode'] !== 'newsletter_unsubscribe') {
 			$oFlash->checkForValue('subscriber_group_id', 'subscriber_group_required');
 		}

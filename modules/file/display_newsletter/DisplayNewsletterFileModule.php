@@ -14,20 +14,69 @@ class DisplayNewsletterFileModule extends FileModule {
 		$sBase = Manager::usePath();
 		$iId = Manager::usePath();
 		
+		// Base path "newsletter" > display newsletter
 		if($sBase === 'newsletter') {
+			$iId = is_numeric($sBase) ? $sBase : $iId;
 			$this->oNewsletter = NewsletterQuery::create()->findPk($iId);
 			if($this->oNewsletter === null) {
 				throw new Exception('No such newsletter exists');
 			}
-		} else if ($sBase === 'mailing') {
+		} 
+		// Base path "mailing" > display newsletter by calling related newsletter mailing id
+		else if ($sBase === 'mailing') {
 			$this->oMailing = NewsletterMailingQuery::create()->findPk($iId);
 			if($this->oMailing === null) {
 				throw new Exception('No such mailing exists');
 			}
 			$this->oNewsletter = $this->oMailing->getNewsletter();
+		} 
+		// Fallback numeric base for direct access to newsletter
+		elseif(is_numeric($sBase)) {
+			$this->oNewsletter = NewsletterQuery::create()->findPk($sBase);
+		}
+		
+		// Throw exception if no newsletter is found
+		if($this->oNewsletter === null) {
+			throw new Exception('Error in DisplayNewsletterFileModule::__construct(): No such newsletter exists');
+		}
+		
+		// Check permission in case the newsletter is for authenticated users only
+		if($this->requiresAuthentication() && !Session::isAuthenticated()) {
+			$oErrorPage = PageQuery::create()->findOneByName(Settings::getSetting('error_pages', 'not_found', 'error_403'));
+			if($oErrorPage) {
+				LinkUtil::redirect(LinkUtil::link($oErrorPage->getLinkArray(), "FrontendManager"));
+			} else {
+				print "Not permitted";exit;
+			}
 		}
 	}
+	
+	/**
+	* If a page is found 
+	* • where the display of newsletter list or detail is configured and
+	* • which 'is_protected'
+	* @return boolean
+	*/
+	private function requiresAuthentication() {
+		$aQuery = LanguageObjectQuery::create()->joinContentObject()->useQuery('ContentObject')->filterByObjectType('newsletter')->endUse();
+		foreach($aQuery->find() as $oLanguageObject) {
+			if(is_resource($oLanguageObject->getData())) {
+				$aData = @unserialize(stream_get_contents($oLanguageObject->getData()));
+			}
+			ErrorHandler::log($aData);
+			if(isset($aData[NewsletterFrontendModule::DISPLAY_MODE]) 
+				&& in_array($aData[NewsletterFrontendModule::DISPLAY_MODE], array('newsletter_display_list', 'newsletter_display_detail'))) {
+				if($oNewsletterPage = $oLanguageObject->getContentObject()->getPage()) {
+					if($oNewsletterPage->getIsProtected()) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 
+	// Display newsletter
 	public function renderFile() {
 		$oOutput = new XHTMLOutput(XHTMLOutput::SETTING_HTML_4_TRANSITIONAL, true, null, $this->oNewsletter->getLanguageId());
 		$oOutput->render();
