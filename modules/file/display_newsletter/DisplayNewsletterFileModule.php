@@ -52,24 +52,18 @@ class DisplayNewsletterFileModule extends FileModule {
 	}
 	
 	/**
-	* If a page is found 
-	* • where the display of newsletter list or detail is configured and
+	* Checks if a page is found 
+	* • where a newsletter list or detail view is configured
 	* • which 'is_protected'
 	* @return boolean
 	*/
 	private function requiresAuthentication() {
-		$aQuery = LanguageObjectQuery::create()->joinContentObject()->useQuery('ContentObject')->filterByObjectType('newsletter')->endUse();
+		/** @todo OPTIMIZE: maybe this can be done in one query with count in the end? */
+		$aQuery = LanguageObjectQuery::create()->joinContentObject()->useQuery('ContentObject')->filterByObjectType('newsletter')->endUse()->filterByData("%newsletter_display_list%", Criteria::LIKE)->_or()->filterByData("%newsletter_display_detail%", Criteria::LIKE);
 		foreach($aQuery->find() as $oLanguageObject) {
-			if(is_resource($oLanguageObject->getData())) {
-				$aData = @unserialize(stream_get_contents($oLanguageObject->getData()));
-			}
-			ErrorHandler::log($aData);
-			if(isset($aData[NewsletterFrontendModule::DISPLAY_MODE]) 
-				&& in_array($aData[NewsletterFrontendModule::DISPLAY_MODE], array('newsletter_display_list', 'newsletter_display_detail'))) {
-				if($oNewsletterPage = $oLanguageObject->getContentObject()->getPage()) {
-					if($oNewsletterPage->getIsProtected()) {
-						return true;
-					}
+			if($oNewsletterPage = $oLanguageObject->getContentObject()->getPage()) {
+				if($oNewsletterPage->getIsProtected()) {
+					return true;
 				}
 			}
 		}
