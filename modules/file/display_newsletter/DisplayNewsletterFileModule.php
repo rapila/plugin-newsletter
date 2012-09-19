@@ -40,37 +40,11 @@ class DisplayNewsletterFileModule extends FileModule {
 			throw new Exception('Error in DisplayNewsletterFileModule::__construct(): No such newsletter exists');
 		}
 		
-		// Check permission in case the newsletter is for authenticated users only
-		if($this->requiresAuthentication() && !Session::isAuthenticated()) {
-			$oErrorPage = PageQuery::create()->findOneByName(Settings::getSetting('error_pages', 'not_found', 'error_403'));
-			if($oErrorPage) {
-				LinkUtil::redirect(LinkUtil::link($oErrorPage->getLinkArray(), "FrontendManager"));
-			} else {
-				print "Not permitted";exit;
-			}
-		}
+		// Optional handle of authentication
+		FilterModule::getFilters()->handleNewsletterDisplayRequested($this->oNewsletter);
 	}
 	
-	/**
-	* Checks if a page is found 
-	* • where a newsletter list or detail view is configured
-	* • which 'is_protected'
-	* @return boolean
-	*/
-	private function requiresAuthentication() {
-		/** @todo OPTIMIZE: maybe this can be done in one query with count in the end? */
-		$aQuery = LanguageObjectQuery::create()->joinContentObject()->useQuery('ContentObject')->filterByObjectType('newsletter')->endUse()->filterByData("%newsletter_display_list%", Criteria::LIKE)->_or()->filterByData("%newsletter_display_detail%", Criteria::LIKE);
-		foreach($aQuery->find() as $oLanguageObject) {
-			if($oNewsletterPage = $oLanguageObject->getContentObject()->getPage()) {
-				if($oNewsletterPage->getIsProtected()) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	// Display newsletter
+	// render newsletter
 	public function renderFile() {
 		$oOutput = new XHTMLOutput(XHTMLOutput::SETTING_HTML_4_TRANSITIONAL, true, null, $this->oNewsletter->getLanguageId());
 		$oOutput->render();
