@@ -10,6 +10,13 @@ newsletter:
         - ["BulletedList"]
         - ["Undo", "Redo"]
         - ["Format", "RemoveFormat", "Source"]
+    # Example of how to implement and configure a insertable_part tool for CKEditor (add some html code that is repetitive
+    # config newsletter/text_module/insertable_parts:
+    # • the insertable_part file has to be named "part_[name_of_part].tmpl" 
+    # • and has to be located in the site/templates/newsletter directory
+    # • there is a icon for this tool available that can be overwritten
+    # • also the tooltip string can be overwritten in a static language ini file or in the strings database
+    # insertable_parts: [{name: name_of_part, template: 'newsletter/part_name_of_part', icon: '{{writeConstantValue=DIRNAME_PLUGINS}}/web/images/tinymce_custom_insert_button.gif"', tooltip_string_key: "richtext.add_info_block", type: end_of_body}]
         
   # default sender name [only used as fallback if sender_email_addresses are not apropriatly configured with email/name]
   sender_name: Rapila Newsletter Plugin
