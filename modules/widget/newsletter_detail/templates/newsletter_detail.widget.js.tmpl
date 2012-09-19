@@ -7,7 +7,7 @@ Widget.types.newsletter_detail = {
 	initialize: function() {
 		this.init_content();
 		var _this = this;
-		this.newsletter_mailing_prototype = jQuery.parseHTML("{{includeTemplate=newsletter_mailing}}");
+		this.newsletter_mailing_prototype = Widget.parseHTML("{{includeTemplate=newsletter_mailing}}");
 		this.content.find('.hide_if_not_saved').hide();
 			// is_approved change handler
 		this.is_approved = this.content.find("input[name='is_approved']");
@@ -74,7 +74,7 @@ Widget.types.newsletter_detail = {
 	},
 	
 	init_content: function() {
-		this.content = jQuery.parseHTML("{{includeTemplate=edit}}");
+		this.content = Widget.parseHTML("{{includeTemplate=edit}}");
 		this.content.find("select[name='language_id']").prepareWidget(function(widget) {
 			widget.settings.international_option = false;
 		}, jQuery.noop);

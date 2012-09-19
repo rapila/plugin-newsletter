@@ -2,7 +2,7 @@ Widget.types.newsletter_send = {
 	
 	show_test_dialog: function() {
 		var _this = this;
-		var test_markup = jQuery.parseHTML('{{includeTemplate=test}}');
+		var test_markup = Widget.parseHTML('{{includeTemplate=test}}');
 		
 		var email_address_info = test_markup.find('.email_address_info');
 		var custom_emails = test_markup.find('textarea[name=custom_emails]');
@@ -46,7 +46,7 @@ Widget.types.newsletter_send = {
 		var send_progress = jQuery('<div/>').hide();
 		send_progress.progressbar();
 		
-		var send_markup = jQuery.parseHTML('{{includeTemplate=send}}');
+		var send_markup = Widget.parseHTML('{{includeTemplate=send}}');
 		send_markup.append(send_progress);
 		
 		var sender_dropdown = send_markup.find('select[name="sender_email"]');
