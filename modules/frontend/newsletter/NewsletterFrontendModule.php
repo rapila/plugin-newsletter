@@ -10,10 +10,11 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	public static $DISPLAY_OPTIONS = array('newsletter_subscribe', 'newsletter_unsubscribe', 'newsletter_display_list_file_link', 'newsletter_display_list', 'newsletter_display_detail');
 
 	// Subscriber
-	private $oSubscriber;
+	private $oSubscriber = null;
 	
 	// Prevent double display of action as result of careless page configuration
 	private static $B_CONFIRMED;
+	private static $NEWSLETTER;
 	
 	const PARAM_OPT_IN_CONFIRM = 'opt_in_confirm';
 	const IDENTIFIER_DETAIL = 'detail';
@@ -43,7 +44,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		}
 	}
 
- /**
+	/**
 	* newsletterSubscribe()
 	* 
 	* @param int/array subscriber group
@@ -73,7 +74,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		return $oTemplate;
 	}
 
- /**
+	/**
 	* processSubscribe()
 	* 
 	* @param int/array subscriber group
@@ -127,7 +128,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		}
 	}
 	
- /**
+	/**
 	* notifySubscriber()
 	* 
 	* @param int/array subscriber group
@@ -138,7 +139,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$this->sendMail($oEmailTemplate);
 	}
 	
- /**
+	/**
 	* notifySubscriberOptIn()
 	* 
 	* @param int/array subscriber group
@@ -165,7 +166,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$this->sendMail($oEmailTemplate, true);
 	}
 	
- /**
+	/**
 	* sendMail()
 	*/
 	private function sendMail($oEmailTemplate, $bSendHtml = false) {
@@ -180,7 +181,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmail->send();
 	}
 
- /**
+	/**
 	* newsletterUnsubscribe()
 	* 
 	* Description
@@ -246,7 +247,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		return $this->constructTemplate('unsubscribe_confirm');
 	}
 
- /**
+	/**
 	* processOptOutSuscriptions()
 	* 
 	* @param Subscriber object
@@ -292,7 +293,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		}
 	}
 	
- /**
+	/**
 	* displayNewsletterList()
 	* @param int/array subscriber group ids
 	* @param boolean detail view link type
@@ -315,12 +316,24 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		if($bHasNewsletters === false) {
 			$oTemplate->replaceIdentifier('newsletter_item', TagWriter::quickTag('p', array('class' => 'no_result_message'), StringPeer::getString('wns.newsletter.no_newsletter_available')));
 		}
+		if($bDisplayFileLink) {
+			$oItemPrototype = $this->constructTemplate('newsletter_list_item_file_module');
+		} else {
+			$this->setNewsletter($mSubscriberGroupId);
+			$oItemPrototype = $this->constructTemplate('newsletter_list_item');
+		}
 		$oPage = FrontendManager::$CURRENT_PAGE;
-		$oItemPrototype = $this->constructTemplate($bDisplayFileLink ? 'newsletter_list_item_file_module' : 'newsletter_list_item');
 		foreach($aRecentNewsletters as $oNewsletter) {
 			$oItemTemplate = clone $oItemPrototype;
 			$oItemTemplate->replaceIdentifier('subject', $oNewsletter->getSubject());
-			$oItemTemplate->replaceIdentifier('newsletter_link', $bDisplayFileLink ? $oNewsletter->getDisplayLink() : LinkUtil::link($oPage->getFullPathArray(array(self::IDENTIFIER_DETAIL, $oNewsletter->getId()))));
+			if($bDisplayFileLink) {
+				$oItemTemplate->replaceIdentifier('newsletter_link', $oNewsletter->getDisplayLink());
+			} else {
+				if($oNewsletter === self::$NEWSLETTER) {
+					$oItemTemplate->replaceIdentifier('class_active', ' class="active"', null, Template::NO_HTML_ESCAPE);
+				}
+				$oItemTemplate->replaceIdentifier('newsletter_link', LinkUtil::link($oPage->getFullPathArray(array(self::IDENTIFIER_DETAIL, $oNewsletter->getId()))));
+			}
 			$oItemTemplate->replaceIdentifier('date', $oNewsletter->getLastSent());
 			$oItemTemplate->replaceIdentifier('template_name', $oNewsletter->getTemplateName());
 			$oItemTemplate->replaceIdentifier('language_id', $oNewsletter->getLanguageId());
@@ -328,8 +341,19 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		}
 		return $oTemplate;
 	}
+	
+	private function setNewsletter($aSubscriberGroupId) {
+		if(self::$NEWSLETTER !== null) {
+			return;
+		}
+		if(isset($_REQUEST[self::IDENTIFIER_DETAIL])) {
+			self::$NEWSLETTER = NewsletterQuery::create()->findPk($_REQUEST[self::IDENTIFIER_DETAIL]);
+		} else {
+			self::$NEWSLETTER = NewsletterQuery::create()->joinNewsletterMailing()->useQuery('NewsletterMailing')->orderByDateSent(Criteria::DESC)->filterBySubscriberGroupId($aSubscriberGroupId)->endUse()->findOne();
+		}
+	}
 
- /**
+	/**
 	* displayNewsletterDetail()
 	* 
 	* @param int/array subscriber group ids
@@ -342,17 +366,17 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	* @return Template
 	*/
 	private function displayNewsletterDetail($aSubscriberGroupId) {
-		if(isset($_REQUEST[self::IDENTIFIER_DETAIL])) {
-			$oNewsletter = NewsletterQuery::create()->findPk($_REQUEST[self::IDENTIFIER_DETAIL]);
-		} else {
-			$oNewsletter = NewsletterQuery::create()->joinNewsletterMailing()->useQuery('NewsletterMailing')->orderByDateSent(Criteria::DESC)->filterBySubscriberGroupId($aSubscriberGroupId)->endUse()->findOne();
-		}
-		if($oNewsletter) {
-			return RichtextUtil::parseStorageForOutput($oNewsletter->getNewsletterBody(), false);
+		$this->setNewsletter($aSubscriberGroupId);
+		if(self::$NEWSLETTER) {
+			$oTemplate = $this->constructTemplate('newsletter_display_detail');
+			$oTemplate->replaceIdentifier('body', RichtextUtil::parseStorageForOutput(self::$NEWSLETTER->getNewsletterBody(), false));
+			$oTemplate->replaceIdentifier('date_prefix', StringPeer::getString('wns.newsletter.newsletter_of_date_prefix'));
+			$oTemplate->replaceIdentifier('date', self::$NEWSLETTER->getLastSent());
+			return $oTemplate;
 		}
 	}
 
- /**
+	/**
 	* getSaveData()
 	* overwrite FrontendModule::getSaveData
 	*/

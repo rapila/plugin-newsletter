@@ -44,7 +44,10 @@ class DisplayNewsletterFileModule extends FileModule {
 		FilterModule::getFilters()->handleNewsletterDisplayRequested($this->oNewsletter);
 	}
 	
-	// render newsletter
+	/**
+	* renderFile()
+	* @return string xhtml output
+	*/
 	public function renderFile() {
 		$oOutput = new XHTMLOutput(XHTMLOutput::SETTING_HTML_4_TRANSITIONAL, true, null, $this->oNewsletter->getLanguageId());
 		$oOutput->render();
