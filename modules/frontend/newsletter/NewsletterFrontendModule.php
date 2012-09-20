@@ -14,6 +14,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	
 	// Prevent double display of action as result of careless page configuration
 	private static $B_CONFIRMED;
+	
 	private static $NEWSLETTER;
 	
 	const PARAM_OPT_IN_CONFIRM = 'opt_in_confirm';
@@ -30,6 +31,8 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	}
 
 	public function renderFrontend() {
+		// Prevent double execution in pourly configured page 
+		// best practice: make and define a dedicated, hidden page that handles the OptIn and OptOut actions only
 		if(isset($_REQUEST[self::PARAM_OPT_IN_CONFIRM]) && self::$B_CONFIRMED === null) {
 			self::$B_CONFIRMED = true;
 			return $this->newsletterOptInConfirm();
@@ -50,7 +53,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	* @param int/array subscriber group
 	* 
 	* Description
-	* • validate post
+	* • validate post subscribe action
 	* • process post and display confirm message
 	* 
 	* @return Template object
@@ -58,6 +61,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	private function newsletterSubscribe($mSubscriberGroupId) {
 		/**
 		* @todo: consider array to become scalar as there is no need for multiple values, or is there?
+		* could this subscribe form provide also multiple (checkboxes) subscriptions?
 		*/
 		if(is_array($mSubscriberGroupId) && count($mSubscriberGroupId) > 0) {
 			$mSubscriberGroupId = $mSubscriberGroupId[0];
