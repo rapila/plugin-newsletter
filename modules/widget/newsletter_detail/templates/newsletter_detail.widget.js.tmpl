@@ -113,12 +113,20 @@ Widget.types.newsletter_detail = {
 			var mailing_list = this.content.find(".mailing_list").empty();
 			var has_mailings = false;
 			jQuery.each(newsletter_data.newsletter_mailings, function(i, params) {
-				console.log(params);
 				var newsletter_mailing = _this.newsletter_mailing_prototype.clone();
 				newsletter_mailing.find('.mail_group_info').text(params.MailGroupType+' : '+params.MailGroupName);
-				newsletter_mailing.find('.date_sent').text(params.DateSent);
-				newsletter_mailing.find('.user_initials').text(params.UserInitials);
-				newsletter_mailing.find('.recipient_count').text(params.RecipientCount);
+				var user_initials = newsletter_mailing.find('.user_initials');
+				jQuery.each(params.UserInitials, function(i, val) {
+					user_initials.append(jQuery('<div/>').text(val));
+				});
+				var date_sent = newsletter_mailing.find('.date_sent');
+				jQuery.each(params.DateSent, function(i, val) {
+					date_sent.append(jQuery('<div/>').text(val));
+				});
+				var recipient_count = newsletter_mailing.find('.recipient_count');
+				jQuery.each(params.RecipientCount, function(i, val) {
+					recipient_count.append(jQuery('<div/>').text(val));
+				});
 				mailing_list.append(newsletter_mailing);	
 				has_mailings = true;	
 			});

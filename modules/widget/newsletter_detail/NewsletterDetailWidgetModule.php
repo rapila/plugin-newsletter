@@ -36,23 +36,33 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$aResult['UpdatedInfo'] = Util::formatUpdatedInfo($oNewsletter);
 		$aResult['SessionUserEmail'] = Session::getSession()->getUser()->getEmail();
 		$aResult['HasBeedSent'] = $oNewsletter->countNewsletterMailings() > 0;
-		$aNewsletterMailings = array();
-		$oQuery = NewsletterMailingQuery::create()->orderByDateSent();
-		foreach($oNewsletter->getNewsletterMailings($oQuery) as $oNewletterMailing) {
-			$aNewsletterMailingInfo = array();
-			$aNewsletterMailingInfo['UserInitials'] = $oNewletterMailing->getUserRelatedByCreatedBy() ? $oNewletterMailing->getUserRelatedByCreatedBy()->getInitials() : '';
-			$aNewsletterMailingInfo['DateSent'] = $oNewletterMailing->getDateSentFormatted('h:m');
-			$aNewsletterMailingInfo['RecipientCount'] = $oNewletterMailing->getRecipientCount();
-			if($oNewletterMailing->getSubscriberGroupName()) {
-				$aNewsletterMailingInfo['MailGroupName'] = $oNewletterMailing->getSubscriberGroupName();
-				$aNewsletterMailingInfo['MailGroupType'] = StringPeer::getString('wns.mail_group.subscribers');
-			} else {
-				$aNewsletterMailingInfo['MailGroupName'] = $oNewletterMailing->getMailGroupId();
-				$aNewsletterMailingInfo['MailGroupType'] = StringPeer::getString('wns.mail_group.external');
+		$aResult['newsletter_mailings'] = $this->getNewsletterMailings();
+		return $aResult;
+	}
+	
+	private function getNewsletterMailings() {
+		$aResult = array();
+		$aSubscriberGroups = SubscriberGroupQuery::create()->distinct()->joinNewsletterMailing(null, Criteria::INNER_JOIN)->find();
+		foreach($aSubscriberGroups as $oSubscriberGroup) {
+			foreach($oSubscriberGroup->getNewsletterMailings() as $i => $oNewsletterMailing) {
+				// Fill Groupname only once
+				if($i === 0) {
+					$aSubscriberGroup = array();
+					if($oNewsletterMailing->getSubscriberGroupName()) {
+						$aSubscriberGroup['MailGroupName'] = $oNewsletterMailing->getSubscriberGroupName();
+						$aSubscriberGroup['MailGroupType'] = StringPeer::getString('wns.mail_group.subscribers');
+					} else {
+						$aSubscriberGroup['MailGroupName'] = $oNewsletterMailing->getMailGroupId();
+						$aSubscriberGroup['MailGroupType'] = StringPeer::getString('wns.mail_group.external');
+					}
+				}
+				// Fill all mailing infos
+				$aSubscriberGroup['UserInitials'][] = $oNewsletterMailing->getUserRelatedByCreatedBy() ? $oNewsletterMailing->getUserRelatedByCreatedBy()->getInitials() : '';
+				$aSubscriberGroup['DateSent'][] = $oNewsletterMailing->getDateSentFormatted('H:i');
+				$aSubscriberGroup['RecipientCount'][] = $oNewsletterMailing->getRecipientCount();
 			}
-			$aNewsletterMailings[] = $aNewsletterMailingInfo;
+			$aResult[] = $aSubscriberGroup;
 		}
-		$aResult['newsletter_mailings'] = $aNewsletterMailings;
 		return $aResult;
 	}
 	
