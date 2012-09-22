@@ -13,6 +13,9 @@ class NewsletterPeer extends BaseNewsletterPeer {
 
   public static function addSearchToCriteria($sSearch, $oCriteria) {
     $oCriteria->add(self::SUBJECT, "%$sSearch%", Criteria::LIKE);
+		$oSearchCriterion = $oCriteria->getNewCriterion(self::SUBJECT, "%$sSearch%", Criteria::LIKE);
+		$oSearchCriterion->addOr($oCriteria->getNewCriterion(self::NEWSLETTER_BODY, "%$sSearch%", Criteria::LIKE));
+		$oCriteria->add($oSearchCriterion);
   }
 
   public static function getRecentNewsletters($iLimit=10, $bCountOnly=false) {

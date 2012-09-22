@@ -40,7 +40,7 @@ class DisplayNewsletterFileModule extends FileModule {
 			throw new Exception('Error in DisplayNewsletterFileModule::__construct(): No such newsletter exists');
 		}
 		
-		// Optional handle of authentication
+		// Optional handling of authentication
 		FilterModule::getFilters()->handleNewsletterDisplayRequested($this->oNewsletter);
 	}
 	

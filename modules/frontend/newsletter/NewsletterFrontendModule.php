@@ -21,7 +21,6 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	const IDENTIFIER_DETAIL = 'detail';
 	const DISPLAY_MODE = 'display_mode';
 
-
 	public function __construct($oLanguageObject = null, $aRequestPath = null, $iId = 1) {
 		parent::__construct($oLanguageObject, $aRequestPath, $iId);
 	}
