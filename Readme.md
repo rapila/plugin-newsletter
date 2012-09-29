@@ -6,8 +6,8 @@ The Newsletter-Plugin is a newsletter plugin that works seamlessly with [Raplia]
 
 The Newsletter-Plugin was designed with the following goals in mind:
 
-* Easy integration in a Rapila CMS environmen
-* All the important features of a newsletter system but be as lean as possible
+* Easy integration in a Rapila CMS environment
+* All the important features of a newsletter system but as lean as possible
 * Work seamlessly with other Raplia plugins like [Journal (Blog)](https://github.com/rapila/plugin-journal/wiki/).
 
 ## Diving in
