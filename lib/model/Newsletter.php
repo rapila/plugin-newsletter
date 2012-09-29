@@ -26,11 +26,8 @@ class Newsletter extends BaseNewsletter {
 	}
 
 	public function getGroupSentTo() {
-		$aResult = array();
-		$oCriteria = new Criteria();
-		$oCriteria->addJoin(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID, SubscriberGroupPeer::ID, Criteria::INNER_JOIN);
-		$oCriteria->addAscendingOrderByColumn(NewsletterMailingPeer::SUBSCRIBER_GROUP_ID);
-		foreach($this->getNewsletterMailings($oCriteria) as $oMailing) {
+		$oQuery = NewsletterMailingQuery::create()->joinSubscriberGroup(null, Criteria::INNER_JOIN)->orderBySubscriberGroupId();
+		foreach($this->getNewsletterMailings($oQuery) as $oMailing) {
 			if($oMailing->getSubscriberGroupName()) {
 				$aResult[] = $oMailing->getSubscriberGroupName();
 			}

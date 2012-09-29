@@ -46,7 +46,7 @@ class NewslettersAdminModule extends AdminModule {
 	}
 	
 	public function getCustomListElements() {
-		if(SubscriberGroupPeer::doCount(new Criteria()) > 0) {
+		if(SubscriberGroupQuery::create()->count() > 0) {
 		 	return array(
 				array('id' => CriteriaListWidgetDelegate::SELECT_ALL,
 							'readable_name' => StringPeer::getString('wns.subscriber_group.select_all_title'),
