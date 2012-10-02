@@ -49,17 +49,14 @@ Widget.types.newsletter_send = {
 		var send_markup = Widget.parseHTML('{{includeTemplate=send}}');
 		send_markup.append(send_progress);
 		
-		var sender_dropdown = send_markup.find('select[name="sender_email"]');
-		jQuery.each(this.getSenderEmails(), function(email, name) {
-			sender_dropdown.append(jQuery('<option/>').val(email).text(name));
-		});
+		var sender_dropdown = send_markup.find('select[name="sender_email"]').empty().populate(this.getSenderEmails());
 		var mail_groups = send_markup.find("select[name='mail_group_ids[]']");
 		mail_groups.prepareWidget(function(widget) {
 
 		}, jQuery.noop);
 	
 		send_markup.bind('submit', function(event) {
-			var sender_name= jQuery(".sender_list option:selected").text();
+			var sender_name= sender_dropdown.children("option:selected").text();
 			_this.send_newsletter(mail_groups.val(), sender_dropdown.val(), sender_name, send_progress, send_markup);
 			return false;
 		});
