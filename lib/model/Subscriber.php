@@ -23,6 +23,10 @@ class Subscriber extends BaseSubscriber {
 		return !$this->isNew();
 	}
 	
+	public function hasNewsletter($iSubscriberGroupId) {
+		return SubscriberGroupMembershipQuery::create()->filterBySubscriberGroupId($iSubscriberGroupId)->filterBySubscriber($this)->count() > 0;
+	}
+	
 	// Display the name even if it does not exist
 	public function getName() {
 		if(parent::getName() != null) {
