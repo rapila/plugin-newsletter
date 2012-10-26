@@ -125,7 +125,8 @@ Widget.types.newsletter_detail = {
 				});
 				var recipient_count = newsletter_mailing.find('.recipient_count');
 				jQuery.each(params.RecipientCount, function(i, val) {
-					recipient_count.append(jQuery('<div/>').text(val));
+					var value = val ? val : " ";
+					recipient_count.append(jQuery('<div/>').text(value));
 				});
 				mailing_list.append(newsletter_mailing);	
 				has_mailings = true;	
