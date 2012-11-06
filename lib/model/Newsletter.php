@@ -27,6 +27,7 @@ class Newsletter extends BaseNewsletter {
 
 	public function getGroupSentTo() {
 		$oQuery = NewsletterMailingQuery::create()->joinSubscriberGroup(null, Criteria::INNER_JOIN)->orderBySubscriberGroupId();
+		$aResult = array();
 		foreach($this->getNewsletterMailings($oQuery) as $oMailing) {
 			if($oMailing->getSubscriberGroupName()) {
 				$aResult[] = $oMailing->getSubscriberGroupName();
