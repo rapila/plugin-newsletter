@@ -44,24 +44,28 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$aResult = array();
 		$aSubscriberGroups = SubscriberGroupQuery::create()->distinct()->joinNewsletterMailing(null, Criteria::INNER_JOIN)->find();
 		foreach($aSubscriberGroups as $oSubscriberGroup) {
-			foreach($oSubscriberGroup->getNewsletterMailings() as $i => $oNewsletterMailing) {
-				// Fill Groupname only once
-				if($i === 0) {
-					$aSubscriberGroup = array();
-					if($oNewsletterMailing->getSubscriberGroupName()) {
-						$aSubscriberGroup['MailGroupName'] = $oNewsletterMailing->getSubscriberGroupName();
-						$aSubscriberGroup['MailGroupType'] = StringPeer::getString('wns.mail_group.subscribers');
-					} else {
-						$aSubscriberGroup['MailGroupName'] = $oNewsletterMailing->getMailGroupId();
-						$aSubscriberGroup['MailGroupType'] = StringPeer::getString('wns.mail_group.external');
+			$aNewsletterMailing = NewsletterMailingQuery::create()->filterByNewsletterId($this->iNewsletterId)->filterBySubscriberGroup($oSubscriberGroup)->find();
+			$bHasMailing = count($aNewsletterMailing) > 0;
+			if($bHasMailing) {
+				$aSubscriberGroup = array('UserInitials' => array(), 'DateSent' => array(), 'RecipientCount' => array());
+				foreach($aNewsletterMailing as $i => $oNewsletterMailing) {
+					// Fill Groupname only once
+					if($i === 0) {
+						if($oNewsletterMailing->getSubscriberGroupName()) {
+							$aSubscriberGroup['MailGroupName'] = $oNewsletterMailing->getSubscriberGroupName();
+							$aSubscriberGroup['MailGroupType'] = StringPeer::getString('wns.mail_group.subscribers');
+						} else {
+							$aSubscriberGroup['MailGroupName'] = $oNewsletterMailing->getMailGroupId();
+							$aSubscriberGroup['MailGroupType'] = StringPeer::getString('wns.mail_group.external');
+						}
 					}
+					// Fill all mailing infos
+					$aSubscriberGroup['UserInitials'][] = $oNewsletterMailing->getUserRelatedByCreatedBy() ? $oNewsletterMailing->getUserRelatedByCreatedBy()->getInitials() : '';
+					$aSubscriberGroup['DateSent'][] = $oNewsletterMailing->getDateSentFormatted('H:i');
+					$aSubscriberGroup['RecipientCount'][] = $oNewsletterMailing->getRecipientCount();
 				}
-				// Fill all mailing infos
-				$aSubscriberGroup['UserInitials'][] = $oNewsletterMailing->getUserRelatedByCreatedBy() ? $oNewsletterMailing->getUserRelatedByCreatedBy()->getInitials() : '';
-				$aSubscriberGroup['DateSent'][] = $oNewsletterMailing->getDateSentFormatted('H:i');
-				$aSubscriberGroup['RecipientCount'][] = $oNewsletterMailing->getRecipientCount();
+				$aResult[] = $aSubscriberGroup;
 			}
-			$aResult[] = $aSubscriberGroup;
 		}
 		return $aResult;
 	}
