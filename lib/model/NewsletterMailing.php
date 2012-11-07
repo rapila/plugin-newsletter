@@ -33,8 +33,8 @@ class NewsletterMailing extends BaseNewsletterMailing {
 	}
 	
 	public function getSubscriberGroupName() {
-		if($this->getSubscriberGroup()) {
-			return StringPeer::getString('subscriber_group_display_name.'.$this->getSubscriberGroup()->getName(), null, $this->getSubscriberGroup()->getName());
+		if($oSubscriberGroup = $this->getSubscriberGroup()) {
+			return $oSubscriberGroup->getReadableName();
 		}
 		return null;
 	}
