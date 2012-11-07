@@ -36,20 +36,32 @@ button.newsletter_send_button {
 fieldset.option_groups {
 	margin-top: 1em;
 	background-color: #f9f9f9;
+	margin-bottom: 1em;
 }
 
 fieldset.option_groups table td {
 	border-bottom: 1px solid #FFF;
 }
+
 fieldset .mailing_list {
 	border-collapse:collapse;
 }
+
+fieldset .mailing_list tr.ui-list-row:nth-child(odd) {
+	background-color:	 #fff;
+}
+
 fieldset .mailing_list td {
 	vertical-align: top;
-	border-bottom:  1px solid #d1d1d1;
+	padding: 4px 0px 3px 0px;
+	border-bottom:	1px solid #d1d1d1;
 }
 
 .mailing_list td div {
 	padding: 1px 0;
-	border-bottom: 1px solid #e1e1e1;
+	border-top: 1px solid #e1e1e1;
+}
+
+.mailing_list td div:first-child {
+	border-top: 0;
 }

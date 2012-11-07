@@ -42,13 +42,15 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 	
 	private function getNewsletterMailings() {
 		$aResult = array();
-		$aSubscriberGroups = SubscriberGroupQuery::create()->distinct()->joinNewsletterMailing(null, Criteria::INNER_JOIN)->find();
+		$aSubscriberGroups = SubscriberGroupQuery::create()->distinct()->joinNewsletterMailing(null, Criteria::INNER_JOIN)->orderByName()->find();
 		foreach($aSubscriberGroups as $oSubscriberGroup) {
-			$aNewsletterMailing = NewsletterMailingQuery::create()->filterByNewsletterId($this->iNewsletterId)->filterBySubscriberGroup($oSubscriberGroup)->find();
-			$bHasMailing = count($aNewsletterMailing) > 0;
+			$aNewsletterMailing = NewsletterMailingQuery::create()->filterByNewsletterId($this->iNewsletterId)->orderByCreatedAt(Criteria::DESC)->filterBySubscriberGroup($oSubscriberGroup)->find();
+			$iCountMailings = count($aNewsletterMailing);
+			$bHasMailing = $iCountMailings > 0;
 			if($bHasMailing) {
 				$aSubscriberGroup = array('UserInitials' => array(), 'DateSent' => array(), 'RecipientCount' => array());
 				foreach($aNewsletterMailing as $i => $oNewsletterMailing) {
+					$sAdditionalMailingCount = '';
 					// Fill Groupname only once
 					if($i === 0) {
 						if($oNewsletterMailing->getSubscriberGroupName()) {
@@ -58,11 +60,17 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 							$aSubscriberGroup['MailGroupName'] = $oNewsletterMailing->getMailGroupId();
 							$aSubscriberGroup['MailGroupType'] = StringPeer::getString('wns.mail_group.external');
 						}
+						if(($iCountMailings - 1) > 0) {
+							$sAdditionalMailingCount = ' (+'.($iCountMailings - 1).')';
+						}
+					} else {
+						continue;
 					}
 					// Fill all mailing infos
 					$aSubscriberGroup['UserInitials'][] = $oNewsletterMailing->getUserRelatedByCreatedBy() ? $oNewsletterMailing->getUserRelatedByCreatedBy()->getInitials() : '';
-					$aSubscriberGroup['DateSent'][] = $oNewsletterMailing->getDateSentFormatted('H:i');
+					$aSubscriberGroup['DateSent'][] = $oNewsletterMailing->getDateSentFormatted('H:i').$sAdditionalMailingCount;
 					$aSubscriberGroup['RecipientCount'][] = $oNewsletterMailing->getRecipientCount();
+					$aSubscriberGroup['CountAdditionalMailings'] = null;
 				}
 				$aResult[] = $aSubscriberGroup;
 			}
