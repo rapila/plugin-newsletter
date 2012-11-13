@@ -56,7 +56,7 @@ class NewsletterMailer {
 				// Fallback: try searching the page by name
 				$this->oUnsubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter', 'unsubscribe_page', 'unsubscribe'));
 				if ($this->oUnsubscribePage === null) {
-					throw new Exception('Error in'.__METHOD__.': a public and hidden unsubscribe page is required for unsubscribe to function');
+					throw new LocalizedException('newsletter.unsubscriber_page_required_error', array('method' => "NewsletterMailer::__construct()"));
 				}
 			}
 		}
