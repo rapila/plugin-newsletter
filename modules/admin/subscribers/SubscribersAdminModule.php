@@ -14,7 +14,7 @@ class SubscribersAdminModule extends AdminModule {
 			$this->oListWidget->oDelegateProxy->setSubscriberGroupId($_REQUEST['subscriber_group_id']);
 		}
 		$this->addResourceParameter(ResourceIncluder::RESOURCE_TYPE_JS, 'subscriber_group_id', $this->oListWidget->oDelegateProxy->getSubscriberGroupId());
-		$this->oSidebarWidget 		= new ListWidgetModule();
+		$this->oSidebarWidget = new ListWidgetModule();
 		$this->oSidebarWidget->setListTag(new TagWriter('ul'));
 		$this->oSidebarWidget->setDelegate(new CriteriaListWidgetDelegate($this, 'SubscriberGroup', 'name'));
 	}

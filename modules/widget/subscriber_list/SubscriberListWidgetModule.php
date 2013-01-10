@@ -10,7 +10,7 @@ class SubscriberListWidgetModule extends WidgetModule {
 	
 	public function __construct() {
 		$this->oListWidget = new ListWidgetModule();
-		$this->oDelegateProxy = new CriteriaListWidgetDelegate($this, "Subscriber", 'name');
+		$this->oDelegateProxy = new CriteriaListWidgetDelegate($this, "Subscriber", 'created_at', Criteria::DESC);
 		$this->oListWidget->setDelegate($this->oDelegateProxy);
 	}
 	
@@ -22,7 +22,7 @@ class SubscriberListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'email', 'name', 'is_unconfirmed', 'preferred_language_id', 'delete');
+		return array('id', 'email', 'name', 'is_unconfirmed', 'preferred_language_id', 'created_at_formatted', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -43,6 +43,9 @@ class SubscriberListWidgetModule extends WidgetModule {
 			case 'email':
 				$aResult['heading'] = StringPeer::getString('wns.email');
 				break;
+			case 'created_at_formatted':
+				$aResult['heading'] = StringPeer::getString('wns.date_of_subscription');
+				break;
 			case 'delete':
 				$aResult['heading'] = ' ';
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_ICON;
@@ -56,6 +59,9 @@ class SubscriberListWidgetModule extends WidgetModule {
 	public function getDatabaseColumnForColumn($sColumnIdentifier) {
 		if($sColumnIdentifier === 'subscriber_group_id') {
 			return SubscriberGroupPeer::ID;
+		}
+		if($sColumnIdentifier === 'created_at_formatted') {
+			return SubscriberPeer::CREATED_AT;
 		}
 		return null;
 	}
