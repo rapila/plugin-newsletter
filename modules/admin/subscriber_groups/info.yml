@@ -1,0 +1,5 @@
+allowed_roles: [subscribers]
+name: "Subscriber groups"
+description: "Administer subscriber groups in Newsletter Plugin"
+website: "https://github.com/rapila/plugin-newsletter"
+version: "1.1"

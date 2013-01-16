@@ -1,5 +1,5 @@
 allowed_roles: [newsletters]
 name: "Newsletter"
 description: "Newsletter module for creating and sending newsletters"
-website: "http://plugins.mini-cms.ch/newsletter"
-version: "2.0"
+website: "https://github.com/rapila/plugin-newsletter"
+version: "1.1"
