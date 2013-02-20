@@ -22,7 +22,7 @@ class SubscriberGroupListWidgetModule extends WidgetModule {
 	}
 		
 	public function getColumnIdentifiers() {
-		return array('id', 'name', 'link_to_subscriber_data', 'delete');
+		return array('id', 'name', 'display_name', 'is_temporary', 'link_to_subscriber_data', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -33,6 +33,13 @@ class SubscriberGroupListWidgetModule extends WidgetModule {
 				break;
 			case 'name':
 				$aResult['heading'] = StringPeer::getString('wns.subscriber_group.name');
+				break;
+			case 'display_name':
+				$aResult['heading'] = StringPeer::getString('wns.subscriber_group.display_name');
+				break;
+			case 'is_temporary':
+				$aResult['heading'] = StringPeer::getString('wns.subscriber_group.is_temporary');
+				$aResult['is_sortable'] = false;
 				break;
 			case 'link_to_subscriber_data':
 				$aResult['heading'] = StringPeer::getString('wns.subscribers');

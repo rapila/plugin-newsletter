@@ -19,6 +19,10 @@ class SubscriberGroup extends BaseSubscriberGroup {
 		return strtoupper(substr($this->getName(), 0,1));
 	}
 	
+	public function getIsTemporary() {
+		return $this->getDisplayName() == null;
+	}
+	
 	public function getSubscriberGroupMemberships($oCriteria = null, PropelPDO $oCon = null, $iLimit = null, $iOffset = null) {
 		if($oCriteria === null) {
 			$oCriteria = new Criteria();
