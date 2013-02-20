@@ -5,20 +5,29 @@ Widget.types.subscriber_group_input = {
 	},
 	
 	reload: function() {
+		var _this = this;
 		var current = this._element.val();
 		this._element.empty();
-		var subscriber_groups = this.getSubscriberGroups();
-		this._element.populate(subscriber_groups);
-		if(current) {
-			this._element.val(current);
-		}
-	}, 
+		this.subscriberGroups(function(subscriber_groups) {
+			_this._element.populate(subscriber_groups);
+			if(current) {
+				this._element.val(current);
+			} else {
+				this._element.val(_this.settings.initial_selection);
+			}
+		});
+	},
 	
 	val: function(value) {
-		if(value) {
+		if(arguments.length) {
 			this._element.val(value);
+			this.settings.initial_selection = value;
 			return;
 		}
 		return this._element.val();
+	},
+	
+	settings: {
+		initial_selection: ''
 	}
 };

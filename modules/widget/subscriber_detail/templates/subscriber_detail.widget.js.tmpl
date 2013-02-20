@@ -1,27 +1,30 @@
 Widget.types.subscriber_detail = {
 	initialize: function() {
-		this.content = Widget.parseHTML("{{includeTemplate=edit}}");
-		this.content.find('div.hide_if_not_saved').hide();
-		
+		var _this = this;
+		this._element = Widget.parseHTML("{{includeTemplate=edit}}");
+		this._element.find('div.hide_if_not_saved').hide();
+
 		Widget.callStatic('detail', 'create_for_instance', this);
-		this.content.find("select[name='subscriber_group_ids']").prepareWidget();
-		this.content.find("select[name='preferred_language_id']").prepareWidget(function(widget) {
+		this._element.find("select[name='subscriber_group_ids']").prepareWidget(function(widget) {
+			widget.settings.initial_selection = _this.settings.initial_subscriber_group_id;
+		}, jQuery.noop);
+		this._element.find("select[name='preferred_language_id']").prepareWidget(function(widget) {
 			widget.settings.international_option = false;
 			widget.settings.use_admin_languages = true;
 		}, jQuery.noop);
 	},
-	
+
 	fill_data: function() {
 		this.getSubscriberData(function(subscriber_data) {
-			this.content.find("input[name='name']").val(subscriber_data.Name);
-			this.content.find("input[name='email']").val(subscriber_data.Email);
-			this.content.find("select[name='preferred_language_id']").val(subscriber_data.PreferredLanguageId);
-			this.content.find("select[name='subscriber_group_ids']").val(subscriber_data.SubscribedGroupIds);
+			this._element.find("input[name='name']").val(subscriber_data.Name);
+			this._element.find("input[name='email']").val(subscriber_data.Email);
+			this._element.find("select[name='preferred_language_id']").val(subscriber_data.PreferredLanguageId);
+			this._element.find("select[name='subscriber_group_ids']").val(subscriber_data.SubscribedGroupIds);
+			this._element.find(".updated_info").text(subscriber_data.UpdatedInfo);
+			this._element.find(".created_info").text(subscriber_data.CreatedInfo);
+			this._element.find("span[class='detail_id']").text(subscriber_data.Id);
+			this._element.find('div.hide_if_not_saved').show();
 			
-			this.content.find(".updated_info").text(subscriber_data.UpdatedInfo);
-			this.content.find(".created_info").text(subscriber_data.CreatedInfo);
-			this.content.find("span[class='detail_id']").text(subscriber_data.Id);
-			this.content.find('div.hide_if_not_saved').show();
 			this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.subscriber}} "+subscriber_data.Name);
 		});
 	},
@@ -29,8 +32,8 @@ Widget.types.subscriber_detail = {
 	settings: {
 		detail_widget: {
 			title: "{{writeString=wns.new_entry}}",
-			width: 550,
-			select: "input[name='name']"
-		}
+			width: 550
+		},
+		initial_subscriber_group_id: null
 	}
 };
