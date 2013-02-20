@@ -5,7 +5,7 @@
  */
 class MailGroupInputWidgetModule extends WidgetModule {
 	
-	public function getMailGroups($bIncludeExternalMailGroups = true, $bIncludeGeneratedMailGroups = true) {
+	public function listMailGroups($bIncludeExternalMailGroups = true, $bIncludeGeneratedMailGroups = true) {
 		
 		// Get subscriber groups with membership count in not used for subscriber import
 		$bUsedForSubscriberImport = $bIncludeExternalMailGroups === false && $bIncludeGeneratedMailGroups = false;
