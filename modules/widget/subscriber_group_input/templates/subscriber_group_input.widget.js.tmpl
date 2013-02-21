@@ -13,7 +13,7 @@ Widget.types.subscriber_group_input = {
 			if(current) {
 				this._element.val(current);
 			} else {
-				this._element.val(_this.settings.initial_selection);
+				this._element.val(_this.settings.initial_selection || '');
 			}
 		});
 	},
@@ -28,6 +28,6 @@ Widget.types.subscriber_group_input = {
 	},
 	
 	settings: {
-		initial_selection: ''
+		initial_selection: null
 	}
 };
