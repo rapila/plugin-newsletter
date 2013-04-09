@@ -46,7 +46,7 @@ Widget.types.newsletter_detail = {
 			_this.init_textareas();
 		});
 		this.handle('opened', function() {
-			_this._element.find('div.accordion').accordion({active: 0, autoHeight: false, clearStyle: true, collapsible:false});
+			_this._element.find('div.accordion').accordion({heightStyle: 'content'});
 		});
 		this.handle('saving', function(event, data) {
 			var text = this.get_newsletter_text();
