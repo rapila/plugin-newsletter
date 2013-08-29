@@ -38,7 +38,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 				break;
 			case 'language_id':
 				$aResult['has_data'] = true;
-				if(LanguagePeer::isMonolingual()) {
+				if(LanguageInputWidgetModule::isMonolingual()) {
 					$aResult['heading'] = StringPeer::getString('wns.language');
 				} else {
 					$aResult['heading'] = '';
