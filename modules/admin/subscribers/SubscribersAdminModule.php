@@ -17,6 +17,7 @@ class SubscribersAdminModule extends AdminModule {
 		$this->oSidebarWidget = new ListWidgetModule();
 		$this->oSidebarWidget->setListTag(new TagWriter('ul'));
 		$this->oSidebarWidget->setDelegate(new CriteriaListWidgetDelegate($this, 'SubscriberGroup', 'name'));
+    $this->oSidebarWidget->setSetting('initial_selection', array('subscriber_group_id' => $this->oListWidget->getSubscriberGroupId()));
 	}
 	
 	public function mainContent() {

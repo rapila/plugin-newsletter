@@ -72,6 +72,10 @@ class SubscriberListWidgetModule extends WidgetModule {
 		}
 		return null;
 	}
+
+	public function getSubscriberGroupId() {
+		return $this->oDelegateProxy->getSubscriberGroupId();
+	}
 	
 	public function getSubscriberGroupName() {
 		if(is_numeric($this->oDelegateProxy->getSubscriberGroupId())) {
