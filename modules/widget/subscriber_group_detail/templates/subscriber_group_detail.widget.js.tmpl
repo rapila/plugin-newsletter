@@ -29,6 +29,10 @@ Widget.types.subscriber_group_detail = {
 		});
 	},
 
+	save_callback: function(info) {
+		Widget.fire('rapila-subscriber_groups_changed', info);
+	},
+	
 	settings: {
 		detail_widget: {
 			title: "{{writeString=wns.new_entry}}",

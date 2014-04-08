@@ -7,16 +7,20 @@ class NewslettersAdminModule extends AdminModule {
 
 	private $oListWidget;
 	private $oSidebarWidget;
+	private $oInputWidget;
 	
 	public function __construct() {
 		$this->oListWidget = new NewsletterListWidgetModule();
 		if(isset($_REQUEST['subscriber_group_id'])) {
 			$this->oListWidget->oDelegateProxy->setSubscriberGroupId($_REQUEST['subscriber_group_id']);
 		}
-		$this->addResourceParameter(ResourceIncluder::RESOURCE_TYPE_JS, 'subscriber_group_id', $this->oListWidget->oDelegateProxy->getSubscriberGroupId());
+
 		$this->oSidebarWidget = new ListWidgetModule();
 		$this->oSidebarWidget->setListTag(new TagWriter('ul'));
 		$this->oSidebarWidget->setDelegate(new CriteriaListWidgetDelegate($this, 'SubscriberGroup', 'name'));
+    $this->oSidebarWidget->setSetting('initial_selection', array('id' => $this->oListWidget->getSubscriberGroupId()));
+		
+		$this->oInputWidget = new SidebarInputWidgetModule();
 	}
 	
 	public function mainContent() {
@@ -59,21 +63,14 @@ class NewslettersAdminModule extends AdminModule {
 		return array();
 	}
 	
-	public function usedWidgets() {
-		return array($this->oListWidget, $this->oSidebarWidget);
+	public function getDatabaseColumnForColumn($sColumnIdentifier) {
+		if($sColumnIdentifier === 'subscriber_group_id') {
+			return SubscriberGroupPeer::ID;
+		}
+		return null;
 	}
 	
-	public function getCriteria() {
-		$oQuery = NewsletterQuery::create();
-		if($this->oListWidget->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_ALL) {
-			return $oQuery;
-		}
-		$oQuery->joinNewsletterMailing(null, Criteria::LEFT_JOIN)->useQuery('NewsletterMailing');
-		if($this->oListWidget->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
-			$oQuery->filterByNewsletterId(null, Criteria::ISNULL)->endUse();
-		} else {
-			$oQuery->filterBySubscriberGroupId($this->oListWidget->oDelegateProxy->getSubscriberGroupId())->endUse();
-		}
-		return $oQuery;
+	public function usedWidgets() {
+		return array($this->oListWidget, $this->oSidebarWidget, $this->oInputWidget);
 	}
 }

@@ -11,6 +11,7 @@ Widget.types.subscriber_detail = {
 		this._element.find("select[name='preferred_language_id']").prepareWidget(function(widget) {
 			widget.settings.international_option = false;
 			widget.settings.use_admin_languages = true;
+			widget.val(!widget.settings.international_option ? widget.settings.session_language : null);
 		}, jQuery.noop);
 	},
 

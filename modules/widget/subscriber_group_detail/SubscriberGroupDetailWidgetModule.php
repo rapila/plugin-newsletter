@@ -26,8 +26,9 @@ class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 	}
 	
 	public function saveData($aSubscriberGroupData) {
-		$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->iSubscriberGroupId);
-		if($oSubscriberGroup === null) {
+		if($this->iSubscriberGroupId) {
+			$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->iSubscriberGroupId);
+		} else {
 			$oSubscriberGroup = new SubscriberGroup();
 			$oSubscriberGroup->setCreatedBy(Session::getSession()->getUserId());
 			$oSubscriberGroup->setCreatedAt(date('c'));
@@ -39,6 +40,16 @@ class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
     if(!Flash::noErrors()) {
 			throw new ValidationException();
 		}
-		return $oSubscriberGroup->save();
+		$oSubscriberGroup->save();
+		
+		$oResult = new stdClass();
+		$oResult->id = $oSubscriberGroup->getId();
+		if($this->iSubscriberGroupId === null) {
+			$oResult->inserted = true;
+		} else {
+			$oResult->updated = true;
+		}
+		$this->iSubscriberGroupId = $oResult->id;
+		return $oResult;
 	}
 }

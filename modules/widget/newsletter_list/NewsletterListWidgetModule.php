@@ -108,6 +108,14 @@ class NewsletterListWidgetModule extends WidgetModule {
 		return StringPeer::getString('language.'.$this->oDelegateProxy->getLanguageId(), null, $this->oDelegateProxy->getLanguageId());
 	}
 	
+	public function getSubscriberGroupHasNewsletterMailings($iSubscriberGroupId) {
+		return NewsletterMailingQuery::create()->filterBySubscriberGroupId($iSubscriberGroupId)->count() > 0;
+	}
+	
+	public function getSubscriberGroupId() {
+		return $this->oDelegateProxy->getSubscriberGroupId();
+	}
+		
 	public function getSubscriberGroupName() {
 		if(is_numeric($this->oDelegateProxy->getSubscriberGroupId())) {
 			$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->oDelegateProxy->getSubscriberGroupId());
