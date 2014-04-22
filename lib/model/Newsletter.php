@@ -17,6 +17,10 @@ class Newsletter extends BaseNewsletter {
 		return $sDate.$this->getName();
 	}
 	
+	public function getLanguageName() {
+		return LanguageInputWidgetModule::getLanguageName($this->getLanguageId());
+	}
+	
 	public function getDisplayLink() {
 		return LinkUtil::link(array('display_newsletter', 'newsletter', $this->getId()), 'FileManager');
 	}

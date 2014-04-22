@@ -44,6 +44,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 					$aResult['heading'] = '';
 					$aResult['heading_filter'] = array('language_input', $this->oLanguageFilter->getSessionKey());
 				}
+				$aResult['field_name'] = 'language_name';
 				$aResult['is_sortable'] = false;
 				break;
 			case 'template_name':
