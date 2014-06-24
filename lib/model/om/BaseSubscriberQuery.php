@@ -43,7 +43,6 @@
  * @method Subscriber findOne(PropelPDO $con = null) Return the first Subscriber matching the query
  * @method Subscriber findOneOrCreate(PropelPDO $con = null) Return the first Subscriber matching the query, or a new Subscriber object populated from the query conditions when no match is found
  *
- * @method Subscriber findOneById(int $id) Return the first Subscriber filtered by the id column
  * @method Subscriber findOneByName(string $name) Return the first Subscriber filtered by the name column
  * @method Subscriber findOneByPreferredLanguageId(string $preferred_language_id) Return the first Subscriber filtered by the preferred_language_id column
  * @method Subscriber findOneByEmail(string $email) Return the first Subscriber filtered by the email column
@@ -72,8 +71,14 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'rapila', $modelName = 'Subscriber', $modelAlias = null)
+    public function __construct($dbName = null, $modelName = null, $modelAlias = null)
     {
+        if (null === $dbName) {
+            $dbName = 'rapila';
+        }
+        if (null === $modelName) {
+            $modelName = 'Subscriber';
+        }
         parent::__construct($dbName, $modelName, $modelAlias);
     }
 
@@ -81,7 +86,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      * Returns a new SubscriberQuery object.
      *
      * @param     string $modelAlias The alias of a model in the query
-     * @param     SubscriberQuery|Criteria $criteria Optional Criteria to build the query from
+     * @param   SubscriberQuery|Criteria $criteria Optional Criteria to build the query from
      *
      * @return SubscriberQuery
      */
@@ -90,10 +95,8 @@ abstract class BaseSubscriberQuery extends ModelCriteria
         if ($criteria instanceof SubscriberQuery) {
             return $criteria;
         }
-        $query = new SubscriberQuery();
-        if (null !== $modelAlias) {
-            $query->setModelAlias($modelAlias);
-        }
+        $query = new SubscriberQuery(null, null, $modelAlias);
+
         if ($criteria instanceof Criteria) {
             $query->mergeWith($criteria);
         }
@@ -121,7 +124,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
             return null;
         }
         if ((null !== ($obj = SubscriberPeer::getInstanceFromPool((string) $key))) && !$this->formatter) {
-            // the object is alredy in the instance pool
+            // the object is already in the instance pool
             return $obj;
         }
         if ($con === null) {
@@ -138,18 +141,32 @@ abstract class BaseSubscriberQuery extends ModelCriteria
     }
 
     /**
+     * Alias of findPk to use instance pooling
+     *
+     * @param     mixed $key Primary key to use for the query
+     * @param     PropelPDO $con A connection object
+     *
+     * @return                 Subscriber A model object, or null if the key is not found
+     * @throws PropelException
+     */
+     public function findOneById($key, $con = null)
+     {
+        return $this->findPk($key, $con);
+     }
+
+    /**
      * Find object by primary key using raw SQL to go fast.
      * Bypass doSelect() and the object formatter by using generated code.
      *
      * @param     mixed $key Primary key to use for the query
      * @param     PropelPDO $con A connection object
      *
-     * @return   Subscriber A model object, or null if the key is not found
-     * @throws   PropelException
+     * @return                 Subscriber A model object, or null if the key is not found
+     * @throws PropelException
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `ID`, `NAME`, `PREFERRED_LANGUAGE_ID`, `EMAIL`, `CREATED_AT`, `UPDATED_AT`, `CREATED_BY`, `UPDATED_BY` FROM `subscribers` WHERE `ID` = :p0';
+        $sql = 'SELECT `id`, `name`, `preferred_language_id`, `email`, `created_at`, `updated_at`, `created_by`, `updated_by` FROM `subscribers` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -245,7 +262,8 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      * <code>
      * $query->filterById(1234); // WHERE id = 1234
      * $query->filterById(array(12, 34)); // WHERE id IN (12, 34)
-     * $query->filterById(array('min' => 12)); // WHERE id > 12
+     * $query->filterById(array('min' => 12)); // WHERE id >= 12
+     * $query->filterById(array('max' => 12)); // WHERE id <= 12
      * </code>
      *
      * @param     mixed $id The value to use as filter.
@@ -258,8 +276,22 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      */
     public function filterById($id = null, $comparison = null)
     {
-        if (is_array($id) && null === $comparison) {
-            $comparison = Criteria::IN;
+        if (is_array($id)) {
+            $useMinMax = false;
+            if (isset($id['min'])) {
+                $this->addUsingAlias(SubscriberPeer::ID, $id['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($id['max'])) {
+                $this->addUsingAlias(SubscriberPeer::ID, $id['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
         }
 
         return $this->addUsingAlias(SubscriberPeer::ID, $id, $comparison);
@@ -359,7 +391,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      * <code>
      * $query->filterByCreatedAt('2011-03-14'); // WHERE created_at = '2011-03-14'
      * $query->filterByCreatedAt('now'); // WHERE created_at = '2011-03-14'
-     * $query->filterByCreatedAt(array('max' => 'yesterday')); // WHERE created_at > '2011-03-13'
+     * $query->filterByCreatedAt(array('max' => 'yesterday')); // WHERE created_at < '2011-03-13'
      * </code>
      *
      * @param     mixed $createdAt The value to use as filter.
@@ -402,7 +434,7 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      * <code>
      * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
      * $query->filterByUpdatedAt('now'); // WHERE updated_at = '2011-03-14'
-     * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at > '2011-03-13'
+     * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at < '2011-03-13'
      * </code>
      *
      * @param     mixed $updatedAt The value to use as filter.
@@ -445,7 +477,8 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      * <code>
      * $query->filterByCreatedBy(1234); // WHERE created_by = 1234
      * $query->filterByCreatedBy(array(12, 34)); // WHERE created_by IN (12, 34)
-     * $query->filterByCreatedBy(array('min' => 12)); // WHERE created_by > 12
+     * $query->filterByCreatedBy(array('min' => 12)); // WHERE created_by >= 12
+     * $query->filterByCreatedBy(array('max' => 12)); // WHERE created_by <= 12
      * </code>
      *
      * @see       filterByUserRelatedByCreatedBy()
@@ -488,7 +521,8 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      * <code>
      * $query->filterByUpdatedBy(1234); // WHERE updated_by = 1234
      * $query->filterByUpdatedBy(array(12, 34)); // WHERE updated_by IN (12, 34)
-     * $query->filterByUpdatedBy(array('min' => 12)); // WHERE updated_by > 12
+     * $query->filterByUpdatedBy(array('min' => 12)); // WHERE updated_by >= 12
+     * $query->filterByUpdatedBy(array('max' => 12)); // WHERE updated_by <= 12
      * </code>
      *
      * @see       filterByUserRelatedByUpdatedBy()
@@ -530,8 +564,8 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      * @param   User|PropelObjectCollection $user The related object(s) to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return   SubscriberQuery The current query, for fluid interface
-     * @throws   PropelException - if the provided filter is invalid.
+     * @return                 SubscriberQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
      */
     public function filterByUserRelatedByCreatedBy($user, $comparison = null)
     {
@@ -606,8 +640,8 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      * @param   User|PropelObjectCollection $user The related object(s) to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return   SubscriberQuery The current query, for fluid interface
-     * @throws   PropelException - if the provided filter is invalid.
+     * @return                 SubscriberQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
      */
     public function filterByUserRelatedByUpdatedBy($user, $comparison = null)
     {
@@ -682,8 +716,8 @@ abstract class BaseSubscriberQuery extends ModelCriteria
      * @param   SubscriberGroupMembership|PropelObjectCollection $subscriberGroupMembership  the related object to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return   SubscriberQuery The current query, for fluid interface
-     * @throws   PropelException - if the provided filter is invalid.
+     * @return                 SubscriberQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
      */
     public function filterBySubscriberGroupMembership($subscriberGroupMembership, $comparison = null)
     {

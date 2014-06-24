@@ -32,44 +32,44 @@ abstract class BaseNewsletterPeer
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
     const NUM_HYDRATE_COLUMNS = 11;
 
-    /** the column name for the ID field */
-    const ID = 'newsletters.ID';
+    /** the column name for the id field */
+    const ID = 'newsletters.id';
 
-    /** the column name for the SUBJECT field */
-    const SUBJECT = 'newsletters.SUBJECT';
+    /** the column name for the subject field */
+    const SUBJECT = 'newsletters.subject';
 
-    /** the column name for the NEWSLETTER_BODY field */
-    const NEWSLETTER_BODY = 'newsletters.NEWSLETTER_BODY';
+    /** the column name for the newsletter_body field */
+    const NEWSLETTER_BODY = 'newsletters.newsletter_body';
 
-    /** the column name for the LANGUAGE_ID field */
-    const LANGUAGE_ID = 'newsletters.LANGUAGE_ID';
+    /** the column name for the language_id field */
+    const LANGUAGE_ID = 'newsletters.language_id';
 
-    /** the column name for the IS_APPROVED field */
-    const IS_APPROVED = 'newsletters.IS_APPROVED';
+    /** the column name for the is_approved field */
+    const IS_APPROVED = 'newsletters.is_approved';
 
-    /** the column name for the IS_HTML field */
-    const IS_HTML = 'newsletters.IS_HTML';
+    /** the column name for the is_html field */
+    const IS_HTML = 'newsletters.is_html';
 
-    /** the column name for the TEMPLATE_NAME field */
-    const TEMPLATE_NAME = 'newsletters.TEMPLATE_NAME';
+    /** the column name for the template_name field */
+    const TEMPLATE_NAME = 'newsletters.template_name';
 
-    /** the column name for the CREATED_AT field */
-    const CREATED_AT = 'newsletters.CREATED_AT';
+    /** the column name for the created_at field */
+    const CREATED_AT = 'newsletters.created_at';
 
-    /** the column name for the UPDATED_AT field */
-    const UPDATED_AT = 'newsletters.UPDATED_AT';
+    /** the column name for the updated_at field */
+    const UPDATED_AT = 'newsletters.updated_at';
 
-    /** the column name for the CREATED_BY field */
-    const CREATED_BY = 'newsletters.CREATED_BY';
+    /** the column name for the created_by field */
+    const CREATED_BY = 'newsletters.created_by';
 
-    /** the column name for the UPDATED_BY field */
-    const UPDATED_BY = 'newsletters.UPDATED_BY';
+    /** the column name for the updated_by field */
+    const UPDATED_BY = 'newsletters.updated_by';
 
     /** The default string format for model objects of the related table **/
     const DEFAULT_STRING_FORMAT = 'YAML';
 
     /**
-     * An identiy map to hold any loaded instances of Newsletter objects.
+     * An identity map to hold any loaded instances of Newsletter objects.
      * This must be public so that other peer classes can access this when hydrating from JOIN
      * queries.
      * @var        array Newsletter[]
@@ -192,17 +192,17 @@ abstract class BaseNewsletterPeer
             $criteria->addSelectColumn(NewsletterPeer::CREATED_BY);
             $criteria->addSelectColumn(NewsletterPeer::UPDATED_BY);
         } else {
-            $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.SUBJECT');
-            $criteria->addSelectColumn($alias . '.NEWSLETTER_BODY');
-            $criteria->addSelectColumn($alias . '.LANGUAGE_ID');
-            $criteria->addSelectColumn($alias . '.IS_APPROVED');
-            $criteria->addSelectColumn($alias . '.IS_HTML');
-            $criteria->addSelectColumn($alias . '.TEMPLATE_NAME');
-            $criteria->addSelectColumn($alias . '.CREATED_AT');
-            $criteria->addSelectColumn($alias . '.UPDATED_AT');
-            $criteria->addSelectColumn($alias . '.CREATED_BY');
-            $criteria->addSelectColumn($alias . '.UPDATED_BY');
+            $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.subject');
+            $criteria->addSelectColumn($alias . '.newsletter_body');
+            $criteria->addSelectColumn($alias . '.language_id');
+            $criteria->addSelectColumn($alias . '.is_approved');
+            $criteria->addSelectColumn($alias . '.is_html');
+            $criteria->addSelectColumn($alias . '.template_name');
+            $criteria->addSelectColumn($alias . '.created_at');
+            $criteria->addSelectColumn($alias . '.updated_at');
+            $criteria->addSelectColumn($alias . '.created_by');
+            $criteria->addSelectColumn($alias . '.updated_by');
         }
     }
 
@@ -255,7 +255,7 @@ abstract class BaseNewsletterPeer
      *
      * @param      Criteria $criteria object used to create the SELECT statement.
      * @param      PropelPDO $con
-     * @return                 Newsletter
+     * @return Newsletter
      * @throws PropelException Any exceptions caught during processing will be
      *		 rethrown wrapped into a PropelException.
      */
@@ -286,7 +286,7 @@ abstract class BaseNewsletterPeer
     /**
      * Prepares the Criteria object and uses the parent doSelect() method to execute a PDOStatement.
      *
-     * Use this method directly if you want to work with an executed statement durirectly (for example
+     * Use this method directly if you want to work with an executed statement directly (for example
      * to perform your own object hydration).
      *
      * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
@@ -322,7 +322,7 @@ abstract class BaseNewsletterPeer
      * to the cache in order to ensure that the same objects are always returned by doSelect*()
      * and retrieveByPK*() calls.
      *
-     * @param      Newsletter $obj A Newsletter object.
+     * @param Newsletter $obj A Newsletter object.
      * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
      */
     public static function addInstanceToPool($obj, $key = null)
@@ -372,7 +372,7 @@ abstract class BaseNewsletterPeer
      * a multi-column primary key, a serialize()d version of the primary key will be returned.
      *
      * @param      string $key The key (@see getPrimaryKeyHash()) for this instance.
-     * @return   Newsletter Found object or null if 1) no instance exists for specified key or 2) instance pooling has been disabled.
+     * @return Newsletter Found object or null if 1) no instance exists for specified key or 2) instance pooling has been disabled.
      * @see        getPrimaryKeyHash()
      */
     public static function getInstanceFromPool($key)
@@ -391,8 +391,13 @@ abstract class BaseNewsletterPeer
      *
      * @return void
      */
-    public static function clearInstancePool()
+    public static function clearInstancePool($and_clear_all_references = false)
     {
+      if ($and_clear_all_references) {
+        foreach (NewsletterPeer::$instances as $instance) {
+          $instance->clearAllReferences(true);
+        }
+      }
         NewsletterPeer::$instances = array();
     }
 
@@ -1099,7 +1104,7 @@ abstract class BaseNewsletterPeer
     {
       $dbMap = Propel::getDatabaseMap(BaseNewsletterPeer::DATABASE_NAME);
       if (!$dbMap->hasTable(BaseNewsletterPeer::TABLE_NAME)) {
-        $dbMap->addTableObject(new NewsletterTableMap());
+        $dbMap->addTableObject(new \NewsletterTableMap());
       }
     }
 
@@ -1109,7 +1114,7 @@ abstract class BaseNewsletterPeer
      *
      * @return string ClassName
      */
-    public static function getOMClass()
+    public static function getOMClass($row = 0, $colnum = 0)
     {
         return NewsletterPeer::OM_CLASS;
     }
@@ -1149,7 +1154,7 @@ abstract class BaseNewsletterPeer
             $con->beginTransaction();
             $pk = BasePeer::doInsert($criteria, $con);
             $con->commit();
-        } catch (PropelException $e) {
+        } catch (Exception $e) {
             $con->rollBack();
             throw $e;
         }
@@ -1223,7 +1228,7 @@ abstract class BaseNewsletterPeer
             $con->commit();
 
             return $affectedRows;
-        } catch (PropelException $e) {
+        } catch (Exception $e) {
             $con->rollBack();
             throw $e;
         }
@@ -1289,7 +1294,7 @@ abstract class BaseNewsletterPeer
             $con->commit();
 
             return $affectedRows;
-        } catch (PropelException $e) {
+        } catch (Exception $e) {
             $con->rollBack();
             throw $e;
         }
@@ -1335,7 +1340,7 @@ abstract class BaseNewsletterPeer
      *
      * NOTICE: This does not apply to primary or foreign keys for now.
      *
-     * @param      Newsletter $obj The object to validate.
+     * @param Newsletter $obj The object to validate.
      * @param      mixed $cols Column name or array of column names.
      *
      * @return mixed TRUE if all columns are valid or the error message of the first invalid column.
@@ -1368,7 +1373,7 @@ abstract class BaseNewsletterPeer
     /**
      * Retrieve a single object by pkey.
      *
-     * @param      int $pk the primary key.
+     * @param int $pk the primary key.
      * @param      PropelPDO $con the connection to use
      * @return Newsletter
      */

@@ -32,38 +32,38 @@ abstract class BaseSubscriberGroupPeer
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
     const NUM_HYDRATE_COLUMNS = 9;
 
-    /** the column name for the ID field */
-    const ID = 'subscriber_groups.ID';
+    /** the column name for the id field */
+    const ID = 'subscriber_groups.id';
 
-    /** the column name for the NAME field */
-    const NAME = 'subscriber_groups.NAME';
+    /** the column name for the name field */
+    const NAME = 'subscriber_groups.name';
 
-    /** the column name for the DISPLAY_NAME field */
-    const DISPLAY_NAME = 'subscriber_groups.DISPLAY_NAME';
+    /** the column name for the display_name field */
+    const DISPLAY_NAME = 'subscriber_groups.display_name';
 
-    /** the column name for the IS_DEFAULT field */
-    const IS_DEFAULT = 'subscriber_groups.IS_DEFAULT';
+    /** the column name for the is_default field */
+    const IS_DEFAULT = 'subscriber_groups.is_default';
 
-    /** the column name for the DESCRIPTION field */
-    const DESCRIPTION = 'subscriber_groups.DESCRIPTION';
+    /** the column name for the description field */
+    const DESCRIPTION = 'subscriber_groups.description';
 
-    /** the column name for the CREATED_AT field */
-    const CREATED_AT = 'subscriber_groups.CREATED_AT';
+    /** the column name for the created_at field */
+    const CREATED_AT = 'subscriber_groups.created_at';
 
-    /** the column name for the UPDATED_AT field */
-    const UPDATED_AT = 'subscriber_groups.UPDATED_AT';
+    /** the column name for the updated_at field */
+    const UPDATED_AT = 'subscriber_groups.updated_at';
 
-    /** the column name for the CREATED_BY field */
-    const CREATED_BY = 'subscriber_groups.CREATED_BY';
+    /** the column name for the created_by field */
+    const CREATED_BY = 'subscriber_groups.created_by';
 
-    /** the column name for the UPDATED_BY field */
-    const UPDATED_BY = 'subscriber_groups.UPDATED_BY';
+    /** the column name for the updated_by field */
+    const UPDATED_BY = 'subscriber_groups.updated_by';
 
     /** The default string format for model objects of the related table **/
     const DEFAULT_STRING_FORMAT = 'YAML';
 
     /**
-     * An identiy map to hold any loaded instances of SubscriberGroup objects.
+     * An identity map to hold any loaded instances of SubscriberGroup objects.
      * This must be public so that other peer classes can access this when hydrating from JOIN
      * queries.
      * @var        array SubscriberGroup[]
@@ -184,15 +184,15 @@ abstract class BaseSubscriberGroupPeer
             $criteria->addSelectColumn(SubscriberGroupPeer::CREATED_BY);
             $criteria->addSelectColumn(SubscriberGroupPeer::UPDATED_BY);
         } else {
-            $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.NAME');
-            $criteria->addSelectColumn($alias . '.DISPLAY_NAME');
-            $criteria->addSelectColumn($alias . '.IS_DEFAULT');
-            $criteria->addSelectColumn($alias . '.DESCRIPTION');
-            $criteria->addSelectColumn($alias . '.CREATED_AT');
-            $criteria->addSelectColumn($alias . '.UPDATED_AT');
-            $criteria->addSelectColumn($alias . '.CREATED_BY');
-            $criteria->addSelectColumn($alias . '.UPDATED_BY');
+            $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.name');
+            $criteria->addSelectColumn($alias . '.display_name');
+            $criteria->addSelectColumn($alias . '.is_default');
+            $criteria->addSelectColumn($alias . '.description');
+            $criteria->addSelectColumn($alias . '.created_at');
+            $criteria->addSelectColumn($alias . '.updated_at');
+            $criteria->addSelectColumn($alias . '.created_by');
+            $criteria->addSelectColumn($alias . '.updated_by');
         }
     }
 
@@ -245,7 +245,7 @@ abstract class BaseSubscriberGroupPeer
      *
      * @param      Criteria $criteria object used to create the SELECT statement.
      * @param      PropelPDO $con
-     * @return                 SubscriberGroup
+     * @return SubscriberGroup
      * @throws PropelException Any exceptions caught during processing will be
      *		 rethrown wrapped into a PropelException.
      */
@@ -276,7 +276,7 @@ abstract class BaseSubscriberGroupPeer
     /**
      * Prepares the Criteria object and uses the parent doSelect() method to execute a PDOStatement.
      *
-     * Use this method directly if you want to work with an executed statement durirectly (for example
+     * Use this method directly if you want to work with an executed statement directly (for example
      * to perform your own object hydration).
      *
      * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
@@ -312,7 +312,7 @@ abstract class BaseSubscriberGroupPeer
      * to the cache in order to ensure that the same objects are always returned by doSelect*()
      * and retrieveByPK*() calls.
      *
-     * @param      SubscriberGroup $obj A SubscriberGroup object.
+     * @param SubscriberGroup $obj A SubscriberGroup object.
      * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
      */
     public static function addInstanceToPool($obj, $key = null)
@@ -362,7 +362,7 @@ abstract class BaseSubscriberGroupPeer
      * a multi-column primary key, a serialize()d version of the primary key will be returned.
      *
      * @param      string $key The key (@see getPrimaryKeyHash()) for this instance.
-     * @return   SubscriberGroup Found object or null if 1) no instance exists for specified key or 2) instance pooling has been disabled.
+     * @return SubscriberGroup Found object or null if 1) no instance exists for specified key or 2) instance pooling has been disabled.
      * @see        getPrimaryKeyHash()
      */
     public static function getInstanceFromPool($key)
@@ -381,8 +381,13 @@ abstract class BaseSubscriberGroupPeer
      *
      * @return void
      */
-    public static function clearInstancePool()
+    public static function clearInstancePool($and_clear_all_references = false)
     {
+      if ($and_clear_all_references) {
+        foreach (SubscriberGroupPeer::$instances as $instance) {
+          $instance->clearAllReferences(true);
+        }
+      }
         SubscriberGroupPeer::$instances = array();
     }
 
@@ -1092,7 +1097,7 @@ abstract class BaseSubscriberGroupPeer
     {
       $dbMap = Propel::getDatabaseMap(BaseSubscriberGroupPeer::DATABASE_NAME);
       if (!$dbMap->hasTable(BaseSubscriberGroupPeer::TABLE_NAME)) {
-        $dbMap->addTableObject(new SubscriberGroupTableMap());
+        $dbMap->addTableObject(new \SubscriberGroupTableMap());
       }
     }
 
@@ -1102,7 +1107,7 @@ abstract class BaseSubscriberGroupPeer
      *
      * @return string ClassName
      */
-    public static function getOMClass()
+    public static function getOMClass($row = 0, $colnum = 0)
     {
         return SubscriberGroupPeer::OM_CLASS;
     }
@@ -1142,7 +1147,7 @@ abstract class BaseSubscriberGroupPeer
             $con->beginTransaction();
             $pk = BasePeer::doInsert($criteria, $con);
             $con->commit();
-        } catch (PropelException $e) {
+        } catch (Exception $e) {
             $con->rollBack();
             throw $e;
         }
@@ -1216,7 +1221,7 @@ abstract class BaseSubscriberGroupPeer
             $con->commit();
 
             return $affectedRows;
-        } catch (PropelException $e) {
+        } catch (Exception $e) {
             $con->rollBack();
             throw $e;
         }
@@ -1282,7 +1287,7 @@ abstract class BaseSubscriberGroupPeer
             $con->commit();
 
             return $affectedRows;
-        } catch (PropelException $e) {
+        } catch (Exception $e) {
             $con->rollBack();
             throw $e;
         }
@@ -1334,7 +1339,7 @@ abstract class BaseSubscriberGroupPeer
      *
      * NOTICE: This does not apply to primary or foreign keys for now.
      *
-     * @param      SubscriberGroup $obj The object to validate.
+     * @param SubscriberGroup $obj The object to validate.
      * @param      mixed $cols Column name or array of column names.
      *
      * @return mixed TRUE if all columns are valid or the error message of the first invalid column.
@@ -1367,7 +1372,7 @@ abstract class BaseSubscriberGroupPeer
     /**
      * Retrieve a single object by pkey.
      *
-     * @param      int $pk the primary key.
+     * @param int $pk the primary key.
      * @param      PropelPDO $con the connection to use
      * @return SubscriberGroup
      */

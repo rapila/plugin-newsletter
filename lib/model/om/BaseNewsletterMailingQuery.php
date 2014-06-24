@@ -51,7 +51,6 @@
  * @method NewsletterMailing findOne(PropelPDO $con = null) Return the first NewsletterMailing matching the query
  * @method NewsletterMailing findOneOrCreate(PropelPDO $con = null) Return the first NewsletterMailing matching the query, or a new NewsletterMailing object populated from the query conditions when no match is found
  *
- * @method NewsletterMailing findOneById(int $id) Return the first NewsletterMailing filtered by the id column
  * @method NewsletterMailing findOneByDateSent(string $date_sent) Return the first NewsletterMailing filtered by the date_sent column
  * @method NewsletterMailing findOneBySubscriberGroupId(int $subscriber_group_id) Return the first NewsletterMailing filtered by the subscriber_group_id column
  * @method NewsletterMailing findOneByExternalMailGroupId(string $external_mail_group_id) Return the first NewsletterMailing filtered by the external_mail_group_id column
@@ -84,8 +83,14 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'rapila', $modelName = 'NewsletterMailing', $modelAlias = null)
+    public function __construct($dbName = null, $modelName = null, $modelAlias = null)
     {
+        if (null === $dbName) {
+            $dbName = 'rapila';
+        }
+        if (null === $modelName) {
+            $modelName = 'NewsletterMailing';
+        }
         parent::__construct($dbName, $modelName, $modelAlias);
     }
 
@@ -93,7 +98,7 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * Returns a new NewsletterMailingQuery object.
      *
      * @param     string $modelAlias The alias of a model in the query
-     * @param     NewsletterMailingQuery|Criteria $criteria Optional Criteria to build the query from
+     * @param   NewsletterMailingQuery|Criteria $criteria Optional Criteria to build the query from
      *
      * @return NewsletterMailingQuery
      */
@@ -102,10 +107,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
         if ($criteria instanceof NewsletterMailingQuery) {
             return $criteria;
         }
-        $query = new NewsletterMailingQuery();
-        if (null !== $modelAlias) {
-            $query->setModelAlias($modelAlias);
-        }
+        $query = new NewsletterMailingQuery(null, null, $modelAlias);
+
         if ($criteria instanceof Criteria) {
             $query->mergeWith($criteria);
         }
@@ -133,7 +136,7 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
             return null;
         }
         if ((null !== ($obj = NewsletterMailingPeer::getInstanceFromPool((string) $key))) && !$this->formatter) {
-            // the object is alredy in the instance pool
+            // the object is already in the instance pool
             return $obj;
         }
         if ($con === null) {
@@ -150,18 +153,32 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
     }
 
     /**
+     * Alias of findPk to use instance pooling
+     *
+     * @param     mixed $key Primary key to use for the query
+     * @param     PropelPDO $con A connection object
+     *
+     * @return                 NewsletterMailing A model object, or null if the key is not found
+     * @throws PropelException
+     */
+     public function findOneById($key, $con = null)
+     {
+        return $this->findPk($key, $con);
+     }
+
+    /**
      * Find object by primary key using raw SQL to go fast.
      * Bypass doSelect() and the object formatter by using generated code.
      *
      * @param     mixed $key Primary key to use for the query
      * @param     PropelPDO $con A connection object
      *
-     * @return   NewsletterMailing A model object, or null if the key is not found
-     * @throws   PropelException
+     * @return                 NewsletterMailing A model object, or null if the key is not found
+     * @throws PropelException
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `ID`, `DATE_SENT`, `SUBSCRIBER_GROUP_ID`, `EXTERNAL_MAIL_GROUP_ID`, `NEWSLETTER_ID`, `RECIPIENT_COUNT`, `CREATED_AT`, `UPDATED_AT`, `CREATED_BY`, `UPDATED_BY` FROM `newsletter_mailings` WHERE `ID` = :p0';
+        $sql = 'SELECT `id`, `date_sent`, `subscriber_group_id`, `external_mail_group_id`, `newsletter_id`, `recipient_count`, `created_at`, `updated_at`, `created_by`, `updated_by` FROM `newsletter_mailings` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -257,7 +274,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * <code>
      * $query->filterById(1234); // WHERE id = 1234
      * $query->filterById(array(12, 34)); // WHERE id IN (12, 34)
-     * $query->filterById(array('min' => 12)); // WHERE id > 12
+     * $query->filterById(array('min' => 12)); // WHERE id >= 12
+     * $query->filterById(array('max' => 12)); // WHERE id <= 12
      * </code>
      *
      * @param     mixed $id The value to use as filter.
@@ -270,8 +288,22 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      */
     public function filterById($id = null, $comparison = null)
     {
-        if (is_array($id) && null === $comparison) {
-            $comparison = Criteria::IN;
+        if (is_array($id)) {
+            $useMinMax = false;
+            if (isset($id['min'])) {
+                $this->addUsingAlias(NewsletterMailingPeer::ID, $id['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($id['max'])) {
+                $this->addUsingAlias(NewsletterMailingPeer::ID, $id['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
         }
 
         return $this->addUsingAlias(NewsletterMailingPeer::ID, $id, $comparison);
@@ -284,7 +316,7 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * <code>
      * $query->filterByDateSent('2011-03-14'); // WHERE date_sent = '2011-03-14'
      * $query->filterByDateSent('now'); // WHERE date_sent = '2011-03-14'
-     * $query->filterByDateSent(array('max' => 'yesterday')); // WHERE date_sent > '2011-03-13'
+     * $query->filterByDateSent(array('max' => 'yesterday')); // WHERE date_sent < '2011-03-13'
      * </code>
      *
      * @param     mixed $dateSent The value to use as filter.
@@ -327,7 +359,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * <code>
      * $query->filterBySubscriberGroupId(1234); // WHERE subscriber_group_id = 1234
      * $query->filterBySubscriberGroupId(array(12, 34)); // WHERE subscriber_group_id IN (12, 34)
-     * $query->filterBySubscriberGroupId(array('min' => 12)); // WHERE subscriber_group_id > 12
+     * $query->filterBySubscriberGroupId(array('min' => 12)); // WHERE subscriber_group_id >= 12
+     * $query->filterBySubscriberGroupId(array('max' => 12)); // WHERE subscriber_group_id <= 12
      * </code>
      *
      * @see       filterBySubscriberGroup()
@@ -399,7 +432,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * <code>
      * $query->filterByNewsletterId(1234); // WHERE newsletter_id = 1234
      * $query->filterByNewsletterId(array(12, 34)); // WHERE newsletter_id IN (12, 34)
-     * $query->filterByNewsletterId(array('min' => 12)); // WHERE newsletter_id > 12
+     * $query->filterByNewsletterId(array('min' => 12)); // WHERE newsletter_id >= 12
+     * $query->filterByNewsletterId(array('max' => 12)); // WHERE newsletter_id <= 12
      * </code>
      *
      * @see       filterByNewsletter()
@@ -442,7 +476,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * <code>
      * $query->filterByRecipientCount(1234); // WHERE recipient_count = 1234
      * $query->filterByRecipientCount(array(12, 34)); // WHERE recipient_count IN (12, 34)
-     * $query->filterByRecipientCount(array('min' => 12)); // WHERE recipient_count > 12
+     * $query->filterByRecipientCount(array('min' => 12)); // WHERE recipient_count >= 12
+     * $query->filterByRecipientCount(array('max' => 12)); // WHERE recipient_count <= 12
      * </code>
      *
      * @param     mixed $recipientCount The value to use as filter.
@@ -483,7 +518,7 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * <code>
      * $query->filterByCreatedAt('2011-03-14'); // WHERE created_at = '2011-03-14'
      * $query->filterByCreatedAt('now'); // WHERE created_at = '2011-03-14'
-     * $query->filterByCreatedAt(array('max' => 'yesterday')); // WHERE created_at > '2011-03-13'
+     * $query->filterByCreatedAt(array('max' => 'yesterday')); // WHERE created_at < '2011-03-13'
      * </code>
      *
      * @param     mixed $createdAt The value to use as filter.
@@ -526,7 +561,7 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * <code>
      * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
      * $query->filterByUpdatedAt('now'); // WHERE updated_at = '2011-03-14'
-     * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at > '2011-03-13'
+     * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at < '2011-03-13'
      * </code>
      *
      * @param     mixed $updatedAt The value to use as filter.
@@ -569,7 +604,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * <code>
      * $query->filterByCreatedBy(1234); // WHERE created_by = 1234
      * $query->filterByCreatedBy(array(12, 34)); // WHERE created_by IN (12, 34)
-     * $query->filterByCreatedBy(array('min' => 12)); // WHERE created_by > 12
+     * $query->filterByCreatedBy(array('min' => 12)); // WHERE created_by >= 12
+     * $query->filterByCreatedBy(array('max' => 12)); // WHERE created_by <= 12
      * </code>
      *
      * @see       filterByUserRelatedByCreatedBy()
@@ -612,7 +648,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * <code>
      * $query->filterByUpdatedBy(1234); // WHERE updated_by = 1234
      * $query->filterByUpdatedBy(array(12, 34)); // WHERE updated_by IN (12, 34)
-     * $query->filterByUpdatedBy(array('min' => 12)); // WHERE updated_by > 12
+     * $query->filterByUpdatedBy(array('min' => 12)); // WHERE updated_by >= 12
+     * $query->filterByUpdatedBy(array('max' => 12)); // WHERE updated_by <= 12
      * </code>
      *
      * @see       filterByUserRelatedByUpdatedBy()
@@ -654,8 +691,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * @param   SubscriberGroup|PropelObjectCollection $subscriberGroup The related object(s) to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return   NewsletterMailingQuery The current query, for fluid interface
-     * @throws   PropelException - if the provided filter is invalid.
+     * @return                 NewsletterMailingQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
      */
     public function filterBySubscriberGroup($subscriberGroup, $comparison = null)
     {
@@ -730,8 +767,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * @param   Newsletter|PropelObjectCollection $newsletter The related object(s) to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return   NewsletterMailingQuery The current query, for fluid interface
-     * @throws   PropelException - if the provided filter is invalid.
+     * @return                 NewsletterMailingQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
      */
     public function filterByNewsletter($newsletter, $comparison = null)
     {
@@ -806,8 +843,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * @param   User|PropelObjectCollection $user The related object(s) to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return   NewsletterMailingQuery The current query, for fluid interface
-     * @throws   PropelException - if the provided filter is invalid.
+     * @return                 NewsletterMailingQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
      */
     public function filterByUserRelatedByCreatedBy($user, $comparison = null)
     {
@@ -882,8 +919,8 @@ abstract class BaseNewsletterMailingQuery extends ModelCriteria
      * @param   User|PropelObjectCollection $user The related object(s) to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
-     * @return   NewsletterMailingQuery The current query, for fluid interface
-     * @throws   PropelException - if the provided filter is invalid.
+     * @return                 NewsletterMailingQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
      */
     public function filterByUserRelatedByUpdatedBy($user, $comparison = null)
     {

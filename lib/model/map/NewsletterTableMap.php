@@ -38,17 +38,17 @@ class NewsletterTableMap extends TableMap
         $this->setPackage('model');
         $this->setUseIdGenerator(true);
         // columns
-        $this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('SUBJECT', 'Subject', 'VARCHAR', true, 255, null);
-        $this->addColumn('NEWSLETTER_BODY', 'NewsletterBody', 'BLOB', false, null, null);
-        $this->addColumn('LANGUAGE_ID', 'LanguageId', 'VARCHAR', true, 3, null);
-        $this->addColumn('IS_APPROVED', 'IsApproved', 'BOOLEAN', true, 1, false);
-        $this->addColumn('IS_HTML', 'IsHtml', 'BOOLEAN', true, 1, true);
-        $this->addColumn('TEMPLATE_NAME', 'TemplateName', 'VARCHAR', false, 60, null);
-        $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
-        $this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
-        $this->addForeignKey('CREATED_BY', 'CreatedBy', 'INTEGER', 'users', 'ID', false, null, null);
-        $this->addForeignKey('UPDATED_BY', 'UpdatedBy', 'INTEGER', 'users', 'ID', false, null, null);
+        $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
+        $this->addColumn('subject', 'Subject', 'VARCHAR', true, 255, null);
+        $this->addColumn('newsletter_body', 'NewsletterBody', 'BLOB', false, null, null);
+        $this->addColumn('language_id', 'LanguageId', 'VARCHAR', true, 3, null);
+        $this->addColumn('is_approved', 'IsApproved', 'BOOLEAN', true, 1, false);
+        $this->addColumn('is_html', 'IsHtml', 'BOOLEAN', true, 1, true);
+        $this->addColumn('template_name', 'TemplateName', 'VARCHAR', false, 60, null);
+        $this->addColumn('created_at', 'CreatedAt', 'TIMESTAMP', false, null, null);
+        $this->addColumn('updated_at', 'UpdatedAt', 'TIMESTAMP', false, null, null);
+        $this->addForeignKey('created_by', 'CreatedBy', 'INTEGER', 'users', 'id', false, null, null);
+        $this->addForeignKey('updated_by', 'UpdatedBy', 'INTEGER', 'users', 'id', false, null, null);
         // validators
     } // initialize()
 
@@ -71,11 +71,25 @@ class NewsletterTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
-            'referencing' => array(),
-            'denyable' => array('mode' => 'by_role', 'role_key' => '', 'owner_allowed' => '', ),
-            'extended_timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', 'disable_updated_at' => 'false', ),
-            'attributable' => array('create_column' => 'created_by', 'update_column' => 'updated_by', ),
-            'extended_keyable' => array('key_separator' => '_', ),
+            'referencing' =>  array (
+),
+            'denyable' =>  array (
+  'mode' => 'by_role',
+  'role_key' => '',
+  'owner_allowed' => '',
+),
+            'extended_timestampable' =>  array (
+  'create_column' => 'created_at',
+  'update_column' => 'updated_at',
+  'disable_updated_at' => 'false',
+),
+            'attributable' =>  array (
+  'create_column' => 'created_by',
+  'update_column' => 'updated_by',
+),
+            'extended_keyable' =>  array (
+  'key_separator' => '_',
+),
         );
     } // getBehaviors()
 

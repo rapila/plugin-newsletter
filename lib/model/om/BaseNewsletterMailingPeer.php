@@ -32,41 +32,41 @@ abstract class BaseNewsletterMailingPeer
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
     const NUM_HYDRATE_COLUMNS = 10;
 
-    /** the column name for the ID field */
-    const ID = 'newsletter_mailings.ID';
+    /** the column name for the id field */
+    const ID = 'newsletter_mailings.id';
 
-    /** the column name for the DATE_SENT field */
-    const DATE_SENT = 'newsletter_mailings.DATE_SENT';
+    /** the column name for the date_sent field */
+    const DATE_SENT = 'newsletter_mailings.date_sent';
 
-    /** the column name for the SUBSCRIBER_GROUP_ID field */
-    const SUBSCRIBER_GROUP_ID = 'newsletter_mailings.SUBSCRIBER_GROUP_ID';
+    /** the column name for the subscriber_group_id field */
+    const SUBSCRIBER_GROUP_ID = 'newsletter_mailings.subscriber_group_id';
 
-    /** the column name for the EXTERNAL_MAIL_GROUP_ID field */
-    const EXTERNAL_MAIL_GROUP_ID = 'newsletter_mailings.EXTERNAL_MAIL_GROUP_ID';
+    /** the column name for the external_mail_group_id field */
+    const EXTERNAL_MAIL_GROUP_ID = 'newsletter_mailings.external_mail_group_id';
 
-    /** the column name for the NEWSLETTER_ID field */
-    const NEWSLETTER_ID = 'newsletter_mailings.NEWSLETTER_ID';
+    /** the column name for the newsletter_id field */
+    const NEWSLETTER_ID = 'newsletter_mailings.newsletter_id';
 
-    /** the column name for the RECIPIENT_COUNT field */
-    const RECIPIENT_COUNT = 'newsletter_mailings.RECIPIENT_COUNT';
+    /** the column name for the recipient_count field */
+    const RECIPIENT_COUNT = 'newsletter_mailings.recipient_count';
 
-    /** the column name for the CREATED_AT field */
-    const CREATED_AT = 'newsletter_mailings.CREATED_AT';
+    /** the column name for the created_at field */
+    const CREATED_AT = 'newsletter_mailings.created_at';
 
-    /** the column name for the UPDATED_AT field */
-    const UPDATED_AT = 'newsletter_mailings.UPDATED_AT';
+    /** the column name for the updated_at field */
+    const UPDATED_AT = 'newsletter_mailings.updated_at';
 
-    /** the column name for the CREATED_BY field */
-    const CREATED_BY = 'newsletter_mailings.CREATED_BY';
+    /** the column name for the created_by field */
+    const CREATED_BY = 'newsletter_mailings.created_by';
 
-    /** the column name for the UPDATED_BY field */
-    const UPDATED_BY = 'newsletter_mailings.UPDATED_BY';
+    /** the column name for the updated_by field */
+    const UPDATED_BY = 'newsletter_mailings.updated_by';
 
     /** The default string format for model objects of the related table **/
     const DEFAULT_STRING_FORMAT = 'YAML';
 
     /**
-     * An identiy map to hold any loaded instances of NewsletterMailing objects.
+     * An identity map to hold any loaded instances of NewsletterMailing objects.
      * This must be public so that other peer classes can access this when hydrating from JOIN
      * queries.
      * @var        array NewsletterMailing[]
@@ -188,16 +188,16 @@ abstract class BaseNewsletterMailingPeer
             $criteria->addSelectColumn(NewsletterMailingPeer::CREATED_BY);
             $criteria->addSelectColumn(NewsletterMailingPeer::UPDATED_BY);
         } else {
-            $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.DATE_SENT');
-            $criteria->addSelectColumn($alias . '.SUBSCRIBER_GROUP_ID');
-            $criteria->addSelectColumn($alias . '.EXTERNAL_MAIL_GROUP_ID');
-            $criteria->addSelectColumn($alias . '.NEWSLETTER_ID');
-            $criteria->addSelectColumn($alias . '.RECIPIENT_COUNT');
-            $criteria->addSelectColumn($alias . '.CREATED_AT');
-            $criteria->addSelectColumn($alias . '.UPDATED_AT');
-            $criteria->addSelectColumn($alias . '.CREATED_BY');
-            $criteria->addSelectColumn($alias . '.UPDATED_BY');
+            $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.date_sent');
+            $criteria->addSelectColumn($alias . '.subscriber_group_id');
+            $criteria->addSelectColumn($alias . '.external_mail_group_id');
+            $criteria->addSelectColumn($alias . '.newsletter_id');
+            $criteria->addSelectColumn($alias . '.recipient_count');
+            $criteria->addSelectColumn($alias . '.created_at');
+            $criteria->addSelectColumn($alias . '.updated_at');
+            $criteria->addSelectColumn($alias . '.created_by');
+            $criteria->addSelectColumn($alias . '.updated_by');
         }
     }
 
@@ -250,7 +250,7 @@ abstract class BaseNewsletterMailingPeer
      *
      * @param      Criteria $criteria object used to create the SELECT statement.
      * @param      PropelPDO $con
-     * @return                 NewsletterMailing
+     * @return NewsletterMailing
      * @throws PropelException Any exceptions caught during processing will be
      *		 rethrown wrapped into a PropelException.
      */
@@ -281,7 +281,7 @@ abstract class BaseNewsletterMailingPeer
     /**
      * Prepares the Criteria object and uses the parent doSelect() method to execute a PDOStatement.
      *
-     * Use this method directly if you want to work with an executed statement durirectly (for example
+     * Use this method directly if you want to work with an executed statement directly (for example
      * to perform your own object hydration).
      *
      * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
@@ -317,7 +317,7 @@ abstract class BaseNewsletterMailingPeer
      * to the cache in order to ensure that the same objects are always returned by doSelect*()
      * and retrieveByPK*() calls.
      *
-     * @param      NewsletterMailing $obj A NewsletterMailing object.
+     * @param NewsletterMailing $obj A NewsletterMailing object.
      * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
      */
     public static function addInstanceToPool($obj, $key = null)
@@ -367,7 +367,7 @@ abstract class BaseNewsletterMailingPeer
      * a multi-column primary key, a serialize()d version of the primary key will be returned.
      *
      * @param      string $key The key (@see getPrimaryKeyHash()) for this instance.
-     * @return   NewsletterMailing Found object or null if 1) no instance exists for specified key or 2) instance pooling has been disabled.
+     * @return NewsletterMailing Found object or null if 1) no instance exists for specified key or 2) instance pooling has been disabled.
      * @see        getPrimaryKeyHash()
      */
     public static function getInstanceFromPool($key)
@@ -386,8 +386,13 @@ abstract class BaseNewsletterMailingPeer
      *
      * @return void
      */
-    public static function clearInstancePool()
+    public static function clearInstancePool($and_clear_all_references = false)
     {
+      if ($and_clear_all_references) {
+        foreach (NewsletterMailingPeer::$instances as $instance) {
+          $instance->clearAllReferences(true);
+        }
+      }
         NewsletterMailingPeer::$instances = array();
     }
 
@@ -1835,7 +1840,7 @@ abstract class BaseNewsletterMailingPeer
     {
       $dbMap = Propel::getDatabaseMap(BaseNewsletterMailingPeer::DATABASE_NAME);
       if (!$dbMap->hasTable(BaseNewsletterMailingPeer::TABLE_NAME)) {
-        $dbMap->addTableObject(new NewsletterMailingTableMap());
+        $dbMap->addTableObject(new \NewsletterMailingTableMap());
       }
     }
 
@@ -1845,7 +1850,7 @@ abstract class BaseNewsletterMailingPeer
      *
      * @return string ClassName
      */
-    public static function getOMClass()
+    public static function getOMClass($row = 0, $colnum = 0)
     {
         return NewsletterMailingPeer::OM_CLASS;
     }
@@ -1885,7 +1890,7 @@ abstract class BaseNewsletterMailingPeer
             $con->beginTransaction();
             $pk = BasePeer::doInsert($criteria, $con);
             $con->commit();
-        } catch (PropelException $e) {
+        } catch (Exception $e) {
             $con->rollBack();
             throw $e;
         }
@@ -1958,7 +1963,7 @@ abstract class BaseNewsletterMailingPeer
             $con->commit();
 
             return $affectedRows;
-        } catch (PropelException $e) {
+        } catch (Exception $e) {
             $con->rollBack();
             throw $e;
         }
@@ -2017,7 +2022,7 @@ abstract class BaseNewsletterMailingPeer
             $con->commit();
 
             return $affectedRows;
-        } catch (PropelException $e) {
+        } catch (Exception $e) {
             $con->rollBack();
             throw $e;
         }
@@ -2030,7 +2035,7 @@ abstract class BaseNewsletterMailingPeer
      *
      * NOTICE: This does not apply to primary or foreign keys for now.
      *
-     * @param      NewsletterMailing $obj The object to validate.
+     * @param NewsletterMailing $obj The object to validate.
      * @param      mixed $cols Column name or array of column names.
      *
      * @return mixed TRUE if all columns are valid or the error message of the first invalid column.
@@ -2063,7 +2068,7 @@ abstract class BaseNewsletterMailingPeer
     /**
      * Retrieve a single object by pkey.
      *
-     * @param      int $pk the primary key.
+     * @param int $pk the primary key.
      * @param      PropelPDO $con the connection to use
      * @return NewsletterMailing
      */
