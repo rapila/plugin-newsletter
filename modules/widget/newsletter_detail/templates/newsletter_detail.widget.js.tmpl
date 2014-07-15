@@ -3,11 +3,11 @@ Widget.types.newsletter_detail = {
 		this.mailing_list_changed_handler = this.fill_data.bind(this);
 		Widget.handle('rapila-mailing_list_changed', this.mailing_list_changed_handler);
 	},
-	
+
 	initialize: function() {
 		this.init_content();
 		var _this = this;
-		
+
 		Widget.callStatic('detail', 'create_for_instance', this);
 		this.newsletter_mailing_prototype = Widget.parseHTML("{{includeTemplate=newsletter_mailing}}");
 		this._element.find('.hide_if_not_saved').hide();
@@ -19,9 +19,9 @@ Widget.types.newsletter_detail = {
 		});
 
 		// Template select and allow template reload
-		this.allow_load_template = true; 
+		this.allow_load_template = true;
 		var template_select = _this._element.find("select[name='template_name']").change(function() {
-			if(this.allow_load_template) {
+			if(_this.allow_load_template) {
 				_this.update_newsletter_body(template_select.val());
 			}
 		});
@@ -41,7 +41,7 @@ Widget.types.newsletter_detail = {
 		});
 		jQuery('<option/>').text("{{writeString=wns.newsletter.choose_template}}").val('').prependTo(template_select);
 		template_select.find("option:first-child").attr('selected', true);
-		
+
 		this.handle('opening-initial', function() {
 			_this.init_textareas();
 		});
@@ -53,7 +53,7 @@ Widget.types.newsletter_detail = {
 			this.detail_widget.clear_validation();
 		}.bind(this));
 	},
-	
+
 	init_content: function() {
 		this._element = Widget.parseHTML("{{includeTemplate=edit}}");
 		this._element.find("select[name='language_id']").prepareWidget(function(widget) {
@@ -63,7 +63,7 @@ Widget.types.newsletter_detail = {
 
 		this._element.find('.newsletter_send_test_button').button().click(this.send_newsletter.bind(this, 'test'));
 	},
-	
+
 	send_info_text: function(is_hot) {
 		var send_info_text = this._element.find('span.status_send_info');
 		if(is_hot) {
@@ -72,7 +72,7 @@ Widget.types.newsletter_detail = {
 			send_info_text.text("{{writeString=wns.newsletter.send_test_info}}");
 		}
 	},
-	
+
 	fill_data: function() {
 		var _this = this;
 		this.loadNewsletterData(function(newsletter_data) {
@@ -110,22 +110,22 @@ Widget.types.newsletter_detail = {
 					var value = val ? val : " ";
 					recipient_count.append(jQuery('<div/>').text(value));
 				});
-				mailing_list.append(newsletter_mailing);	
-				has_mailings = true;	
+				mailing_list.append(newsletter_mailing);
+				has_mailings = true;
 			});
-		
+
 			if(!has_mailings) {
 				var no_entry_row = jQuery('<tr/>').html(jQuery("<td/>").attr("colspan", 4).text("{{writeString=newsletter_mailing.no_entries}}"));
 				mailing_list.append(no_entry_row);
 			}
-		
+
 			this.send_info_text(newsletter_data.IsApproved);
 			this.update_newsletter_body();
 			this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.newsletter}} "+newsletter_data.Subject);
 			this._element.find('.hide_if_not_saved').show();
 		});
 	},
-	
+
 	send_newsletter: function(action) {
 		var newsletter_id = this.current_detail_id;
 		Widget.create('newsletter_send', function(send_widget) {
@@ -137,7 +137,7 @@ Widget.types.newsletter_detail = {
 			}
 		});
 	},
-	
+
 	init_textareas: function() {
 		var newsletter_text = this.get_newsletter_text();
 		if(!newsletter_text.attr('data-widget-type')) {
@@ -146,7 +146,7 @@ Widget.types.newsletter_detail = {
 			}, jQuery.noop, this.settings.rich_text_config);
 		}
 	},
-	
+
 	update_newsletter_body: function(newsletter_template) {
 		var _this = this;
 		var newsletter_body = this.getNewsletterBody(newsletter_template);
@@ -158,11 +158,11 @@ Widget.types.newsletter_detail = {
 			});
 		});
 	},
-	
+
 	get_newsletter_text: function() {
 		return this._element.find('div.newsletter_body');
 	},
-	
+
 	save: function(should_remain_open) {
 		if(should_remain_open) {
 			this.settings.remains_open = true;
@@ -172,7 +172,7 @@ Widget.types.newsletter_detail = {
 			this.settings.remains_open = false;
 		}
 	},
-	
+
 	settings: {
 		detail_widget: {
 			title: "{{writeString=wns.new_entry}}",
