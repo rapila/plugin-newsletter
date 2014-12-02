@@ -3,8 +3,8 @@
 
 newsletter:
   text_module:
-    toolbar: 
-      - 
+    toolbar:
+      -
         - ["Bold", "Italic"]
         - ["Link", "Unlink", "Image"]
         - ["BulletedList"]
@@ -12,31 +12,37 @@ newsletter:
         - ["Format", "RemoveFormat", "Source"]
     # Example of how to implement and configure a insertable_part tool for CKEditor (add some html code that is repetitive
     # config newsletter/text_module/insertable_parts:
-    # • the insertable_part file has to be named "part_[name_of_part].tmpl" 
+    # • the insertable_part file has to be named "part_[name_of_part].tmpl"
     # • and has to be located in the site/templates/newsletter directory
     # • there is a icon for this tool available that can be overwritten
     # • also the tooltip string can be overwritten in a static language ini file or in the strings database
-    # insertable_parts: [{name: name_of_part, template: 'newsletter/part_name_of_part', icon: '{{writeConstantValue=DIRNAME_PLUGINS}}/web/images/tinymce_custom_insert_button.gif"', tooltip_string_key: "richtext.add_info_block", type: end_of_body}]
-        
+    # insertable_parts: [{
+      # name: name_of_part,
+      # template: 'newsletter/part_name_of_part',
+      # icon: 'richtext_icon_append_block.png',
+      # tooltip_string_key: "richtext.add_info_block",
+      # type: end_of_body
+    # }]
+
   # default sender name [only used as fallback if sender_email_addresses are not apropriatly configured with email/name]
   sender_name: Rapila Newsletter Plugin
-  
+
   # used for automatic system confirmation e-mail (not to confuse with sender_email_addresses)
   # sender_email: 'no-reply@rapi.la'
-  
+
   # Use this parameter if you want to use different email addresses for sending newsletters
   # note: the logged in user is automatically available as sender option
   sender_email_addresses:
     # 'noreply@example.com' : "Sender Name"
     # 'sender@example.com' : "Sender Name2"
-    
+
     # - 'noreply@example.com' @deprecated, still works but is not recommended
-  
+
   # unsubscribe page identifier: defaults to unsubscribe (page handles all unsubscribe actions)
   unsubscribe_page: unsubscribe
 
   # always use optin for correct subscription handling
   optin_confirmation_required: true
-  
+
   #how to convert to plain-text alternative set to null or false to send only html emails
   plain_text_alternative_method: markdown
