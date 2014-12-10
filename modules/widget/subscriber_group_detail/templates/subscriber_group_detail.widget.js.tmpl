@@ -17,22 +17,25 @@ Widget.types.subscriber_group_detail = {
 	},
 
 	fill_data: function() {
-		this.loadData(function(subscriber_group_data) {
-			this._element.find("input[name='name']").val(subscriber_group_data.Name);
-			this.display_name.val(subscriber_group_data.DisplayName);
+		this.loadData(function(data) {
+			this._element.find("input[name='name']").val(data.Name);
+			this.display_name.val(data.DisplayName);
 			this.display_name.change();
-			this._element.find(".updated_info").text(subscriber_group_data.UpdatedInfo);
-			this._element.find(".created_info").text(subscriber_group_data.CreatedInfo);
-			this._element.find("span[class='detail_id']").text(subscriber_group_data.Id);
+			this._element.find(".updated_info").text(data.UpdatedInfo);
+			this._element.find(".created_info").text(data.CreatedInfo);
+			this._element.find("span[class='detail_id']").text(data.Id);
+			this._element.find("span[class='subscriber_count']").text(data.SubscriberCount);
+
+
 			this._element.find('div.hide_if_not_saved').show();
-			this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.subscriber_group}} "+subscriber_group_data.Name);
+			this.detail_widget.set_title(this.detail_widget.settings.title = "{{writeString=wns.subscriber_group}} "+data.Name);
 		});
 	},
 
 	save_callback: function(info) {
 		Widget.fire('rapila-subscriber_groups_changed', info);
 	},
-	
+
 	settings: {
 		detail_widget: {
 			title: "{{writeString=wns.new_entry}}",

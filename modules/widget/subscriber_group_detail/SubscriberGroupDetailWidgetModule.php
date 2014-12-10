@@ -5,16 +5,17 @@
  */
 class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 	private $iSubscriberGroupId;
-	
+
 	public function setSubscriberGroupId($iSubscriberGroupId) {
 		$this->iSubscriberGroupId = $iSubscriberGroupId;
 	}
-	
+
 	public function loadData() {
 		$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->iSubscriberGroupId);
 		$aResult = $oSubscriberGroup->toArray();
 		$aResult['CreatedInfo'] = Util::formatCreatedInfo($oSubscriberGroup);
 		$aResult['UpdatedInfo'] = Util::formatUpdatedInfo($oSubscriberGroup);
+		$aResult['SubscriberCount'] = $oSubscriberGroup->countSubscriberGroupMemberships();
 		return $aResult;
 	}
 
@@ -24,7 +25,7 @@ class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 		$oFlash->checkForValue('name', 'name_required');
 		$oFlash->finishReporting();
 	}
-	
+
 	public function saveData($aSubscriberGroupData) {
 		if($this->iSubscriberGroupId) {
 			$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->iSubscriberGroupId);
@@ -41,7 +42,7 @@ class SubscriberGroupDetailWidgetModule extends PersistentWidgetModule {
 			throw new ValidationException();
 		}
 		$oSubscriberGroup->save();
-		
+
 		$oResult = new stdClass();
 		$oResult->id = $oSubscriberGroup->getId();
 		if($this->iSubscriberGroupId === null) {
