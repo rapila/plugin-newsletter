@@ -4,7 +4,7 @@
  * @subpackage rapila-plugin-newsletter
  */
 class NewsletterDetailWidgetModule extends PersistentWidgetModule {
-	
+
 	private $sLanguageId = null;
 	private $iNewsletterId;
 	private $iBatchSize = 50;
@@ -17,13 +17,17 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 	public function __construct($sSessionKey = null) {
 		parent::__construct($sSessionKey);
 		$oRichtextWidget = WidgetModule::getWidget('rich_text', null, '', 'newsletter');
+		$oNewsletterPage = PageQuery::create()->findOneByIdentifier('newsletter');
+		if($oNewsletterPage) {
+			$oRichtextWidget->setTemplate($oNewsletterPage->getTemplate());
+		}
 		$this->setSetting('rich_text_session', $oRichtextWidget->getSessionKey());
 	}
-	
+
 	public function setNewsletterId($iNewsletterId) {
 		$this->iNewsletterId = $iNewsletterId;
 	}
-	
+
 	public function loadNewsletterData() {
 		if(!$this->iNewsletterId) {
 			return null;
@@ -39,7 +43,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$aResult['newsletter_mailings'] = $this->getNewsletterMailings();
 		return $aResult;
 	}
-	
+
 	private function getNewsletterMailings() {
 		$aResult = array();
 		$aSubscriberGroups = SubscriberGroupQuery::create()->distinct()->joinNewsletterMailing(null, Criteria::INNER_JOIN)->orderByName()->find();
@@ -77,7 +81,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		}
 		return $aResult;
 	}
-	
+
 	public function duplicateNewsletter($iOriginalId) {
 		$oNewsletter = NewsletterQuery::create()->findPk($iOriginalId);
 		if($oNewsletter) {
@@ -91,7 +95,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 			return $oNewNewsletter->getId();
 		}
 	}
-	
+
 	public function getNewsletterBody($sTemplateName = null) {
 		if($sTemplateName) {
 			return self::getNewsletterBodyTemplateByName($sTemplateName)->__toString();
@@ -105,7 +109,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		}
 		return null;
 	}
-	
+
 	public function newsletterContentCss($sTemplateName = null) {
 		if($sTemplateName) {
 			return self::getNewsletterCssTemplateByName($sTemplateName)->render();
@@ -117,15 +121,15 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		}
 		return null;
 	}
-	
+
 	public static function getNewsletterCssTemplateByName($sTemplateName=null) {
 		return self::getTemplateByNameAndType($sTemplateName, self::CSS_TEMPLATE_SUFFIX);
 	}
-	
+
 	public static function getNewsletterBodyTemplateByName($sTemplateName=null) {
 		return self::getTemplateByNameAndType($sTemplateName, self::CONTENT_TEMPLATE_SUFFIX);
 	}
-	
+
 	public static function getTemplateByNameAndType($sTemplateName, $sType=self::CONTENT_TEMPLATE_SUFFIX) {
 		if($sTemplateName === null) {
 			$sTemplateName = self::DEFAULT_TEMPLATE_NAME;
@@ -153,7 +157,7 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 		$oFlash->checkForValue('template_name', 'template_required');
 		$oFlash->finishReporting();
 	}
-	
+
 	public function saveData($aNewsletterData) {
 		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		if($oNewsletter === null) {
