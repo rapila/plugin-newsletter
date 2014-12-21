@@ -10,6 +10,7 @@ class SubscribersAdminModule extends AdminModule {
 
 	public function __construct() {
 		$this->oListWidget 	= new SubscriberListWidgetModule();
+		$this->oListWidget->addPaging();
 		if(isset($_REQUEST['subscriber_group_id'])) {
 			$this->oListWidget->oDelegateProxy->setSubscriberGroupId($_REQUEST['subscriber_group_id']);
 		}
@@ -19,19 +20,19 @@ class SubscribersAdminModule extends AdminModule {
 		$this->oSidebarWidget->setDelegate(new CriteriaListWidgetDelegate($this, 'SubscriberGroup', 'name'));
     $this->oSidebarWidget->setSetting('initial_selection', array('subscriber_group_id' => $this->oListWidget->getSubscriberGroupId()));
 	}
-	
+
 	public function mainContent() {
 		return $this->oListWidget->doWidget();
 	}
-	
+
 	public function sidebarContent() {
 		return $this->oSidebarWidget->doWidget();
 	}
-	
+
 	public function getColumnIdentifiers() {
 		return array('subscriber_group_id', 'readable_name', 'magic_column');
 	}
-	
+
 	public function getMetadataForColumn($sColumnIdentifier) {
 		$aResult = array();
 		switch($sColumnIdentifier) {

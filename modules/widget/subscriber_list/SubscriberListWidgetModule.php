@@ -3,26 +3,18 @@
  * @package modules.widget
  * @subpackage rapila-plugin-newsletter
  */
-class SubscriberListWidgetModule extends WidgetModule {
-	
-	private $oListWidget;
+class SubscriberListWidgetModule extends SpecializedListWidgetModule {
+
 	public $oDelegateProxy;
-	
-	public function __construct() {
-		$this->oListWidget = new ListWidgetModule();
-		$this->oDelegateProxy = new CriteriaListWidgetDelegate($this, "Subscriber", 'created_at', Criteria::DESC);
-		$this->oListWidget->setDelegate($this->oDelegateProxy);
+
+	protected function createListWidget() {
+		$oListWidget = new ListWidgetModule();
+		$this->oDelegateProxy = new CriteriaListWidgetDelegate($this, "Subscriber", 'created_at', 'desc');
+		$oListWidget->setDelegate($this->oDelegateProxy);
+		return $oListWidget;
 	}
-	
-	public function doWidget() {
-		$aTagAttributes = array('class' => 'subscriber_list');
-		$oListTag = new TagWriter('table', $aTagAttributes);
-		$this->oListWidget->setListTag($oListTag);
-		return $this->oListWidget->doWidget();
-	}
-		
 	public function getColumnIdentifiers() {
-		return array('id', 'email', 'name', 'is_unconfirmed', 'preferred_language_id', 'created_at_formatted', 'delete');
+		return array('id', 'email', 'name', 'created_at_formatted', 'preferred_language_id', 'is_unconfirmed', 'delete');
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -55,7 +47,7 @@ class SubscriberListWidgetModule extends WidgetModule {
 		}
 		return $aResult;
 	}
-	
+
 	public function getDatabaseColumnForColumn($sColumnIdentifier) {
 		if($sColumnIdentifier === 'subscriber_group_id') {
 			return SubscriberGroupPeer::ID;
@@ -65,7 +57,7 @@ class SubscriberListWidgetModule extends WidgetModule {
 		}
 		return null;
 	}
-	
+
 	public function getFilterTypeForColumn($sColumnIdentifier) {
 		if($sColumnIdentifier === 'subscriber_group_id') {
 			return CriteriaListWidgetDelegate::FILTER_TYPE_MANUAL;
@@ -76,7 +68,7 @@ class SubscriberListWidgetModule extends WidgetModule {
 	public function getSubscriberGroupId() {
 		return $this->oDelegateProxy->getSubscriberGroupId();
 	}
-	
+
 	public function getSubscriberGroupName() {
 		if(is_numeric($this->oDelegateProxy->getSubscriberGroupId())) {
 			$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->oDelegateProxy->getSubscriberGroupId());
@@ -89,11 +81,11 @@ class SubscriberListWidgetModule extends WidgetModule {
 		}
 		return $this->oDelegateProxy->getSubscriberGroupId();
 	}
-	
+
 	public function getSubscriberGroupHasSubscriptions($iSubscriberGroupId) {
 		return SubscriberGroupMembershipQuery::create()->filterBySubscriberGroupId($iSubscriberGroupId)->count() > 0;
 	}
-	
+
 	public function deleteRow($aRowData, $oCriteria) {
 		$oSubscriber = SubscriberQuery::create()->findPk($aRowData['id']);
 		return $oSubscriber->deleteSubscriberGroupMembership($this->oDelegateProxy->getSubscriberGroupId());
