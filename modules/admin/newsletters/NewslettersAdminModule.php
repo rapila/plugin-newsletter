@@ -1,6 +1,6 @@
 <?php
 /**
- * @package modules.admin 
+ * @package modules.admin
  * @subpackage rapila-plugin-newsletter
  */
 class NewslettersAdminModule extends AdminModule {
@@ -8,9 +8,10 @@ class NewslettersAdminModule extends AdminModule {
 	private $oListWidget;
 	private $oSidebarWidget;
 	private $oInputWidget;
-	
+
 	public function __construct() {
 		$this->oListWidget = new NewsletterListWidgetModule();
+		$this->oListWidget->addPaging();
 		if(isset($_REQUEST['subscriber_group_id'])) {
 			$this->oListWidget->oDelegateProxy->setSubscriberGroupId($_REQUEST['subscriber_group_id']);
 		}
@@ -19,22 +20,22 @@ class NewslettersAdminModule extends AdminModule {
 		$this->oSidebarWidget->setListTag(new TagWriter('ul'));
 		$this->oSidebarWidget->setDelegate(new CriteriaListWidgetDelegate($this, 'SubscriberGroup', 'name'));
     $this->oSidebarWidget->setSetting('initial_selection', array('id' => $this->oListWidget->getSubscriberGroupId()));
-		
+
 		$this->oInputWidget = new SidebarInputWidgetModule();
 	}
-	
+
 	public function mainContent() {
 		return $this->oListWidget->doWidget();
 	}
-		
+
 	public function sidebarContent() {
 		return $this->oSidebarWidget->doWidget();
-	}	
-	
+	}
+
 	public function getColumnIdentifiers() {
 		return array('id', 'readable_name', 'magic_column');
 	}
-	
+
 	public function getMetadataForColumn($sColumnIdentifier) {
 		$aResult = array();
 		switch($sColumnIdentifier) {
@@ -48,7 +49,7 @@ class NewslettersAdminModule extends AdminModule {
 		}
 		return $aResult;
 	}
-	
+
 	public function getCustomListElements() {
 		if(SubscriberGroupQuery::create()->count() > 0) {
 		 	return array(
@@ -62,14 +63,14 @@ class NewslettersAdminModule extends AdminModule {
 		}
 		return array();
 	}
-	
+
 	public function getDatabaseColumnForColumn($sColumnIdentifier) {
 		if($sColumnIdentifier === 'subscriber_group_id') {
 			return SubscriberGroupPeer::ID;
 		}
 		return null;
 	}
-	
+
 	public function usedWidgets() {
 		return array($this->oListWidget, $this->oSidebarWidget, $this->oInputWidget);
 	}

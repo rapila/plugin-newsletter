@@ -3,28 +3,27 @@
  * @package modules.widget
  * @subpackage rapila-plugin-newsletter
  */
-class NewsletterListWidgetModule extends WidgetModule {
-	
-	private $oListWidget;
+class NewsletterListWidgetModule extends SpecializedListWidgetModule {
+
+	protected $oLanguageFilter;
 	public $oDelegateProxy;
-	private $oLanguageFilter;
-	
-	public function __construct() {
-		$this->oListWidget = new ListWidgetModule();
+
+	protected function createListWidget() {
+		$oListWidget = new ListWidgetModule();
 		$this->oDelegateProxy = new CriteriaListWidgetDelegate($this, "Newsletter", 'updated_at', 'desc');
-		$this->oListWidget->setDelegate($this->oDelegateProxy);
-		$this->oLanguageFilter = WidgetModule::getWidget('language_input', null, true);
+		$oListWidget->setDelegate($this->oDelegateProxy);
+		if(!LanguageInputWidgetModule::isMonolingual()) {
+			$this->oLanguageFilter = WidgetModule::getWidget('language_input', null, true);
+		}
+		return $oListWidget;
 	}
-	
-	public function doWidget() {
-		$aTagAttributes = array('class' => 'newsletter_list');
-		$oListTag = new TagWriter('table', $aTagAttributes);
-		$this->oListWidget->setListTag($oListTag);
-		return $this->oListWidget->doWidget();
-	}
-		
+
 	public function getColumnIdentifiers() {
-		return array('id', 'subject', 'language_id', 'template_name', 'is_approved', 'group_sent_to', 'last_sent_localized', 'send_test', 'duplicate', 'delete');
+		$aResult = array('id', 'subject');
+		if($this->oLanguageFilter !== null) {
+			$aResult[] = 'language_id';
+		}
+		return array_merge($aResult, array('template_name', 'is_approved', 'group_sent_to', 'last_sent_localized', 'send_test', 'duplicate', 'delete'));
 	}
 
 	public function getMetadataForColumn($sColumnIdentifier) {
@@ -81,7 +80,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 		}
 		return $aResult;
 	}
-	
+
 	public function getDatabaseColumnForColumn($sColumnIdentifier) {
 		if($sColumnIdentifier === 'group_sent_to') {
 			return NewsletterMailingPeer::SUBSCRIBER_GROUP_ID;
@@ -94,7 +93,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 		}
 		return null;
 	}
-	
+
 	public function getFilterTypeForColumn($sColumnIdentifier) {
 		if($sColumnIdentifier === 'subscriber_group_id') {
 			return CriteriaListWidgetDelegate::FILTER_TYPE_IS;
@@ -108,15 +107,15 @@ class NewsletterListWidgetModule extends WidgetModule {
 	public function getLanguageName() {
 		return StringPeer::getString('language.'.$this->oDelegateProxy->getLanguageId(), null, $this->oDelegateProxy->getLanguageId());
 	}
-	
+
 	public function getSubscriberGroupHasNewsletterMailings($iSubscriberGroupId) {
 		return NewsletterMailingQuery::create()->filterBySubscriberGroupId($iSubscriberGroupId)->count() > 0;
 	}
-	
+
 	public function getSubscriberGroupId() {
 		return $this->oDelegateProxy->getSubscriberGroupId();
 	}
-		
+
 	public function getSubscriberGroupName() {
 		if(is_numeric($this->oDelegateProxy->getSubscriberGroupId())) {
 			$oSubscriberGroup = SubscriberGroupQuery::create()->findPk($this->oDelegateProxy->getSubscriberGroupId());
@@ -129,7 +128,7 @@ class NewsletterListWidgetModule extends WidgetModule {
 		}
 		return $this->oDelegateProxy->getSubscriberGroupId();
 	}
-	
+
   public function getCriteria() {
 		return NewsletterQuery::create()->distinct()->joinNewsletterMailing(null, Criteria::LEFT_JOIN);
 	}

@@ -1,41 +1,38 @@
-jQuery(document).ready(function() {
-	
-	jQuery('table.newsletter_list').each(function() {
-		jQuery(this).prepareWidget(function(widget) {
-			Widget.callStatic('detail', 'connect_detail_with_list', 'newsletter', widget, 'setNewsletterId');
-			widget.handle('list-cell_click', function(event, rowIndex, col, row, cell) {
-				if(col.identifier === 'delete') {
-					var subject = widget.cell_for_identifier('subject', row).text();
-					var delete_message = AdminInterface.strings.get_string('wns.newsletter.delete_warning', {subject: subject});
-					Widget.confirm("{{writeString=wns.delete_warning_title}}", delete_message, function(confirmed) {
-						if(confirmed) {
-							this.delete_row(row);
-						}
-					}.bind(this));
-					event.stopPropagation();
-				} else if(col.identifier === 'send_test') {
-					Widget.create('newsletter_send', function(send_widget) {
-						var rowData = widget.collect_row_data(row);
-						send_widget.setNewsletterId(rowData.id);
-						send_widget.show_test_dialog();
-					});
-				}
-				// Add duplicate link to list
-				if(col.identifier === 'duplicate') {
+Widget.types.newsletter_list = {
+	prepare: function() {
+		var widget = this._list;
+		Widget.callStatic('detail', 'connect_detail_with_list', 'newsletter', widget, 'setNewsletterId');
+		widget.handle('list-cell_click', function(event, rowIndex, col, row, cell) {
+			if(col.identifier === 'delete') {
+				var subject = widget.cell_for_identifier('subject', row).text();
+				var delete_message = AdminInterface.strings.get_string('wns.newsletter.delete_warning', {subject: subject});
+				Widget.confirm("{{writeString=wns.delete_warning_title}}", delete_message, function(confirmed) {
+					if(confirmed) {
+						this.delete_row(row);
+					}
+				}.bind(this));
+				event.stopPropagation();
+			}	else if(col.identifier === 'send_test') {
+				Widget.create('newsletter_send', function(send_widget) {
 					var rowData = widget.collect_row_data(row);
-					Widget.create('newsletter_detail', function(newsletter_detail) {
-						newsletter_detail.duplicateNewsletter(rowData.id, function(new_id) {
-							widget.reload();
-							if(new_id) {
-								newsletter_detail.setNewsletterId(new_id);
-								newsletter_detail.fill_data();
-								newsletter_detail.open();
-							}
-						});
+					send_widget.setNewsletterId(rowData.id);
+					send_widget.show_test_dialog();
+				});
+			}
+			// Add duplicate link to list
+			if(col.identifier === 'duplicate') {
+				var rowData = widget.collect_row_data(row);
+				Widget.create('newsletter_detail', function(newsletter_detail) {
+					newsletter_detail.duplicateNewsletter(rowData.id, function(new_id) {
+						widget.reload();
+						if(new_id) {
+							newsletter_detail.setNewsletterId(new_id);
+							newsletter_detail.fill_data();
+							newsletter_detail.open();
+						}
 					});
-				}
-			});
-			AdminInterface.strings.handle_strings_for_list_result('wns.newsletters.no_result', ['subscriber_group_name', 'language_name'], widget);
+				});
+			}
 		});
-	});
-});
+	}
+};
