@@ -5,33 +5,33 @@
 * @package newsletter
 */
 class NewsletterMailer {
-	
+
 	// Array of newsletter recipients
 	private $aRecipients;
-	
+
 	// Newsletter object
 	private $oNewsletter;
-	
+
 	// Unsubsribe page required for optOut form, see {@link NewsletterFrontendModule::newsletterUnsubscribe()}
 	private $oUnsubscribePage;
-	
+
 	// Sender name
 	private $sSenderName;
-	
+
 	// Sender e-mail
 	private $sSenderEmailAddress;
 
 	// Array of invalid e-mail addresses
 	private $aInvalidEmails = array();
-	
+
 
  /** __construct()
 	* @param object Newsletter
-	* @param array recipients mixed string email / object 
+	* @param array recipients mixed string email / object
 	* @param boolean $bRequiresUnsubsribeLink
 	* @param string sender email
 	* @param string sender name
-	* 
+	*
 	* @return void
 	*/
 	public function __construct($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $sSenderEmailAddress, $sSenderName = null) {
@@ -47,12 +47,12 @@ class NewsletterMailer {
 		} else {
 			$this->sSenderName = Settings::getSetting('newsletter', 'sender_name', "Rapila Newsletter Plugin");
 		}
-		
+
 		if($bRequiresUnsubsribeLink) {
 			// Unsubscribe page is required, a page that contains a content object NewsletterFrontendModule
 			$this->oUnsubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter', 'unsubscribe_page', 'unsubscribe'));
 			if ($this->oUnsubscribePage === null) {
-				
+
 				// Fallback: try searching the page by name
 				$this->oUnsubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter', 'unsubscribe_page', 'unsubscribe'));
 				if ($this->oUnsubscribePage === null) {
@@ -61,10 +61,10 @@ class NewsletterMailer {
 			}
 		}
 	}
-	
+
  /** send()
 	* Description:
-	* • This method is called when NewsletterMailer is instanciated 
+	* • This method is called when NewsletterMailer is instanciated
 	* • All newsletter, sender and recipient info are ready
 	*
 	* @return boolean has_invalid email addresses
@@ -73,12 +73,12 @@ class NewsletterMailer {
 		// Get newsletter email main template and template body and css by template name
 		$oEmailTemplate = new Template('main', array(DIRNAME_TEMPLATES, 'newsletter'));
 		$oEmailTemplate->replaceIdentifier('newsletter_template_css', new Template("{$this->oNewsletter->getTemplateName()}.css", array(DIRNAME_TEMPLATES, 'newsletter')));
-		
+
 		// Parse links differently in text
 		RichtextUtil::$USE_ABSOLUTE_LINKS = LinkUtil::isSSL();
 		$oEMailContent = RichtextUtil::parseStorageForFrontendOutput(stream_get_contents($this->oNewsletter->getNewsletterBody()));
 		RichtextUtil::$USE_ABSOLUTE_LINKS = null;
-		
+
 		// Replace add surrounding (body.tmpl) before content if exists. Template needs to contain a newsletter_content identifier
 		if(ResourceFinder::findResource(array(DIRNAME_TEMPLATES, NewsletterDetailWidgetModule::NEWSLETTER_DIRNAME, "{$this->oNewsletter->getTemplateName()}.body.tmpl")) !== null) {
 			$oEmailTemplate->replaceIdentifier('newsletter_content', new Template("{$this->oNewsletter->getTemplateName()}.body", array(DIRNAME_TEMPLATES, NewsletterDetailWidgetModule::NEWSLETTER_DIRNAME)), null, Template::LEAVE_IDENTIFIERS);
@@ -94,16 +94,16 @@ class NewsletterMailer {
 		foreach($this->aRecipients as $mRecipient) {
 			$this->sendNewsletter($mRecipient, clone $oEmailTemplate);
 		}
-		
+
 		return count($this->aInvalidEmails) === 0;
-		
+
 	}
-	
+
  /** sendNewsletter()
-	* 
+	*
 	* @param mixed string/object recipient
 	* @param object oEmailTemplateInstance
-	* 
+	*
 	* @return void
 	*/
 	private function sendNewsletter($mRecipient, $oEmailTemplateInstance) {
@@ -139,9 +139,8 @@ class NewsletterMailer {
 		} catch (Exception $e) {
 			$this->aInvalidEmails[] = new NewsletterSendFailure($e, $mRecipient);
 		}
-		
 	}
-	
+
 	public function setInvalidEmails($aInvalidEmails) {
 		$this->aInvalidEmails = $aInvalidEmails;
 	}

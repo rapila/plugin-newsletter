@@ -4,40 +4,40 @@
  * @subpackage rapila-plugin-newsletter
  */
 class NewsletterSendWidgetModule extends PersistentWidgetModule {
-	
+
 	// Id of newsletter that is sent
 	private $iNewsletterId;
-	
+
 	// Batch size number for smooth handling of batches of recipients sent in one request
 	private $iBatchSize = 50;
-	
+
 	// All distinct recipient of the newsletter
 	private $aRecipients = null;
-	
+
 	// sender email
 	private $sSenderEmail = null;
-	
+
 	// Optional sender name
 	private $sSenderName = null;
-	
+
 	// Mail groups [subscriber_groups, external_mail_groups]
 	private $aMailGroups = null;
 
 	// Unsuccessful or failed recipients
 	private $aUnsuccessfulAttempts;
-	
+
 	public function setNewsletterId($iNewsletterId) {
 		$this->iNewsletterId = $iNewsletterId;
 	}
-	
+
 	public function getNewsletterIsApproved() {
 		return NewsletterQuery::create()->findPk($this->iNewsletterId)->getIsApproved();
 	}
-	
+
 	public function getNewsletterSubject() {
 		return NewsletterQuery::create()->findPk($this->iNewsletterId)->getSubject();
 	}
-	
+
 	public function sendTestNewsletter($mRecipients = array()) {
 		$this->aUnsuccessfulAttempts = array();
 		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
@@ -49,14 +49,14 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 			return false;
 		}
 	}
-	
+
  /** getSenderEmails()
-	* 
+	*
 	* description: following sender options
 	* • sender_email_addresses email/name
 	* • current user email / fullname
 	* • fallback domain_holder email or old array notation sender_email_addresses
-	* 
+	*
 	* @return array of key email and value name [email if name is not set]
 	*/
 	public function getSenderEmails() {
@@ -79,16 +79,16 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		}
 		return $aResult;
 	}
-	
+
  /** prepareForSending()
-	* 
+	*
 	* @param array of mail_group values [int subscriber_group_id, string external_mail_group]
 	* @param string SenderMail
 	* @param string SenderName
 	*
-	* description: prepare batch processing 
+	* description: prepare batch processing
 	* • validates send form
-	* 
+	*
 	* @return int batch count
 	*/
 	public function prepareForSending($aMailGroups = null, $sSenderEmail = null, $sSenderName = null) {
@@ -101,7 +101,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		}
 		$this->aRecipients = self::getSubscribersBySubscriberGroupMembership($aMailGroups);
 		FilterModule::getFilters()->handleMailGroupsRecipients($aMailGroups, array(&$this->aRecipients));
-		
+
 		// Validate prepareForSending
 		$sError = null;
 		if($aMailGroups === null) {
@@ -121,27 +121,27 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		$this->aMailGroups = is_array($aMailGroups) ? $aMailGroups : array($aMailGroups);
 		return ceil(count($this->aRecipients)/$this->iBatchSize);
 	}
-	
+
 	private static function getSubscribersBySubscriberGroupMembership($aSubscriberGroupIds) {
 		$oQuery = SubscriberQuery::create()->distinct();
 		if($aSubscriberGroupIds !== null) {
 			$aSubscriberGroupIds = is_array($aSubscriberGroupIds) ? $aSubscriberGroupIds : array($aSubscriberGroupIds);
 			$oQuery->joinSubscriberGroupMembership()->useSubscriberGroupMembershipQuery()->filterBySubscriberGroupId($aSubscriberGroupIds)->filterByOptInHash(null, Criteria::ISNULL)->endUse();
 		}
-		return $oQuery->find();
+		return $oQuery->orderByEmail()->find();
 	}
 
  /** sendNewsletter()
-	* 
+	*
 	* @param int BatchNumber
-	* 
+	*
 	* @return boolean full or partial success
 	*/
 	public function sendNewsletter($iBatchNumber = 0) {
 		if($this->aRecipients === null || $this->sSenderEmail === null || $this->aMailGroups === null) {
 			throw new Exception("Error in sendNewsletter: prepare not called");
 		}
-		
+
 		// Send newsletter if newsletter is chosen and there are recipients
 		$oNewsletter = NewsletterQuery::create()->findPk($this->iNewsletterId);
 		if($oNewsletter === null) {
@@ -151,15 +151,15 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 		if($iBatchNumber === 0) {
 			$this->aUnsuccessfulAttempts = array();
 		}
-		
+
 		if($this->aRecipients instanceof PropelObjectCollection) {
 			$this->aRecipients = $this->aRecipients->getData();
 		}
 		$aRecipients = array_slice($this->aRecipients, $iBatchNumber*($this->iBatchSize), $this->iBatchSize);
-		
+
 		$bRequiresUnsubsribeLink = true;
 		$oNewsletterMailer = new NewsletterMailer($oNewsletter, $aRecipients, $bRequiresUnsubsribeLink, $this->sSenderEmail, $this->sSenderName);
-		
+
 		if(!$oNewsletterMailer->send()) {
 			$this->aUnsuccessfulAttempts = array_merge($this->aUnsuccessfulAttempts, $oNewsletterMailer->getInvalidEmails());
 		}
@@ -189,7 +189,7 @@ class NewsletterSendWidgetModule extends PersistentWidgetModule {
 			return count($this->aUnsuccessfulAttempts) === 0;
 		}
 	}
-	
+
 	public function unsuccessfulAttempts() {
 		$aResult = array();
 		foreach($this->aUnsuccessfulAttempts as $oException) {
