@@ -123,13 +123,27 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 
 			$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success');
 			// Notifiy only if a new subscription has been added, otherwise ignore
-
+			// overwrite email_subscription_notification template for specific subscriber group by adding “_” + SubscriberGroupId to the regular template name
 			if($bHasNewSubscription) {
 				if(Settings::getSetting('newsletter', 'optin_confirmation_required', true)) {
 					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
-					$this->notifySubscriberOptIn($iSubscriberGroupId);
+					$oEmailTemplate = null;
+					if($iSubscriberGroupId) {
+						$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification_'.$iSubscriberGroupId);
+					}
+					if($oEmailTemplate === null) {
+						$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
+					}
+					$this->notifySubscriberOptIn($oEmailTemplate, $iSubscriberGroupId);
 				} else {
-					$this->notifySubscriber();
+					$oEmailTemplate = null;
+					if($iSubscriberGroupId) {
+						$oEmailTemplate = $this->constructTemplate('email_subscription_notification_'.$iSubscriberGroupId);
+					}
+					if($oEmailTemplate === null) {
+						$oEmailTemplate = $this->constructTemplate('email_subscription_notification');
+					}
+					$this->notifySubscriber($oEmailTemplate);
 				}
 			}
 			$oTemplate->replaceIdentifier('message', $sConfirmMessage);
@@ -142,8 +156,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	* @param int/array subscriber group
 	* @return void
 	*/
-	public function notifySubscriber() {
-		$oEmailTemplate = $this->constructTemplate('email_subscription_notification');
+	public function notifySubscriber($oEmailTemplate) {
 		$this->sendMail($oEmailTemplate);
 	}
 
@@ -153,8 +166,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 	* @param int/array subscriber group
 	* @return void
 	*/
-	public function notifySubscriberOptIn($iSubscriberGroupId) {
-		$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
+	public function notifySubscriberOptIn($oEmailTemplate, $iSubscriberGroupId) {
 		/**
 		* note: unsubscribe_page is just the main communication page where forms like
 		* • optin confirm or
