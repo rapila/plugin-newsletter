@@ -124,33 +124,40 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			SubscriberPeer::ignoreRights(true);
 			$this->oSubscriber->save();
 
-			$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success');
+			$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success_'.$iSubscriberGroupId, null, StringPeer::getString('wns.newsletter.subscribe.success'));
 			// Notifiy only if a new subscription has been added, otherwise ignore
 			// overwrite email_subscription_notification template for specific subscriber group by adding “_” + SubscriberGroupId to the regular template name
 			if($bHasNewSubscription) {
-				if(Settings::getSetting('newsletter', 'optin_confirmation_required', true)) {
-					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
-					$oEmailTemplate = null;
-					if($iSubscriberGroupId) {
-						$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification_'.$iSubscriberGroupId);
-					}
-					if($oEmailTemplate === null) {
-						$oEmailTemplate = $this->constructTemplate('email_subscription_optin_notification');
-					}
+				$bOptinRequired = Settings::getSetting('newsletter', 'optin_confirmation_required', true);
+				$oEmailTemplate = $this->getAlternateEmailTemplate($bOptinRequired, $iSubscriberGroupId);
+				if($bOptinRequired) {
+					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success_'.$iSubscriberGroupId, null, tringPeer::getString('wns.newsletter.subscribe_opt_in.success'));
 					$this->notifySubscriberOptIn($oEmailTemplate, $iSubscriberGroupId);
 				} else {
-					$oEmailTemplate = null;
-					if($iSubscriberGroupId) {
-						$oEmailTemplate = $this->constructTemplate('email_subscription_notification_'.$iSubscriberGroupId);
-					}
-					if($oEmailTemplate === null) {
-						$oEmailTemplate = $this->constructTemplate('email_subscription_notification');
-					}
+					$sConfirmMessage = StringPeer::getString('email_subscription_notification_'.$iSubscriberGroupId, null, tringPeer::getString('email_subscription_notification_'));
 					$this->notifySubscriber($oEmailTemplate);
 				}
 			}
 			$oTemplate->replaceIdentifier('message', $sConfirmMessage);
 		}
+	}
+
+	private function getAlternateEmailTemplate($bOptinRequired, $iSubscriberGroupId) {
+		$sTemplateName = 'email_subscription_notification';
+		if($bOptinRequired) {
+			$sTemplateName = 'email_subscription_optin_notification';
+		}
+		if($iSubscriberGroupId) {
+			try {
+				$oTemplate = $this->constructTemplate($sTemplateName.'_'.$iSubscriberGroupId);
+			} catch(Exception $e) {
+				$oTemplate = $this->constructTemplate($sTemplateName);
+			}
+		}
+		if($oTemplate === null) {
+			$oTemplate = $this->constructTemplate($sTemplateName);
+		}
+		return $oTemplate;
 	}
 
 	/**
