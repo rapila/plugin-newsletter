@@ -131,7 +131,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 				$bOptinRequired = Settings::getSetting('newsletter', 'optin_confirmation_required', true);
 				$oEmailTemplate = $this->getAlternateEmailTemplate($bOptinRequired, $iSubscriberGroupId);
 				if($bOptinRequired) {
-					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success_'.$iSubscriberGroupId, null, tringPeer::getString('wns.newsletter.subscribe_opt_in.success'));
+					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success_'.$iSubscriberGroupId, null, StringPeer::getString('wns.newsletter.subscribe_opt_in.success'));
 					$this->notifySubscriberOptIn($oEmailTemplate, $iSubscriberGroupId);
 				} else {
 					$sConfirmMessage = StringPeer::getString('email_subscription_notification_'.$iSubscriberGroupId, null, tringPeer::getString('email_subscription_notification_'));
