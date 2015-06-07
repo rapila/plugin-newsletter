@@ -73,14 +73,11 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		if(!SubscriberGroupQuery::create()->findPk($mSubscriberGroupId)) {
 			throw new Exception(__CLASS__.': configured subscriber_group_id '.$mSubscriberGroupId.' does not exist!');
 		}
-		$oTemplate = null;
-		if($mSubscriberGroupId) {
-			$oTemplate = $this->constructTemplate('newsletter_subscribe_'.$mSubscriberGroupId);
-		}
-		if($oTemplate === null) {
+		try {
+			$oTemplate = self::template('newsletter_subscribe_'.$mSubscriberGroupId);
+		} catch(Exception $e) {
 			$oTemplate = $this->constructTemplate("newsletter_subscribe");
 		}
-
 		// Process form
 		if(Manager::isPost() && isset($_POST['newsletter_subscribe'])) {
 			$this->processSubscribe($mSubscriberGroupId, $oTemplate);
