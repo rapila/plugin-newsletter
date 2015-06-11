@@ -328,7 +328,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			$oSubscriberGroupMembership->setOptInHash(null);
 			$oSubscriberGroupMembership->save();
 			try {
-				$oTemplate = self::template('newsletter_optin_confirm'.$mSubscriberGroupId);
+				$oTemplate = self::template('newsletter_optin_confirm_'.$oSubscriberGroupMembership->getSubscriberGroupId());
 			} catch(Exception $e) {
 				$oTemplate = $this->constructTemplate("newsletter_optin_confirm");
 			}
