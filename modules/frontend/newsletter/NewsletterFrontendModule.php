@@ -181,16 +181,23 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		* note: unsubscribe_page is just the main communication page where forms like
 		* • optin confirm or
 		* • unsubscribe optout
-		* can be easily displayed and safely managed
 		*/
-		$oUnsubscribePage = PageQuery::create()->findOneByIdentifier(Settings::getSetting('newsletter', 'unsubscribe_page', 'unsubscribe'));
-		if ($oUnsubscribePage === null) {
+		$sUnsubscribePageName = Settings::getSetting('newsletter', 'unsubscribe_page', 'unsubscribe');
+		// Optional overwrite
+		$sDedicatedUnsubscribePageName = $sUnsubscribePageName.'_'.$iSubscriberGroupId;
+		$oUnsubscribePage = PageQuery::create()->findOneByIdentifier($sDedicatedUnsubscribePageName);
+		// Get default page if optional overwrite doesn’t exits
+		if(!$oUnsubscribePage) {
+			$oUnsubscribePage = PageQuery::create()->findOneByIdentifier($sUnsubscribePageName);
+		}
+		if($oUnsubscribePage === null) {
 			// Fallback: try searching the page by name
-			$oUnsubscribePage = PageQuery::create()->findOneByName(Settings::getSetting('newsletter', 'unsubscribe_page', 'unsubscribe'));
-			if ($oUnsubscribePage === null) {
+			$oUnsubscribePage = PageQuery::create()->findOneByName($sUnsubscribePageName);
+			if($oUnsubscribePage === null) {
 				throw new Exception('Error in'.__METHOD__.': a public and hidden page is required for optin subscribe action');
 			}
 		}
+
 		$oOptinConfirmLink = LinkUtil::absoluteLink(LinkUtil::link($oUnsubscribePage->getLink(), null, array(self::PARAM_OPT_IN_CONFIRM => Subscriber::getOptInChecksumByEmailAndSubscriberGroupId($this->oSubscriber->getEmail(), $iSubscriberGroupId))), null, LinkUtil::isSSL());
 		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), StringPeer::getString('newsletter_subscription.optin_link_text')));
 		$this->sendMail($oEmailTemplate, true);
@@ -205,6 +212,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$sSenderEmail = Settings::getSetting('newsletter', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
 		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
 		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());
+
 		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate, $bSendHtml);
 		$oEmail->setSender($sSenderName, $sSenderEmail);
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
