@@ -327,7 +327,12 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			SubscriberGroupMembershipPeer::ignoreRights(true);
 			$oSubscriberGroupMembership->setOptInHash(null);
 			$oSubscriberGroupMembership->save();
-			return $this->constructTemplate('newsletter_optin_confirm');
+			try {
+				$oTemplate = self::template('newsletter_optin_confirm'.$mSubscriberGroupId);
+			} catch(Exception $e) {
+				$oTemplate = $this->constructTemplate("newsletter_optin_confirm");
+			}
+			return $oTemplate;
 		}
 	}
 
