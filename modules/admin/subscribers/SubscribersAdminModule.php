@@ -41,7 +41,7 @@ class SubscribersAdminModule extends AdminModule {
 				$aResult['field_name'] = 'id';
 				break;
 			case 'readable_name':
-				$aResult['heading'] = StringPeer::getString('subscriber_group.sidebar_heading');
+				$aResult['heading'] = TranslationPeer::getString('subscriber_group.sidebar_heading');
 				break;
 			case 'magic_column':
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_CLASSNAME;
@@ -55,10 +55,10 @@ class SubscribersAdminModule extends AdminModule {
 		if(SubscriberGroupQuery::create()->count() > 0) {
 			return array(
 				array('subscriber_group_id' => CriteriaListWidgetDelegate::SELECT_ALL,
-							'readable_name' => StringPeer::getString('wns.users.select_all_title'),
+							'readable_name' => TranslationPeer::getString('wns.users.select_all_title'),
 							'magic_column' => 'all'),
 				array('subscriber_group_id' => CriteriaListWidgetDelegate::SELECT_WITHOUT,
-							'readable_name' => StringPeer::getString('wns.users.select_without_title'),
+							'readable_name' => TranslationPeer::getString('wns.users.select_without_title'),
 							'magic_column' => 'without'));
 		}
 		return array();

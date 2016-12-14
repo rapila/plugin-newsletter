@@ -4,16 +4,16 @@
  * @subpackage rapila-plugin-newsletter
  */
 class DisplayNewsletterFileModule extends FileModule {
-	
+
 	protected $oNewsletter;
 	protected $oMailing;
-	
+
 	public function __construct($aRequestPath) {
 		parent::__construct($aRequestPath);
-		
+
 		$sBase = Manager::usePath();
 		$iId = Manager::usePath();
-		
+
 		// Base path "newsletter" > display newsletter
 		if($sBase === 'newsletter') {
 			$iId = is_numeric($sBase) ? $sBase : $iId;
@@ -21,7 +21,7 @@ class DisplayNewsletterFileModule extends FileModule {
 			if($this->oNewsletter === null) {
 				throw new Exception('No such newsletter exists');
 			}
-		} 
+		}
 		// Base path "mailing" > display newsletter by calling related newsletter mailing id
 		else if ($sBase === 'mailing') {
 			$this->oMailing = NewsletterMailingQuery::create()->findPk($iId);
@@ -29,21 +29,21 @@ class DisplayNewsletterFileModule extends FileModule {
 				throw new Exception('No such mailing exists');
 			}
 			$this->oNewsletter = $this->oMailing->getNewsletter();
-		} 
+		}
 		// Fallback numeric base for direct access to newsletter
 		elseif(is_numeric($sBase)) {
 			$this->oNewsletter = NewsletterQuery::create()->findPk($sBase);
 		}
-		
+
 		// Throw exception if no newsletter is found
 		if($this->oNewsletter === null) {
 			throw new Exception('Error in DisplayNewsletterFileModule::__construct(): No such newsletter exists');
 		}
-		
+
 		// Optional handling of authentication
 		FilterModule::getFilters()->handleNewsletterDisplayRequested($this->oNewsletter);
 	}
-	
+
 	/**
 	* renderFile()
 	* @return string xhtml output
@@ -69,7 +69,7 @@ class DisplayNewsletterFileModule extends FileModule {
 			$oNewsletterTemplate->replaceIdentifier('newsletter_date', LocaleUtil::localizeDate($this->oNewsletter->getCreatedAt(null)->getTimestamp(), $this->oNewsletter->getLanguageId()));
 			$oNewsletterTemplate->replaceIdentifier('newsletter_timestamp', $this->oNewsletter->getCreatedAt(null)->getTimestamp());
 		}
-		$oNewsletterTemplate->replaceIdentifier('recipient', StringPeer::getString('wns.newsletter.recipient', $this->oNewsletter->getLanguageId()));
+		$oNewsletterTemplate->replaceIdentifier('recipient', TranslationPeer::getString('wns.newsletter.recipient', $this->oNewsletter->getLanguageId()));
 		$oNewsletterTemplate->replaceIdentifier('subject', $this->oNewsletter->getSubject());
 
 		$oNewsletterTemplate->render();

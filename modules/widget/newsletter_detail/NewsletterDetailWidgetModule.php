@@ -59,10 +59,10 @@ class NewsletterDetailWidgetModule extends PersistentWidgetModule {
 					if($i === 0) {
 						if($oNewsletterMailing->getSubscriberGroupName()) {
 							$aSubscriberGroup['MailGroupName'] = $oNewsletterMailing->getSubscriberGroupName();
-							$aSubscriberGroup['MailGroupType'] = StringPeer::getString('wns.mail_group.subscribers');
+							$aSubscriberGroup['MailGroupType'] = TranslationPeer::getString('wns.mail_group.subscribers');
 						} else {
 							$aSubscriberGroup['MailGroupName'] = $oNewsletterMailing->getMailGroupId();
-							$aSubscriberGroup['MailGroupType'] = StringPeer::getString('wns.mail_group.external');
+							$aSubscriberGroup['MailGroupType'] = TranslationPeer::getString('wns.mail_group.external');
 						}
 						if(($iCountMailings - 1) > 0) {
 							$sAdditionalMailingCount = ' (+'.($iCountMailings - 1).')';

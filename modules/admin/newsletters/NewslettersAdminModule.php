@@ -40,7 +40,7 @@ class NewslettersAdminModule extends AdminModule {
 		$aResult = array();
 		switch($sColumnIdentifier) {
 			case 'readable_name':
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.subscriber_group.sidebar_heading');
+				$aResult['heading'] = TranslationPeer::getString('wns.newsletter.subscriber_group.sidebar_heading');
 				break;
 			case 'magic_column':
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_CLASSNAME;
@@ -54,10 +54,10 @@ class NewslettersAdminModule extends AdminModule {
 		if(SubscriberGroupQuery::create()->count() > 0) {
 		 	return array(
 				array('id' => CriteriaListWidgetDelegate::SELECT_ALL,
-							'readable_name' => StringPeer::getString('wns.subscriber_group.select_all_title'),
+							'readable_name' => TranslationPeer::getString('wns.subscriber_group.select_all_title'),
 							'magic_column' => 'all'),
 				array('id' => CriteriaListWidgetDelegate::SELECT_WITHOUT,
-							'readable_name' => StringPeer::getString('wns.subscriber_group.select_without_title'),
+							'readable_name' => TranslationPeer::getString('wns.subscriber_group.select_without_title'),
 							'magic_column' => 'without')
 			);
 		}
