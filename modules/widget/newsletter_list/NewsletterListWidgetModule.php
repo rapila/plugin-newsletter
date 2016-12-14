@@ -30,15 +30,15 @@ class NewsletterListWidgetModule extends SpecializedListWidgetModule {
 		$aResult = array('is_sortable' => true);
 		switch($sColumnIdentifier) {
 			case 'id':
-				$aResult['heading'] = StringPeer::getString('wns.id');
+				$aResult['heading'] = TranslationPeer::getString('wns.id');
 				break;
 			case 'subject':
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.subject');
+				$aResult['heading'] = TranslationPeer::getString('wns.newsletter.subject');
 				break;
 			case 'language_id':
 				$aResult['has_data'] = true;
 				if(LanguageInputWidgetModule::isMonolingual()) {
-					$aResult['heading'] = StringPeer::getString('wns.language');
+					$aResult['heading'] = TranslationPeer::getString('wns.language');
 				} else {
 					$aResult['heading'] = '';
 					$aResult['heading_filter'] = array('language_input', $this->oLanguageFilter->getSessionKey());
@@ -47,27 +47,27 @@ class NewsletterListWidgetModule extends SpecializedListWidgetModule {
 				$aResult['is_sortable'] = false;
 				break;
 			case 'template_name':
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.template_name');
+				$aResult['heading'] = TranslationPeer::getString('wns.newsletter.template_name');
 				break;
 			case 'is_approved':
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.is_approved');
+				$aResult['heading'] = TranslationPeer::getString('wns.newsletter.is_approved');
 				break;
 			case 'group_sent_to':
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.subscriber_groups_sent_to');
+				$aResult['heading'] = TranslationPeer::getString('wns.newsletter.subscriber_groups_sent_to');
 				break;
 			case 'last_sent_localized':
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.last_sent');
+				$aResult['heading'] = TranslationPeer::getString('wns.newsletter.last_sent');
 				$aResult['is_sortable'] = false;
 				break;
 			case 'send_test':
 				$aResult['field_name'] = 'play';
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.send_test');
+				$aResult['heading'] = TranslationPeer::getString('wns.newsletter.send_test');
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_ICON;
 				$aResult['is_sortable'] = false;
 				break;
 			case 'duplicate':
 				$aResult['field_name'] = 'plus';
-				$aResult['heading'] = StringPeer::getString('wns.newsletter.duplicate');
+				$aResult['heading'] = TranslationPeer::getString('wns.newsletter.duplicate');
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_ICON;
 				$aResult['is_sortable'] = false;
 				break;
@@ -105,7 +105,7 @@ class NewsletterListWidgetModule extends SpecializedListWidgetModule {
 	}
 
 	public function getLanguageName() {
-		return StringPeer::getString('language.'.$this->oDelegateProxy->getLanguageId(), null, $this->oDelegateProxy->getLanguageId());
+		return TranslationPeer::getString('language.'.$this->oDelegateProxy->getLanguageId(), null, $this->oDelegateProxy->getLanguageId());
 	}
 
 	public function getSubscriberGroupHasNewsletterMailings($iSubscriberGroupId) {
@@ -124,7 +124,7 @@ class NewsletterListWidgetModule extends SpecializedListWidgetModule {
 			}
 		}
     if($this->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
-			return StringPeer::getString('wns.subscriber_group.without');
+			return TranslationPeer::getString('wns.subscriber_group.without');
 		}
 		return $this->oDelegateProxy->getSubscriberGroupId();
 	}

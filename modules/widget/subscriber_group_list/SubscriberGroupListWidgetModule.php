@@ -4,23 +4,23 @@
  * @subpackage rapila-plugin-newsletter
  */
 class SubscriberGroupListWidgetModule extends WidgetModule {
-	
+
 	private $oListWidget;
 	public $oDelegateProxy;
-	
+
 	public function __construct() {
 		$this->oListWidget = new ListWidgetModule();
 		$this->oDelegateProxy = new CriteriaListWidgetDelegate($this, "SubscriberGroup", 'name');
 		$this->oListWidget->setDelegate($this->oDelegateProxy);
 	}
-	
+
 	public function doWidget() {
 		$aTagAttributes = array('class' => 'subscriber_group_list');
 		$oListTag = new TagWriter('table', $aTagAttributes);
 		$this->oListWidget->setListTag($oListTag);
 		return $this->oListWidget->doWidget();
 	}
-		
+
 	public function getColumnIdentifiers() {
 		return array('id', 'name', 'display_name', 'is_temporary', 'link_to_subscriber_data', 'delete');
 	}
@@ -32,17 +32,17 @@ class SubscriberGroupListWidgetModule extends WidgetModule {
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_DATA;
 				break;
 			case 'name':
-				$aResult['heading'] = StringPeer::getString('wns.subscriber_group.name');
+				$aResult['heading'] = TranslationPeer::getString('wns.subscriber_group.name');
 				break;
 			case 'display_name':
-				$aResult['heading'] = StringPeer::getString('wns.subscriber_group.display_name');
+				$aResult['heading'] = TranslationPeer::getString('wns.subscriber_group.display_name');
 				break;
 			case 'is_temporary':
-				$aResult['heading'] = StringPeer::getString('wns.subscriber_group.is_temporary');
+				$aResult['heading'] = TranslationPeer::getString('wns.subscriber_group.is_temporary');
 				$aResult['is_sortable'] = false;
 				break;
 			case 'link_to_subscriber_data':
-				$aResult['heading'] = StringPeer::getString('wns.subscribers');
+				$aResult['heading'] = TranslationPeer::getString('wns.subscribers');
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_URL;
 				break;
 			case 'delete':

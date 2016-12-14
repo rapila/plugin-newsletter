@@ -24,19 +24,19 @@ class SubscriberListWidgetModule extends SpecializedListWidgetModule {
 				$aResult['display_type'] = ListWidgetModule::DISPLAY_TYPE_DATA;
 				break;
 			case 'name':
-				$aResult['heading'] = StringPeer::getString('wns.subscriber.name');
+				$aResult['heading'] = TranslationPeer::getString('wns.subscriber.name');
 				break;
 			case 'is_unconfirmed':
-				$aResult['heading'] = StringPeer::getString('wns.subscriber.is_unconfirmed');
+				$aResult['heading'] = TranslationPeer::getString('wns.subscriber.is_unconfirmed');
 				break;
 			case 'preferred_language_id':
-				$aResult['heading'] = StringPeer::getString('wns.preferred_language_id');
+				$aResult['heading'] = TranslationPeer::getString('wns.preferred_language_id');
 				break;
 			case 'email':
-				$aResult['heading'] = StringPeer::getString('wns.email');
+				$aResult['heading'] = TranslationPeer::getString('wns.email');
 				break;
 			case 'created_at_formatted':
-				$aResult['heading'] = StringPeer::getString('wns.date_of_subscription');
+				$aResult['heading'] = TranslationPeer::getString('wns.date_of_subscription');
 				break;
 			case 'delete':
 				$aResult['heading'] = ' ';
@@ -77,7 +77,7 @@ class SubscriberListWidgetModule extends SpecializedListWidgetModule {
 			}
 		}
     if($this->oDelegateProxy->getSubscriberGroupId() === CriteriaListWidgetDelegate::SELECT_WITHOUT) {
-			return StringPeer::getString('wns.subscriber_group.without');
+			return TranslationPeer::getString('wns.subscriber_group.without');
 		}
 		return $this->oDelegateProxy->getSubscriberGroupId();
 	}

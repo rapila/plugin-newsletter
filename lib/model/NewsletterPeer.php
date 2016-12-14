@@ -28,7 +28,7 @@ class NewsletterPeer extends BaseNewsletterPeer {
     }
     return self::doSelect($oCriteria);
   }
-  
+
   public static function getUnsentNewsletters() {
     $oCriteria = new Criteria();
     $oCriteria->addDescendingOrderByColumn(self::CREATED_AT);
@@ -37,7 +37,7 @@ class NewsletterPeer extends BaseNewsletterPeer {
     $oCriteria->add(NewsletterMailingPeer::NEWSLETTER_ID, null, Criteria::ISNULL);
     return self::doSelect($oCriteria);
   }
-  
+
   public static function getNewslettersWithSentInfo($iLimit = 10) {
     $oCriteria = new Criteria();
     $oCriteria->addDescendingOrderByColumn(self::CREATED_AT);
@@ -57,9 +57,9 @@ class NewsletterPeer extends BaseNewsletterPeer {
 					}
         }
         if(count($aSentFirstletters) > 0) {
-          $oNewsletterName .= ' ['.StringPeer::getString('newsletter_mailing.sent_info').' '.implode(', ', $aSentFirstletters).']';
+          $oNewsletterName .= ' ['.TranslationPeer::getString('newsletter_mailing.sent_info').' '.implode(', ', $aSentFirstletters).']';
         }
-      } 
+      }
       $aResult[$oNewsletter->getId()] = $oNewsletterName;
     }
     return $aResult;

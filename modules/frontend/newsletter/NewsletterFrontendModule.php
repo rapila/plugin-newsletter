@@ -121,12 +121,12 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			SubscriberPeer::ignoreRights(true);
 			$this->oSubscriber->save();
 
-			$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe.success');
+			$sConfirmMessage = TranslationPeer::getString('wns.newsletter.subscribe.success');
 			// Notifiy only if a new subscription has been added, otherwise ignore
 
 			if($bHasNewSubscription) {
 				if(Settings::getSetting('newsletter', 'optin_confirmation_required', true)) {
-					$sConfirmMessage = StringPeer::getString('wns.newsletter.subscribe_opt_in.success');
+					$sConfirmMessage = TranslationPeer::getString('wns.newsletter.subscribe_opt_in.success');
 					$this->notifySubscriberOptIn($iSubscriberGroupId);
 				} else {
 					$this->notifySubscriber();
@@ -170,7 +170,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 			}
 		}
 		$oOptinConfirmLink = LinkUtil::absoluteLink(LinkUtil::link($oUnsubscribePage->getLink(), null, array(self::PARAM_OPT_IN_CONFIRM => Subscriber::getOptInChecksumByEmailAndSubscriberGroupId($this->oSubscriber->getEmail(), $iSubscriberGroupId))), null, LinkUtil::isSSL());
-		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), StringPeer::getString('newsletter_subscription.optin_link_text')));
+		$oEmailTemplate->replaceIdentifier('optin_link', TagWriter::quickTag('a', array('href' => $oOptinConfirmLink), TranslationPeer::getString('newsletter_subscription.optin_link_text')));
 		$this->sendMail($oEmailTemplate, true);
 	}
 
@@ -183,7 +183,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$sSenderEmail = Settings::getSetting('newsletter', 'sender_email', LinkUtil::getDomainHolderEmail('no-reply'));
 		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
 		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());
-		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate, $bSendHtml);
+		$oEmail = new EMail(TranslationPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate, $bSendHtml);
 		$oEmail->setSender($sSenderName, $sSenderEmail);
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
 		$oEmail->send();
@@ -282,10 +282,10 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		// Check remaining subscriber group memberships and inform accordingly
 		$oTemplate = $this->constructTemplate('unsubscribe_optout_confirm');
 		if(!$oSubscriber) {
-			$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriber', StringPeer::getString('wns.unsubscribe_optout.subscriber_removed'));
+			$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriber', TranslationPeer::getString('wns.unsubscribe_optout.subscriber_removed'));
 		}
 		$sSubscriptionsRemovedKey = count($_POST['subscriber_group_id']) > 1 ? 'wns.unsubscribe_optout.subscriptions_removed' : 'wns.unsubscribe_optout.subscription_removed';
-		$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriptions', StringPeer::getString($sSubscriptionsRemovedKey));
+		$oTemplate->replaceIdentifier('unsubscribe_optout_message_subscriptions', TranslationPeer::getString($sSubscriptionsRemovedKey));
 		return $oTemplate;
 	}
 
@@ -322,7 +322,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oTemplate = $this->constructTemplate('newsletter_display_list');
 
 		if($bHasNewsletters === false) {
-			$oTemplate->replaceIdentifier('newsletter_item', TagWriter::quickTag('p', array('class' => 'no_result_message'), StringPeer::getString('wns.newsletter.no_newsletter_available')));
+			$oTemplate->replaceIdentifier('newsletter_item', TagWriter::quickTag('p', array('class' => 'no_result_message'), TranslationPeer::getString('wns.newsletter.no_newsletter_available')));
 		}
 		if($bDisplayFileLink) {
 			$oItemPrototype = $this->constructTemplate('newsletter_list_item_file_module');
@@ -378,7 +378,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		if(self::$NEWSLETTER) {
 			$oTemplate = $this->constructTemplate('newsletter_display_detail');
 			$oTemplate->replaceIdentifier('body', RichtextUtil::parseStorageForOutput(self::$NEWSLETTER->getNewsletterBody(), false));
-			$oTemplate->replaceIdentifier('date_prefix', StringPeer::getString('wns.newsletter.newsletter_of_date_prefix'));
+			$oTemplate->replaceIdentifier('date_prefix', TranslationPeer::getString('wns.newsletter.newsletter_of_date_prefix'));
 			$oTemplate->replaceIdentifier('date', self::$NEWSLETTER->getLastSent());
 			return $oTemplate;
 		}
