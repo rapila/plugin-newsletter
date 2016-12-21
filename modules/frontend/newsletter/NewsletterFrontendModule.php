@@ -213,7 +213,7 @@ class NewsletterFrontendModule extends DynamicFrontendModule {
 		$oEmailTemplate->replaceIdentifier('signature', $sSenderName);
 		$oEmailTemplate->replaceIdentifier('weblink', LinkUtil::getHostName());
 
-		$oEmail = new EMail(StringPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate, $bSendHtml);
+		$oEmail = new EMail(TranslationPeer::getString('wns.subscriber_email.subject'), $oEmailTemplate, $bSendHtml);
 		$oEmail->setSender($sSenderName, $sSenderEmail);
 		$oEmail->addRecipient($this->oSubscriber->getEmail());
 		$oEmail->send();
